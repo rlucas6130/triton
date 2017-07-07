@@ -128,3 +128,5 @@ D:\Projects\SVD\UI\bin\HtmlAgilityPack.xml
 D:\Projects\SVD\UI\obj\x64\Debug\UI.csprojResolveAssemblyReference.cache
 D:\Projects\SVD\UI\obj\x64\Debug\UI.dll
 D:\Projects\SVD\UI\obj\x64\Debug\UI.pdb
+D:\Projects\SVD\UI\bin\EntityFramework.dll
+D:\Projects\SVD\UI\bin\EntityFramework.xml

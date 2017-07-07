@@ -45,7 +45,7 @@ namespace UI.Controllers
 
             var start = DateTime.Now;
 
-            var cluster = ClusterOptimizer.OptimizeRange(2, 100, 1);
+            var cluster = ClusterOptimizer.OptimizeRange(null, 2, 100, 1);
 
             cluster.BuildCategoryNameMap();
 

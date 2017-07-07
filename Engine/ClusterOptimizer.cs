@@ -21,27 +21,22 @@ namespace Engine
             // Monitor each cluster Si and remove each cluster from the calculation as they become 'optimized'
         }
 
-        public static Cluster Optimize(Random randomGenerator, StringBuilder csv, int k = 2, int iterations = 4, int maxOptimizationIterations = 100)
+        public static Cluster Optimize(SvdEntities context, Random randomGenerator, int k = 2, int iterations = 4, int maxOptimizationIterations = 100)
         {
             var clusters = (from c in Enumerable.Range(0, iterations).AsParallel()
-                           select new Cluster(randomGenerator, csv, k, maxOptimizationIterations)).ToList();
+                           select new Cluster(context, randomGenerator, k, maxOptimizationIterations)).ToList();
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.ClusterSiAverage).First();
         }
 
-        public static Cluster OptimizeRange(int kStart = 2, int kEnd = 100, int iterations = 4, int maxOptimizationIterations = 200)
+        public static Cluster OptimizeRange(SvdEntities context, int kStart = 2, int kEnd = 100, int iterations = 4, int maxOptimizationIterations = 200)
         {
             var randGen = new Random();
-            var csv = new StringBuilder();
-
-            csv.AppendLine($"Clusters,Global Si,Cluster Si");
 
             var clusters = (from k in Enumerable.Range(kStart, (kEnd - kStart)).AsParallel()
-                            select Optimize(randGen, csv, k, iterations, maxOptimizationIterations)).ToList();
-
-            File.WriteAllText($"D:/Wiki/{LSA.NumDocs}/{DateTime.Now.ToString(@"MM-dd-yyyy-HH-mm")}.csv", csv.ToString());
+                            select Optimize(context, randGen, k, iterations, maxOptimizationIterations)).ToList();
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)

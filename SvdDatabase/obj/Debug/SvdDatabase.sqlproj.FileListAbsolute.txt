@@ -1,0 +1,5 @@
+D:\Projects\SVD\SvdDatabase\bin\Debug\SvdDatabase.dacpac
+D:\Projects\SVD\SvdDatabase\bin\Debug\SvdDatabase.dll
+D:\Projects\SVD\SvdDatabase\bin\Debug\SvdDatabase.pdb
+D:\Projects\SVD\SvdDatabase\obj\Debug\SvdDatabase.dll
+D:\Projects\SVD\SvdDatabase\obj\Debug\SvdDatabase.pdb

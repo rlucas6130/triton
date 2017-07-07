@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SvdModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ClusterCalculation">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" />
+    <Property Name="ClusterCount" Type="Int32" Nullable="false" />
+    <Property Name="GlobalSi" Type="Single" Nullable="false" />
+    <Property Name="ClusterSi" Type="Single" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="SvdEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ClusterCalculations" EntityType="Self.ClusterCalculation" />
+  </EntityContainer>
+</Schema>

@@ -28,7 +28,7 @@ namespace Engine
         public float ClusterSiAverage { get; set; }
         public int Clusters { get; set; }
 
-        public Cluster(Random generator, StringBuilder csv, int k = 2, int maxIteration = 100)
+        public Cluster(SvdEntities context, Random generator, int k = 2, int maxIteration = 100)
         {
             Clusters = k;
 
@@ -179,9 +179,16 @@ namespace Engine
             Debug.WriteLine($"****{Clusters}***** ClusterSiAverage: {ClusterSiAverage}");
             Debug.WriteLine($"----{Clusters}---- Total Cluster SI Calc: {DateTime.Now.Subtract(calcSiStart).TotalMilliseconds} Milliseconds");
 
-            if(csv != null)
+            if(context != null)
             {
-                csv.AppendLine($"{Clusters},{GlobalSi},{ClusterSiAverage}");
+                context.ClusterCalculations.Add(new ClusterCalculation()
+                {
+                    ClusterCount = Clusters,
+                    GlobalSi = GlobalSi, 
+                    ClusterSi = ClusterSiAverage
+                });
+
+                context.SaveChanges();
             }
         }
 

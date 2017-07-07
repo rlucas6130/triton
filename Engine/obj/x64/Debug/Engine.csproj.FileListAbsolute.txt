@@ -18,3 +18,8 @@ D:\Projects\SVD\Engine\bin\x64\Debug\HtmlAgilityPack.xml
 D:\Projects\SVD\Engine\obj\x64\Debug\Engine.csprojResolveAssemblyReference.cache
 D:\Projects\SVD\Engine\obj\x64\Debug\Engine.dll
 D:\Projects\SVD\Engine\obj\x64\Debug\Engine.pdb
+D:\Projects\SVD\Engine\bin\x64\Debug\Engine.dll.config
+D:\Projects\SVD\Engine\bin\x64\Debug\EntityFramework.dll
+D:\Projects\SVD\Engine\bin\x64\Debug\EntityFramework.SqlServer.dll
+D:\Projects\SVD\Engine\bin\x64\Debug\EntityFramework.xml
+D:\Projects\SVD\Engine\bin\x64\Debug\EntityFramework.SqlServer.xml
