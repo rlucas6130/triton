@@ -97,15 +97,15 @@ namespace Engine
                 // Get aI
                 var currentCluster = kvp.Value;
 
-                var targetDoc = LSA.MatrixContainer.VMatrix.Column(kvp.Key).ToArray();
+                //var targetDoc = LSA.MatrixContainer.VMatrix.Column(kvp.Key).ToArray();
 
                 var targetCluster = ClusterMap.Where(c => c.Value == currentCluster).ToList();
                 var distanceTotal = new List<float>();
 
                 for(var i = 0; i < targetCluster.Count; i++)
                 {
-                    var docToCompare = LSA.MatrixContainer.VMatrix.Column(targetCluster[i].Key).ToArray();
-                    var distance = Distance.Cosine(targetDoc, docToCompare);
+                    //var docToCompare = LSA.MatrixContainer.VMatrix.Column(targetCluster[i].Key).ToArray();
+                    var distance = LSA.MatrixContainer.DistanceMap[kvp.Key, targetCluster[i].Key]; // Distance.Cosine(targetDoc, docToCompare);
 
                     if (!float.IsInfinity(distance) && !float.IsNaN(distance))
                     {
@@ -123,12 +123,12 @@ namespace Engine
                     if (i == currentCluster) continue;
 
                     var otherTargetCluster = ClusterMap.Where(c => c.Value == i).ToList();
-                    var distanceOtherTotal = new List<float>(); ;
+                    var distanceOtherTotal = new List<float>();
 
                     for(var m = 0; m < otherTargetCluster.Count; m++)
                     {
-                        var docToCompareOther = LSA.MatrixContainer.VMatrix.Column(otherTargetCluster[m].Key).ToArray();
-                        var distanceOther = Distance.Cosine(targetDoc, docToCompareOther);
+                        //var docToCompareOther = LSA.MatrixContainer.VMatrix.Column(otherTargetCluster[m].Key).ToArray();
+                        var distanceOther = LSA.MatrixContainer.DistanceMap[kvp.Key, otherTargetCluster[m].Key];//Distance.Cosine(targetDoc, docToCompareOther);
 
                         if (!float.IsInfinity(distanceOther) && !float.IsNaN(distanceOther))
                         {

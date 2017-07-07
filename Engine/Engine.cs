@@ -309,13 +309,25 @@ namespace Engine
 
             var newUMatrix = new DenseMatrix(termsList.Count(), dimensions, uValues);
 
+            // Calc Distance Map
+            var distanceMap = new float[newVMatrix.ColumnCount,newVMatrix.ColumnCount];
+
+            Enumerable.Range(0, newVMatrix.ColumnCount).AsParallel().ForAll(i =>
+            {
+                for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                {
+                    distanceMap[i, m] = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray());
+                }
+            });
+
             MatrixContainer = new MatrixContainer()
             {
                 Dimensions = dimensions,
                 DocNameMap = docNameMap,
                 Terms = termsList,
                 UMatrix = newUMatrix,
-                VMatrix = newVMatrix
+                VMatrix = newVMatrix,
+                DistanceMap = distanceMap
             };
         }
     }
@@ -333,6 +345,6 @@ namespace Engine
         public List<string> Terms { get; set; }
         public DenseMatrix UMatrix { get; set; }
         public DenseMatrix VMatrix { get; set; }
-        public Dictionary<Tuple<int, int>, float> DistanceMap { get; set; }
+        public float[,] DistanceMap { get; set; }
     }
 }
