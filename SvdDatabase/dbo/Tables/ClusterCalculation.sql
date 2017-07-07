@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ClusterCalculation] (
-    [Id]           INT  NOT NULL,
+    [Id]           INT  NOT NULL IDENTITY,
     [ClusterCount] INT  NOT NULL,
     [GlobalSi]     REAL NOT NULL,
     [ClusterSi]    REAL NOT NULL,

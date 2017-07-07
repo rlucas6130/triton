@@ -1,0 +1,12 @@
+UI/obj/
+UI/bin/
+SvdDatabase/obj/
+SvdDatabase/bin/
+SVD/obj/
+SVD/bin/
+packages/
+Engine/obj/
+Engine/bin/
+.vs/SVD/v14/.suo
+SvdDatabase/SvdDatabase.dbmdl
+SvdDatabase/SvdDatabase.jfm

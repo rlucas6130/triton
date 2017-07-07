@@ -18,7 +18,7 @@ namespace Engine
         public ConcurrentDictionary<int, int> ClusterMap { get; set; }
         public Dictionary<int, int> DocsPerCluster { get; set; }
         public ConcurrentDictionary<int, float[]> Centers { get; set; }
-        public ConcurrentDictionary<int, ConcurrentBag<float>> ClusterSi { get; set; }
+        public ConcurrentBag<Tuple<int, float>> ClusterSi { get; set; }
         public Dictionary<string, float> ClusterSiAverages { get; set; }
         public ConcurrentDictionary<string, List<string>> CategoryNameMap { get; set; }
         public bool IsOptimized { get; set; }
@@ -28,7 +28,7 @@ namespace Engine
         public float ClusterSiAverage { get; set; }
         public int Clusters { get; set; }
 
-        public Cluster(SvdEntities context, Random generator, int k = 2, int maxIteration = 100)
+        public Cluster(Random generator, int k = 2, int maxIteration = 100)
         {
             Clusters = k;
 
@@ -36,11 +36,11 @@ namespace Engine
             ClusterMap = new ConcurrentDictionary<int, int>();
             DocsPerCluster = new Dictionary<int, int>();
             Distances = new ConcurrentDictionary<int, float>();
-            ClusterSi = new ConcurrentDictionary<int, ConcurrentBag<float>>();
+            ClusterSi = new ConcurrentBag<Tuple<int, float>>();
             ClusterSiAverages = new Dictionary<string, float>();
             CategoryNameMap = new ConcurrentDictionary<string, List<string>>();
             IsOptimized = false;
-            OptimizationVarianceThreshold = .00000001F;
+            OptimizationVarianceThreshold = .00000002F;
             MaxIterations = maxIteration;
 
             if (LSA.MatrixContainer == null)
@@ -52,7 +52,6 @@ namespace Engine
             Centers.Clear();
             Distances.Clear();
             ClusterMap.Clear();
-            ClusterSi.Clear();
             CategoryNameMap.Clear();
 
             var clusterCentersDocIndex = new HashSet<int>();
@@ -153,21 +152,19 @@ namespace Engine
                 {
                     siList.Add(sI);
 
-                    ClusterSi.AddOrUpdate(currentCluster,
-                        (key) => new ConcurrentBag<float>() { sI },
-                        (key, list) => {
-                            list.Add(sI);
-                            return list;
-                    });
+                    ClusterSi.Add(Tuple.Create(currentCluster, sI));
                 }
             });
             
             // Calc Cluster Si Averages
             for (var m = 0; m < Clusters; m++)
             {
-                if(ClusterSi.ContainsKey(m))
+                if(ClusterSi.Any(c => c.Item1 == m))
                 {
-                    ClusterSiAverages[m.ToString()] = ClusterSi[m].Average();
+                    ClusterSiAverages[m.ToString()] = ClusterSi
+                        .Where(c => c.Item1 == m)
+                        .Select(c => c.Item2)
+                        .Average();
                 }
             }
 
@@ -179,12 +176,12 @@ namespace Engine
             Debug.WriteLine($"****{Clusters}***** ClusterSiAverage: {ClusterSiAverage}");
             Debug.WriteLine($"----{Clusters}---- Total Cluster SI Calc: {DateTime.Now.Subtract(calcSiStart).TotalMilliseconds} Milliseconds");
 
-            if(context != null)
-            {
+            using(var context = new SvdEntities())
+            {             
                 context.ClusterCalculations.Add(new ClusterCalculation()
                 {
                     ClusterCount = Clusters,
-                    GlobalSi = GlobalSi, 
+                    GlobalSi = GlobalSi,
                     ClusterSi = ClusterSiAverage
                 });
 

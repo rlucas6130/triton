@@ -333,5 +333,6 @@ namespace Engine
         public List<string> Terms { get; set; }
         public DenseMatrix UMatrix { get; set; }
         public DenseMatrix VMatrix { get; set; }
+        public Dictionary<Tuple<int, int>, float> DistanceMap { get; set; }
     }
 }

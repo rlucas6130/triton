@@ -18,13 +18,11 @@ namespace SVD
 {
     public class Processor
     {
-        public static SvdEntities SvdContext = new SvdEntities();
-
         static void Main(string[] args)
         {
             LSA.GetMatrixContainer();
             //LSA.ProcessAndStore();
-            ClusterOptimizer.OptimizeRange(SvdContext, 5, 15, 2);
+            ClusterOptimizer.OptimizeRange(20, 25, 2);
         }
     }
 }

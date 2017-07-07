@@ -21,22 +21,22 @@ namespace Engine
             // Monitor each cluster Si and remove each cluster from the calculation as they become 'optimized'
         }
 
-        public static Cluster Optimize(SvdEntities context, Random randomGenerator, int k = 2, int iterations = 4, int maxOptimizationIterations = 100)
+        public static Cluster Optimize(Random randomGenerator, int k = 2, int iterations = 4, int maxOptimizationIterations = 200)
         {
-            var clusters = (from c in Enumerable.Range(0, iterations).AsParallel()
-                           select new Cluster(context, randomGenerator, k, maxOptimizationIterations)).ToList();
+            var clusters = (from c in Enumerable.Range(0, iterations)
+                           select new Cluster(randomGenerator, k, maxOptimizationIterations)).ToList();
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.ClusterSiAverage).First();
         }
 
-        public static Cluster OptimizeRange(SvdEntities context, int kStart = 2, int kEnd = 100, int iterations = 4, int maxOptimizationIterations = 200)
+        public static Cluster OptimizeRange(int kStart = 2, int kEnd = 100, int iterations = 4, int maxOptimizationIterations = 200)
         {
             var randGen = new Random();
 
-            var clusters = (from k in Enumerable.Range(kStart, (kEnd - kStart)).AsParallel()
-                            select Optimize(context, randGen, k, iterations, maxOptimizationIterations)).ToList();
+            var clusters = (from k in Enumerable.Range(kStart, (kEnd - kStart) + 1)
+                            select Optimize(randGen, k, iterations, maxOptimizationIterations)).ToList();
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)
