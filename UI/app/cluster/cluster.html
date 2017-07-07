@@ -1,0 +1,39 @@
+﻿<div class="page-header">
+    <h1>Clustering</h1>
+</div>
+
+<dl> <!--ng-repeat="calc in calcs"-->
+    <dt>
+        Global (Dataset) Si
+    </dt>
+    <dd>
+        {{globalSi}}
+    </dd>
+    <dt>
+        Cluser Si Average
+    </dt>
+    <dd>
+        {{clusterSiAverage}}
+    </dd>
+    <dt>
+        NumClusters
+    </dt>
+    <dd>
+        {{numClusters}}
+    </dd>
+</dl>
+
+
+
+<div ng-repeat="cluster in clusters | orderBy:'-SI'" ng-show="cluster.nameList.length > 1">
+
+    <h3>Cluster # {{$index}} (<span ng-repeat="category in cluster.categoryNames"> {{category}}, </span>) 
+    <small>SI: {{cluster.SI}}</small></h3>
+
+    <ul>
+        <li ng-repeat="fileName in cluster.nameList track by $index">
+            <a target="_blank" href="/wiki/{{fileName}}">{{fileName}}</a>
+        </li>
+    </ul>
+
+</div>

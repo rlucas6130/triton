@@ -1,0 +1,130 @@
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\csc.exe
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\vbc.exe
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\VBCSCompiler.exe
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\UI.dll.config
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\UI.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\UI.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Antlr3.Runtime.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Engine.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Newtonsoft.Json.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Helpers.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Mvc.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Optimization.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Razor.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.Deployment.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.Razor.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\WebGrease.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\MathNet.Numerics.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\HtmlAgilityPack.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Engine.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Helpers.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Mvc.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Optimization.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.Razor.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.Deployment.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\System.Web.WebPages.Razor.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Antlr3.Runtime.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\Newtonsoft.Json.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\MathNet.Numerics.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\HtmlAgilityPack.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\bin\HtmlAgilityPack.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\obj\x64\Debug\UI.csprojResolveAssemblyReference.cache
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\obj\x64\Debug\UI.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\UI\obj\x64\Debug\UI.pdb
+D:\Projects\SVD\UI\bin\roslyn\csc.exe
+D:\Projects\SVD\UI\bin\roslyn\csc.exe.config
+D:\Projects\SVD\UI\bin\roslyn\csc.rsp
+D:\Projects\SVD\UI\bin\roslyn\csi.exe
+D:\Projects\SVD\UI\bin\roslyn\csi.exe.config
+D:\Projects\SVD\UI\bin\roslyn\csi.rsp
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\Projects\SVD\UI\bin\roslyn\Microsoft.Win32.Primitives.dll
+D:\Projects\SVD\UI\bin\roslyn\System.AppContext.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Collections.Immutable.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Console.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Diagnostics.FileVersionInfo.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Diagnostics.Process.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Diagnostics.StackTrace.dll
+D:\Projects\SVD\UI\bin\roslyn\System.IO.Compression.dll
+D:\Projects\SVD\UI\bin\roslyn\System.IO.FileSystem.dll
+D:\Projects\SVD\UI\bin\roslyn\System.IO.FileSystem.DriveInfo.dll
+D:\Projects\SVD\UI\bin\roslyn\System.IO.FileSystem.Primitives.dll
+D:\Projects\SVD\UI\bin\roslyn\System.IO.Pipes.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Reflection.Metadata.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.AccessControl.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Claims.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Cryptography.Algorithms.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Cryptography.Encoding.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Cryptography.Primitives.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Cryptography.X509Certificates.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Security.Principal.Windows.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Text.Encoding.CodePages.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Threading.Thread.dll
+D:\Projects\SVD\UI\bin\roslyn\System.ValueTuple.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Xml.ReaderWriter.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Xml.XmlDocument.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Xml.XPath.dll
+D:\Projects\SVD\UI\bin\roslyn\System.Xml.XPath.XDocument.dll
+D:\Projects\SVD\UI\bin\roslyn\vbc.exe
+D:\Projects\SVD\UI\bin\roslyn\vbc.exe.config
+D:\Projects\SVD\UI\bin\roslyn\vbc.rsp
+D:\Projects\SVD\UI\bin\roslyn\VBCSCompiler.exe
+D:\Projects\SVD\UI\bin\roslyn\VBCSCompiler.exe.config
+D:\Projects\SVD\UI\bin\UI.dll.config
+D:\Projects\SVD\UI\bin\UI.dll
+D:\Projects\SVD\UI\bin\UI.pdb
+D:\Projects\SVD\UI\bin\Antlr3.Runtime.dll
+D:\Projects\SVD\UI\bin\Engine.dll
+D:\Projects\SVD\UI\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\Projects\SVD\UI\bin\Microsoft.Web.Infrastructure.dll
+D:\Projects\SVD\UI\bin\Newtonsoft.Json.dll
+D:\Projects\SVD\UI\bin\System.Web.Helpers.dll
+D:\Projects\SVD\UI\bin\System.Web.Mvc.dll
+D:\Projects\SVD\UI\bin\System.Web.Optimization.dll
+D:\Projects\SVD\UI\bin\System.Web.Razor.dll
+D:\Projects\SVD\UI\bin\System.Web.WebPages.Deployment.dll
+D:\Projects\SVD\UI\bin\System.Web.WebPages.dll
+D:\Projects\SVD\UI\bin\System.Web.WebPages.Razor.dll
+D:\Projects\SVD\UI\bin\WebGrease.dll
+D:\Projects\SVD\UI\bin\MathNet.Numerics.dll
+D:\Projects\SVD\UI\bin\HtmlAgilityPack.dll
+D:\Projects\SVD\UI\bin\Engine.pdb
+D:\Projects\SVD\UI\bin\Antlr3.Runtime.pdb
+D:\Projects\SVD\UI\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\Projects\SVD\UI\bin\Newtonsoft.Json.xml
+D:\Projects\SVD\UI\bin\System.Web.Helpers.xml
+D:\Projects\SVD\UI\bin\System.Web.Mvc.xml
+D:\Projects\SVD\UI\bin\System.Web.Optimization.xml
+D:\Projects\SVD\UI\bin\System.Web.Razor.xml
+D:\Projects\SVD\UI\bin\System.Web.WebPages.xml
+D:\Projects\SVD\UI\bin\System.Web.WebPages.Deployment.xml
+D:\Projects\SVD\UI\bin\System.Web.WebPages.Razor.xml
+D:\Projects\SVD\UI\bin\MathNet.Numerics.pdb
+D:\Projects\SVD\UI\bin\HtmlAgilityPack.pdb
+D:\Projects\SVD\UI\bin\HtmlAgilityPack.xml
+D:\Projects\SVD\UI\obj\x64\Debug\UI.csprojResolveAssemblyReference.cache
+D:\Projects\SVD\UI\obj\x64\Debug\UI.dll
+D:\Projects\SVD\UI\obj\x64\Debug\UI.pdb

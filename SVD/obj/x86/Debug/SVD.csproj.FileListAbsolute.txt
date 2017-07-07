@@ -1,0 +1,11 @@
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\SVD.dll.config
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\SVD.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\SVD.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\HtmlAgilityPack.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\MathNet.Numerics.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\HtmlAgilityPack.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\HtmlAgilityPack.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\x86\Debug\MathNet.Numerics.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\obj\x86\Debug\SVD.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\obj\x86\Debug\SVD.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\obj\x86\Debug\SVD.csprojResolveAssemblyReference.cache

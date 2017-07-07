@@ -1,0 +1,10 @@
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\bin\Debug\SVD.exe.config
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\bin\Debug\SVD.exe
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\bin\Debug\SVD.pdb
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\obj\Debug\SVD.exe
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\obj\Debug\SVD.pdb
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\bin\Debug\MathNet.Numerics.dll
+c:\users\ryanj_000\documents\visual studio 2015\Projects\SVD\SVD\bin\Debug\MathNet.Numerics.xml
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\Debug\HtmlAgilityPack.dll
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\ryanj_000\Documents\Visual Studio 2015\Projects\SVD\SVD\bin\Debug\HtmlAgilityPack.xml
