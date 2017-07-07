@@ -48,12 +48,6 @@ namespace Engine
                 LSA.GetMatrixContainer();
             }
 
-            // Clear ConcurrentDictinaries due to multi-threading memory address duplication issues. 
-            Centers.Clear();
-            Distances.Clear();
-            ClusterMap.Clear();
-            CategoryNameMap.Clear();
-
             var clusterCentersDocIndex = new HashSet<int>();
 
             while (clusterCentersDocIndex.Count <= Clusters)

@@ -22,7 +22,7 @@ namespace SVD
         {
             LSA.GetMatrixContainer();
             //LSA.ProcessAndStore();
-            ClusterOptimizer.OptimizeRange(25, 30, 2);
+            ClusterOptimizer.OptimizeRange(30, 35, 2);
         }
     }
 }
