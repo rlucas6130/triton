@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 using MathNet.Numerics.LinearAlgebra.Single;
 using System;
 using System.Collections.Concurrent;
@@ -20,28 +21,52 @@ namespace Engine
     public static class LSA
     {
         public static int NumDocs = 5000;
-        //private static readonly object locker = new object();
+        public static string DictionaryPath = "D:/Wiki/dict.txt";
+
         public static MatrixContainer MatrixContainer { get; set; }
 
         public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered" };
 
-        public static void ProcessAndStore()
+        public static IEnumerable<Term> GetOrAddTerms()
         {
-            var fileStreamDict = new StreamReader("D:/Wiki/dict.txt");
-
-            var words = new List<string>();
-
-            while (!fileStreamDict.EndOfStream)
+            using (var context = new SvdEntities())
             {
-                words.Add(fileStreamDict.ReadLine());
+                if (!context.Terms.Any()) {
+                    var fileStreamDict = new StreamReader(DictionaryPath);
+
+                    while (!fileStreamDict.EndOfStream)
+                    {
+                        context.Terms.Add(new Term()
+                        {
+                            Value = fileStreamDict.ReadLine()
+                        });
+                    }
+
+                    context.SaveChanges();
+                }
+
+                return context.Terms.Where(t => !Exclusions.Contains(t.Value)).ToList();
+            }
+        }
+
+        public class TermComparer : IEqualityComparer<Term>
+        {
+            public bool Equals(Term x, Term y)
+            {
+                return string.Equals(x.Value.ToLower(), y.Value.ToLower());
             }
 
-            words = words.Except(Exclusions).ToList();
+            public int GetHashCode(Term obj)
+            {
+                return obj.Value.GetHashCode();
+            }
+        }
 
-            //var docCollection = new HashSet<Tuple<string, string>>();
+        public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
+        {
+            var terms = GetOrAddTerms();
 
-            // CHECK FOR LATER (CHANGED FROM DICTIONARY - MIGHT BE OUT OF ORDER)
-            //var docNameMap = new ConcurrentDictionary<int, string>();
+            SetJobStatus(context, job, JobStatus.BuildingMatrix);
 
             var readFilesStart = DateTime.Now;
 
@@ -53,165 +78,251 @@ namespace Engine
 
             var fileIndexes = new HashSet<int>();
 
-            while(fileIndexes.Count <= NumDocs)
+            while (fileIndexes.Count <= NumDocs)
             {
                 fileIndexes.Add(random.Next(fileCount));
             }
 
             var files = Enumerable.Range(0, NumDocs).ToList().Select(i => allFiles.ElementAt(fileIndexes.ElementAt(i))).ToList();
-
-            var newDocCollection = new ConcurrentDictionary<string, Dictionary<string, int>>();
+            ConcurrentBag<TermDocumentCount> termDocCounts = new ConcurrentBag<TermDocumentCount>();
 
             files.AsParallel().ForAll((file) =>
             {
-                var html = File.ReadAllText(file, Encoding.UTF8);
+                // TODO: Update predicate to use text hash code (update Documents table)
+                var docEntity = context.Documents.FirstOrDefault(d => d.Name == file);
 
-                HtmlDocument doc = new HtmlDocument();
-
-                doc.LoadHtml(HttpUtility.HtmlDecode(html));
-
-                //var tokenList = new List<string>();
-
-                doc.DocumentNode.SelectNodes("//body//text()").ToList().ForEach(node =>
+                if (docEntity != null)
                 {
-                    var text = node.InnerText.Trim();
-
-                    if (!String.IsNullOrEmpty(text) && !String.IsNullOrWhiteSpace(text))
+                    docEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCounts.Add(tdc));
+                }
+                else
+                {
+                    // Save Entities
+                    docEntity = context.Documents.Add(new Document()
                     {
-                        var filtered = text.Where(c => (
-                            char.IsLetterOrDigit(c) ||
-                            char.IsWhiteSpace(c) ||
-                            c == '-')).ToArray();
+                        Name = file
+                    });
 
-                        text = new string(filtered);
+                    var html = File.ReadAllText(file, Encoding.UTF8);
 
-                        foreach (var _token in text.Trim().Split(' '))
+                    HtmlDocument doc = new HtmlDocument();
+
+                    doc.LoadHtml(HttpUtility.HtmlDecode(html));
+
+                    doc.DocumentNode.SelectNodes("//body//text()").ToList().ForEach(node =>
+                    {
+                        var text = node.InnerText.Trim();
+
+                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
                         {
-                            var miniToken = _token.Trim().ToLower();
+                            var filtered = text.Where(c => (
+                                char.IsLetterOrDigit(c) ||
+                                char.IsWhiteSpace(c) ||
+                                c == '-'))
+                                .ToArray()
+                                .ToString();
 
-                            if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && words.Contains(miniToken))
-                            {
-                                var miniTokenDIct = newDocCollection.GetOrAdd(miniToken, new Dictionary<string, int>());
-
-                                if(!miniTokenDIct.ContainsKey(file))
-                                    miniTokenDIct[file] = 1;
-                                else
-                                    ++miniTokenDIct[file];
-                            }
+                            ParseDocumentData(filtered, docEntity, termDocCounts, terms);
                         }
-                    }
+                    });
+
+                }
+
+                context.JobDocuments.Add(new JobDocument()
+                {
+                    Job = job,
+                    Document = docEntity,
+                    OrdinalIndex = files.IndexOf(file)
                 });
-
-                //var joinedTokens = string.Join(" ", tokenList);
-
-                //lock (locker)
-                //    docCollection.Add(Tuple.Create(file, joinedTokens));
             });
 
-            var matrix = new DenseMatrix(newDocCollection.Count, NumDocs);
-            var termsList = newDocCollection.Keys.ToList();
+            var termsList = termDocCounts.Select(tdc => tdc.Term).Distinct(new TermComparer()).ToList();
+            var matrix = new DenseMatrix(termsList.Count, NumDocs);
 
-            foreach (var term in newDocCollection)
+            // Save Job Terms
+            termsList.ForEach(t =>
             {
-                var termIndex = termsList.IndexOf(term.Key);
-                foreach (var docCount in term.Value)
+                context.JobTerms.Add(new JobTerm()
                 {
-                    matrix[termIndex, files.IndexOf(docCount.Key)] = docCount.Value;
-                }
+                    Job = job,
+                    Term = t,
+                    OrdinalIndex = termsList.IndexOf(t)
+                });
+            });
+
+            // Build Matrix For Input To SVD
+            foreach (var termDocCount in termDocCounts)
+            {
+                var termIndex = termsList.IndexOf(termDocCount.Term);
+
+                matrix[termIndex, files.IndexOf(termDocCount.Document.Name)] = termDocCount.Count;
             }
 
             matrix.CoerceZero(.0000001);
 
             Debug.WriteLine($"Read File Calc Time: {DateTime.Now.Subtract(readFilesStart).TotalMilliseconds} Milliseconds");
 
+            return matrix;
+        }
+
+        public static void ParseDocumentData(string rawText, Document document, ConcurrentBag<TermDocumentCount> termDocCounts, IEnumerable<Term> terms)
+        {
+            foreach (var _token in rawText.Trim().Split(' '))
+            {
+                var miniToken = _token.Trim().ToLower();
+
+                var term = terms.FirstOrDefault(t => t.Value == miniToken);
+
+                if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && term != null)
+                {
+                    AddTermDocumentCount(term, document, termDocCounts);
+                }
+            }
+        }
+
+        public static void AddTermDocumentCount(Term term, Document document, ConcurrentBag<TermDocumentCount> termDocCounts)
+        {
+            var termDocCount = termDocCounts.FirstOrDefault(tdc => tdc.Document.Name == document.Name && tdc.Term.Value == term.Value);
+
+            if(termDocCount == null)
+                termDocCounts.Add(new TermDocumentCount()
+                {
+                    Document = document,
+                    Term = term,
+                    Count = 1
+                });
+             else
+                ++termDocCount.Count;
+            
+        }
+
+        public static Svd<float> GetSvd(SvdEntities context, Job job, DenseMatrix termDocMatrix)
+        {
             var svdStart = DateTime.Now;
 
-            var svd = matrix.Svd();
+            SetJobStatus(context, job, JobStatus.Svd);
+
+            var svd = termDocMatrix.Svd();
 
             Debug.WriteLine($"SVD Calc Time: {DateTime.Now.Subtract(svdStart).TotalMilliseconds} Milliseconds");
 
-            var dimensions = svd.S.Count <= 300 ? svd.S.Count : 300;
+            return svd;
+        }
 
-            // Reduction Step - U Table
+        public static void SetJobStatus(SvdEntities context, Job job, JobStatus status)
+        {
+            job.Status = status;
+            context.SaveChanges();
+        }
 
-            var newUMatrix = new DenseMatrix(termsList.Count, dimensions);
+        public static void ProcessAndStore()
+        {
+            Job job = null;
 
-            for (var i = 0; i < dimensions; i++)
+            using (var context = new SvdEntities())
             {
-                var singularValue = svd.S[i];
-
-                for (var m = 0; m < termsList.Count; m++)
+                try
                 {
-                    newUMatrix[m, i] = svd.U[m, i] * singularValue;
+                    // Create Job With All default values (must set dimensions if different than default '300')
+                    job = context.Jobs.Add(new Job()
+                    {
+                        DocumentCount = NumDocs
+                    });
+
+                    context.SaveChanges();
+
+                    // Process
+                    var matrix = GetTermDocMatrix(context, job);
+                    var svd = GetSvd(context, job, matrix);
+
+                    var dimensions = svd.S.Count <= 300 ? svd.S.Count : 300;
+                     
+                    var binaryFormatter = new BinaryFormatter();
+
+                    // Reduction Step - U Table
+
+                    var newUMatrix = new DenseMatrix(matrix.RowCount, dimensions);
+
+                    for (var i = 0; i < dimensions; i++)
+                    {
+                        var singularValue = svd.S[i];
+
+                        for (var m = 0; m < matrix.RowCount; m++)
+                        {
+                            newUMatrix[m, i] = svd.U[m, i] * singularValue;
+                        }
+                    }
+
+                    using (var memoryStreamU = new MemoryStream())
+                    {
+                        binaryFormatter.Serialize(memoryStreamU, newUMatrix.Values);
+
+                        memoryStreamU.Position = 0;
+
+                        context.UMatrices.Add(new UMatrix()
+                        {
+                            Job = job,
+                            SerializedValues = memoryStreamU.ToArray()
+                        });
+                    }
+
+                    // Reduction Step - V Table
+
+                    var newVMatrix = new DenseMatrix(dimensions, NumDocs);
+
+                    for (var i = 0; i < dimensions; i++)
+                    {
+                        for (var m = 0; m < NumDocs; m++)
+                        {
+                            newVMatrix[i, m] = svd.VT[i, m] * svd.S[i];
+                        }
+                    }
+
+                    using (var memoryStreamV = new MemoryStream())
+                    {
+                        binaryFormatter.Serialize(memoryStreamV, newVMatrix.Values);
+
+                        memoryStreamV.Position = 0;
+
+                        context.VMatrices.Add(new VMatrix()
+                        {
+                            Job = job,
+                            SerializedValues = memoryStreamV.ToArray()
+                        });
+                    }
+
+                    job.Dimensions = dimensions;
+
+                    context.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    job.Status = JobStatus.Failed;
+                    context.SaveChanges();
+
+                    throw;
                 }
             }
+            
+            //// Doc Map Save
 
-            // Reduction Step - V Table
+            //var fileStreamDocMap = new FileStream("D:/Wiki/" + NumDocs + "/docMap.dat", FileMode.Create);
 
-            var newVMatrix = new DenseMatrix(dimensions, NumDocs);
+            //var binaryFormatterDocMap = new BinaryFormatter();
 
-            for (var i = 0; i < dimensions; i++)
-            {
-                for (var m = 0; m < NumDocs; m++)
-                {
-                    newVMatrix[i, m] = svd.VT[i, m] * svd.S[i];
-                }
-            }
+            //binaryFormatterDocMap.Serialize(fileStreamDocMap, files);
 
-            if (!Directory.Exists("D:/Wiki/" + NumDocs))
-            {
-                Directory.CreateDirectory("D:/Wiki/" + NumDocs);
-            }
+            //fileStreamDocMap.Close();
 
-            // V Save
+            //// Term-Index Map Save
 
-            var fileStreamV = new FileStream("D:/Wiki/" + NumDocs + "/v.dat", FileMode.Create);
+            //var fileStreamTermsMap = new FileStream("D:/Wiki/" + NumDocs + "/termsMap.dat", FileMode.Create);
 
-            var binaryFormatterV = new BinaryFormatter();
+            //var binaryFormatterTermsMap = new BinaryFormatter();
 
-            binaryFormatterV.Serialize(fileStreamV, newVMatrix.Values);
+            //binaryFormatterTermsMap.Serialize(fileStreamTermsMap, termsList);
 
-            fileStreamV.Close();
-
-            // U Save
-
-            var fileStreamU = new FileStream("D:/Wiki/" + NumDocs + "/u.dat", FileMode.Create);
-
-            var binaryFormatterU = new BinaryFormatter();
-
-            binaryFormatterU.Serialize(fileStreamU, newUMatrix.Values);
-
-            fileStreamU.Close();
-
-            // Doc Map Save
-
-            var fileStreamDocMap = new FileStream("D:/Wiki/" + NumDocs + "/docMap.dat", FileMode.Create);
-
-            var binaryFormatterDocMap = new BinaryFormatter();
-
-            binaryFormatterDocMap.Serialize(fileStreamDocMap, files);
-
-            fileStreamDocMap.Close();
-
-            // Term-Index Map Save
-
-            var fileStreamTermsMap = new FileStream("D:/Wiki/" + NumDocs + "/termsMap.dat", FileMode.Create);
-
-            var binaryFormatterTermsMap = new BinaryFormatter();
-
-            binaryFormatterTermsMap.Serialize(fileStreamTermsMap, termsList);
-
-            fileStreamTermsMap.Close();
-
-            // Save Dimensions
-
-            var dimensionStream = new FileStream("D:/Wiki/" + NumDocs + "/dimensions.dat", FileMode.Create);
-
-            var dimensionFormatted = new BinaryFormatter();
-
-            dimensionFormatted.Serialize(dimensionStream, dimensions);
-
-            dimensionStream.Close();
+            //fileStreamTermsMap.Close();
         }
 
         public static void RunQueryFromFile(string query)

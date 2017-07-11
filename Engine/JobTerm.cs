@@ -12,15 +12,13 @@ namespace Engine
     using System;
     using System.Collections.Generic;
     
-    public partial class ClusterCalculation
+    public partial class JobTerm
     {
-        public int Id { get; set; }
-        public int ClusterCount { get; set; }
-        public float GlobalSi { get; set; }
-        public float ClusterSi { get; set; }
-        public Nullable<int> DocumentCount { get; set; }
         public int JobId { get; set; }
+        public int TermId { get; set; }
+        public int OrdinalIndex { get; set; }
     
         public virtual Job Job { get; set; }
+        public virtual Term Term { get; set; }
     }
 }

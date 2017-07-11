@@ -12,15 +12,15 @@ namespace Engine
     using System;
     using System.Collections.Generic;
     
-    public partial class ClusterCalculation
+    public partial class DocumentDistance
     {
-        public int Id { get; set; }
-        public int ClusterCount { get; set; }
-        public float GlobalSi { get; set; }
-        public float ClusterSi { get; set; }
-        public Nullable<int> DocumentCount { get; set; }
         public int JobId { get; set; }
+        public int SourceDocumentId { get; set; }
+        public int TargetDocumentId { get; set; }
+        public float Distance { get; set; }
     
         public virtual Job Job { get; set; }
+        public virtual Document SourceDocument { get; set; }
+        public virtual Document TargetDocument { get; set; }
     }
 }

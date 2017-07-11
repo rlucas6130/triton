@@ -4,8 +4,29 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="ff8a2a2a537447929b9e91beb29b95ae" Name="Diagram1">
-        <EntityTypeShape EntityType="SvdModel.ClusterCalculation" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+      <Diagram DiagramId="ff8a2a2a537447929b9e91beb29b95ae" Name="Svd">
+        <EntityTypeShape EntityType="SvdModel.ClusterCalculation" Width="1.5" PointX="3.5" PointY="6.375" />
+        <EntityTypeShape EntityType="SvdModel.DocumentDistance" Width="1.875" PointX="7.625" PointY="0.625" />
+        <EntityTypeShape EntityType="SvdModel.Document" Width="2.125" PointX="3.375" PointY="0.625" />
+        <EntityTypeShape EntityType="SvdModel.JobDocument" Width="1.5" PointX="3.5" PointY="4" />
+        <EntityTypeShape EntityType="SvdModel.Job" Width="1.75" PointX="5.5" PointY="4" />
+        <EntityTypeShape EntityType="SvdModel.JobTerm" Width="1.5" PointX="8" PointY="6.875" />
+        <EntityTypeShape EntityType="SvdModel.Term" Width="1.5" PointX="10.125" PointY="6.875" />
+        <EntityTypeShape EntityType="SvdModel.UMatrix" Width="1.5" PointX="8" PointY="5.125" />
+        <EntityTypeShape EntityType="SvdModel.VMatrix" Width="1.5" PointX="8" PointY="3.375" />
+        <AssociationConnector Association="SvdModel.FK_ClusterCalculation_Job" />
+        <AssociationConnector Association="SvdModel.FK_DocumentDistances_Job" />
+        <AssociationConnector Association="SvdModel.FK_SourceDocument_Documents" />
+        <AssociationConnector Association="SvdModel.FK_TargetDocument_Documents" />
+        <AssociationConnector Association="SvdModel.FK_JobDocuments_Documents" />
+        <AssociationConnector Association="SvdModel.FK_JobDocuments_Jobs" />
+        <AssociationConnector Association="SvdModel.FK_JobTerms_Job" />
+        <AssociationConnector Association="SvdModel.FK_U_Job" />
+        <AssociationConnector Association="SvdModel.FK_JobTerms_Terms" />
+        <AssociationConnector Association="SvdModel.FK_VMatrices_Jobs" />
+        <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.5" PointX="12.375" PointY="3.625" />
+        <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Document" />
+        <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Terms" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

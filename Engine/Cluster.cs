@@ -176,7 +176,8 @@ namespace Engine
                 {
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
-                    ClusterSi = ClusterSiAverage
+                    ClusterSi = ClusterSiAverage,
+                    DocumentCount = LSA.NumDocs
                 });
 
                 context.SaveChanges();
