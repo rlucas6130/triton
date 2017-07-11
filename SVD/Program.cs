@@ -20,9 +20,9 @@ namespace SVD
     {
         static void Main(string[] args)
         {
-            LSA.GetMatrixContainer();
-            //LSA.ProcessAndStore();
-            ClusterOptimizer.OptimizeRange(50, 200, 1, 10);
+            //LSA.GetMatrixContainer();
+            LSA.ProcessAndStore();
+            //ClusterOptimizer.OptimizeRange(50, 200, 1, 10);
         }
     }
 }

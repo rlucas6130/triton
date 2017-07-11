@@ -20,51 +20,41 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 5000;
+        public static int NumDocs = 100;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
 
         public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered" };
 
-        public static IEnumerable<Term> GetOrAddTerms()
+        public static IEnumerable<Term> GetOrAddTerms(SvdEntities context)
         {
-            using (var context = new SvdEntities())
-            {
-                if (!context.Terms.Any()) {
-                    var fileStreamDict = new StreamReader(DictionaryPath);
+            var terms = context.Terms.Where(t => !Exclusions.Contains(t.Value)).ToList();
 
-                    while (!fileStreamDict.EndOfStream)
+            if (!terms.Any()) {
+                var fileStreamDict = new StreamReader(DictionaryPath);
+
+                terms = new List<Term>();
+
+                while (!fileStreamDict.EndOfStream)
+                {
+                    terms.Add(new Term()
                     {
-                        context.Terms.Add(new Term()
-                        {
-                            Value = fileStreamDict.ReadLine()
-                        });
-                    }
-
-                    context.SaveChanges();
+                        Value = fileStreamDict.ReadLine()
+                    });
                 }
 
-                return context.Terms.Where(t => !Exclusions.Contains(t.Value)).ToList();
-            }
-        }
+                terms = context.Terms.AddRange(terms).ToList();
 
-        public class TermComparer : IEqualityComparer<Term>
-        {
-            public bool Equals(Term x, Term y)
-            {
-                return string.Equals(x.Value.ToLower(), y.Value.ToLower());
+                context.SaveChanges();
             }
 
-            public int GetHashCode(Term obj)
-            {
-                return obj.Value.GetHashCode();
-            }
+            return terms;            
         }
 
         public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
         {
-            var terms = GetOrAddTerms();
+            var terms = GetOrAddTerms(context);
 
             SetJobStatus(context, job, JobStatus.BuildingMatrix);
 
@@ -84,24 +74,36 @@ namespace Engine
             }
 
             var files = Enumerable.Range(0, NumDocs).ToList().Select(i => allFiles.ElementAt(fileIndexes.ElementAt(i))).ToList();
-            ConcurrentBag<TermDocumentCount> termDocCounts = new ConcurrentBag<TermDocumentCount>();
+            ConcurrentBag<TermDocumentCount> termDocCountsBag = new ConcurrentBag<TermDocumentCount>();
+            ConcurrentDictionary<int, SvdEntities> threadContexts = new ConcurrentDictionary<int, SvdEntities>();
+            ConcurrentDictionary<int, Job> threadJobs = new ConcurrentDictionary<int, Job>();
+            ConcurrentDictionary<int, ConcurrentBag<TermDocumentCount>> threadTermDocCounts = new ConcurrentDictionary<int, ConcurrentBag<TermDocumentCount>>();
+            ConcurrentDictionary<int, List<Term>> threadTerms = new ConcurrentDictionary<int, List<Term>>();
 
             files.AsParallel().ForAll((file) =>
             {
-                // TODO: Update predicate to use text hash code (update Documents table)
-                var docEntity = context.Documents.FirstOrDefault(d => d.Name == file);
+                var threadContext = threadContexts.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new SvdEntities());
+                var threadJob = threadJobs.GetOrAdd(Thread.CurrentThread.ManagedThreadId, threadContext.Jobs.Find(job.Id));
+                var threadTermDocCountList = threadTermDocCounts.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new ConcurrentBag<TermDocumentCount>());
+                var threadTermsList = threadTerms.GetOrAdd(Thread.CurrentThread.ManagedThreadId, GetOrAddTerms(threadContext).ToList());
 
-                if (docEntity != null)
+                // TODO: Update predicate to use text hash code (update Documents table)
+                var docEntity = threadContext.Documents.FirstOrDefault(d => d.Name == file);
+
+                if (docEntity != null && docEntity.TermDocumentCounts.Count > 0)
                 {
-                    docEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCounts.Add(tdc));
+                    docEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCountsBag.Add(tdc));
                 }
                 else
                 {
                     // Save Entities
-                    docEntity = context.Documents.Add(new Document()
+                    if(docEntity == null)
                     {
-                        Name = file
-                    });
+                        docEntity = threadContext.Documents.Add(new Document()
+                        {
+                            Name = file
+                        });
+                    }
 
                     var html = File.ReadAllText(file, Encoding.UTF8);
 
@@ -115,47 +117,57 @@ namespace Engine
 
                         if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
                         {
-                            var filtered = text.Where(c => (
+                            var chars = text.Where(c => (
                                 char.IsLetterOrDigit(c) ||
                                 char.IsWhiteSpace(c) ||
                                 c == '-'))
-                                .ToArray()
-                                .ToString();
+                                .ToArray();
 
-                            ParseDocumentData(filtered, docEntity, termDocCounts, terms);
+                            text = new string(chars);
+
+                            ParseDocumentData(text, docEntity, threadTermDocCountList, threadTermsList);
                         }
                     });
-
                 }
 
-                context.JobDocuments.Add(new JobDocument()
+                threadContext.JobDocuments.Add(new JobDocument()
                 {
-                    Job = job,
+                    Job = threadJob,
                     Document = docEntity,
                     OrdinalIndex = files.IndexOf(file)
                 });
             });
 
-            var termsList = termDocCounts.Select(tdc => tdc.Term).Distinct(new TermComparer()).ToList();
+            var termDocCounts = termDocCountsBag.ToList();
+
+            foreach(var threadContextKvp in threadContexts)
+            {
+                threadContextKvp.Value.TermDocumentCounts.AddRange(threadTermDocCounts[threadContextKvp.Key]);
+
+                threadContextKvp.Value.SaveChanges();
+
+                termDocCounts.AddRange(threadTermDocCounts[threadContextKvp.Key]);
+            }
+
+            var termsList = termDocCounts.Select(tdc => tdc.Term.Value).Distinct().ToList();
             var matrix = new DenseMatrix(termsList.Count, NumDocs);
+            var termLookup = terms.ToLookup(t => t.Value);
 
             // Save Job Terms
-            termsList.ForEach(t =>
-            {
-                context.JobTerms.Add(new JobTerm()
-                {
-                    Job = job,
-                    Term = t,
-                    OrdinalIndex = termsList.IndexOf(t)
-                });
-            });
+            var jobTerms = from t in termsList
+                           let termEntity = termLookup[t].First()
+                           select new JobTerm()
+                           {
+                               Job = job,
+                               Term = termEntity,
+                               OrdinalIndex = termsList.IndexOf(t)
+                           };
 
-            // Build Matrix For Input To SVD
+            context.JobTerms.AddRange(jobTerms);
+
             foreach (var termDocCount in termDocCounts)
             {
-                var termIndex = termsList.IndexOf(termDocCount.Term);
-
-                matrix[termIndex, files.IndexOf(termDocCount.Document.Name)] = termDocCount.Count;
+                matrix[termsList.IndexOf(termDocCount.Term.Value), files.IndexOf(termDocCount.Document.Name)] = termDocCount.Count;
             }
 
             matrix.CoerceZero(.0000001);
@@ -226,7 +238,8 @@ namespace Engine
                     // Create Job With All default values (must set dimensions if different than default '300')
                     job = context.Jobs.Add(new Job()
                     {
-                        DocumentCount = NumDocs
+                        DocumentCount = NumDocs,
+                        Created = DateTime.Now
                     });
 
                     context.SaveChanges();
@@ -303,26 +316,6 @@ namespace Engine
                     throw;
                 }
             }
-            
-            //// Doc Map Save
-
-            //var fileStreamDocMap = new FileStream("D:/Wiki/" + NumDocs + "/docMap.dat", FileMode.Create);
-
-            //var binaryFormatterDocMap = new BinaryFormatter();
-
-            //binaryFormatterDocMap.Serialize(fileStreamDocMap, files);
-
-            //fileStreamDocMap.Close();
-
-            //// Term-Index Map Save
-
-            //var fileStreamTermsMap = new FileStream("D:/Wiki/" + NumDocs + "/termsMap.dat", FileMode.Create);
-
-            //var binaryFormatterTermsMap = new BinaryFormatter();
-
-            //binaryFormatterTermsMap.Serialize(fileStreamTermsMap, termsList);
-
-            //fileStreamTermsMap.Close();
         }
 
         public static void RunQueryFromFile(string query)

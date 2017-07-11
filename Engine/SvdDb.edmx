@@ -49,7 +49,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DocumentCount" Type="int" Nullable="false" />
-          <Property Name="Created" Type="smalldatetime" Nullable="false" />
+          <Property Name="Created" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Dimensions" Type="int" Nullable="false" />
           <Property Name="Status" Type="int" Nullable="false" />
         </EntityType>
@@ -414,7 +414,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="DocumentCount" Type="Int32" Nullable="false" />
-          <Property Name="Created" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Created" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="Dimensions" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="SvdModel.JobStatus" Nullable="false" />
           <NavigationProperty Name="ClusterCalculations" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="Job" ToRole="ClusterCalculation" />

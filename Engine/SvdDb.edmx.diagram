@@ -24,7 +24,7 @@
         <AssociationConnector Association="SvdModel.FK_U_Job" />
         <AssociationConnector Association="SvdModel.FK_JobTerms_Terms" />
         <AssociationConnector Association="SvdModel.FK_VMatrices_Jobs" />
-        <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.5" PointX="12.375" PointY="3.625" />
+        <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.5" PointX="10.125" PointY="3.75" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Document" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Terms" />
       </Diagram>
