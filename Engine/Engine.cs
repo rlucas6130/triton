@@ -20,7 +20,7 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 20;
+        public static int NumDocs = 100;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
@@ -208,25 +208,11 @@ namespace Engine
 
         public static void AddTermDocumentCount(Term term, Document document, ConcurrentBag<TermDocumentCount> termDocCounts)
         {
-
-            //var termDocCount = termDocCounts.FirstOrDefault(tdc => tdc.Document.Name == document.Name && tdc.Term.Value == term.Value);
-
-            //if(termDocCount == null)
-            //    termDocCounts.Add(new TermDocumentCount()
-            //    {
-            //        Document = document,
-            //        Term = term,
-            //        Count = 1
-            //    });
-            // else
-            //    ++termDocCount.Count;
-
             termDocCounts.Add(new TermDocumentCount()
             {
                 Document = document,
                 Term = term
             });
-
         }
 
         public static Svd<float> GetSvd(SvdEntities context, Job job, DenseMatrix termDocMatrix)

@@ -403,6 +403,7 @@
           <Key>
             <PropertyRef Name="JobId" />
             <PropertyRef Name="DocumentId" />
+            <PropertyRef Name="OrdinalIndex" />
           </Key>
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <Property Name="DocumentId" Type="Int32" Nullable="false" />
@@ -430,6 +431,7 @@
           <Key>
             <PropertyRef Name="JobId" />
             <PropertyRef Name="TermId" />
+            <PropertyRef Name="OrdinalIndex" />
           </Key>
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <Property Name="TermId" Type="Int32" Nullable="false" />
