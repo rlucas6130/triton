@@ -70,6 +70,5 @@
     <Build Include="dbo\Tables\JobDocuments.sql" />
     <Build Include="dbo\Tables\ClusterCalculations.sql" />
     <Build Include="dbo\Tables\TermDocumentCounts.sql" />
-    <Build Include="dbo\Tables\JobDocumentDistances.sql" />
   </ItemGroup>
 </Project>
