@@ -1,6 +1,5 @@
 ﻿using HtmlAgilityPack;
 using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using MathNet.Numerics.LinearAlgebra.Single;
 using System;
@@ -11,16 +10,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
+using static Engine.Contracts;
 
 namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 200;
+        public static int NumDocs = 1000;
+        public static int JobId = 12;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
@@ -54,8 +52,7 @@ namespace Engine
 
         public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
         {
-            var terms = GetOrAddTerms(context);
-            var termLookup = terms.ToLookup(t => t.Value);
+            var termLookup = GetOrAddTerms(context).ToLookup(t => t.Value);
 
             SetJobStatus(context, job, JobStatus.BuildingMatrix);
 
@@ -76,16 +73,15 @@ namespace Engine
 
             var files = Enumerable.Range(0, NumDocs).ToList().Select(i => allFiles.ElementAt(fileIndexes.ElementAt(i))).ToList();
 
-            var documentEntities = new List<Document>();
             var newDocuments = new List<Document>();
             var jobDocuments = new List<JobDocument>();
-
-            List<TermDocumentCount> termDocCounts = new List<TermDocumentCount>();
+            var termDocCounts = new List<TermDocumentCount>();
+            var documentLookup = context.Documents.ToLookup(d => d.Name);
 
             // Create Documents
             foreach (var file in files)
             {
-                var docEntity = context.Documents.FirstOrDefault(d => d.Name == file);
+                var docEntity = documentLookup[file].FirstOrDefault();
 
                 if(docEntity == null)
                 {
@@ -108,8 +104,6 @@ namespace Engine
                     // THIS MIGHT CAUSE AN ISSUE????
                     OrdinalIndex = files.IndexOf(file)
                 });
-
-                documentEntities.Add(docEntity);
             }
 
             context.Documents.AddRange(newDocuments);
@@ -121,11 +115,11 @@ namespace Engine
             
             ConcurrentBag<TermDocumentCount> termDocCountsBagCalculated = new ConcurrentBag<TermDocumentCount>();
 
-            documentEntities.AsParallel().ForAll((documentEntity) =>
+            jobDocuments.AsParallel().ForAll((jobDocumentEntity) =>
             {
-                if (documentEntity.TermDocumentCounts.Count == 0)
+                if (jobDocumentEntity.Document.TermDocumentCounts.Count == 0)
                 {
-                    var html = File.ReadAllText(documentEntity.Name, Encoding.UTF8);
+                    var html = File.ReadAllText(jobDocumentEntity.Document.Name, Encoding.UTF8);
 
                     HtmlDocument doc = new HtmlDocument();
 
@@ -145,11 +139,13 @@ namespace Engine
 
                             text = new string(chars);
 
-                            ParseDocumentData(text, documentEntity, termDocCountsBagCalculated, termLookup);
+                            ParseDocumentData(text, jobDocumentEntity.Document, termDocCountsBagCalculated, termLookup);
                         }
                     });
                 }
             });
+
+            // Build New Term/Doc Count Entites
 
             var newTdc = from tdc in termDocCountsBagCalculated
                          group tdc by new { DocumentId = tdc.Document.Id, TermId = tdc.Term.Id } into g
@@ -162,12 +158,14 @@ namespace Engine
                              Count = g.Count()
                          };
 
+            context.TermDocumentCounts.AddRange(newTdc);
+
             termDocCounts.AddRange(newTdc);
 
-            var termsList = termDocCounts.Select(tdc => tdc.Term.Value).Distinct().ToList();
-            var matrix = new DenseMatrix(termsList.Count, NumDocs);
-            
             // Save Job Terms
+
+            var termsList = termDocCounts.Select(tdc => tdc.Term.Value).Distinct().ToList();
+
             var jobTerms = from t in termsList
                            let termEntity = termLookup[t].First()
                            select new JobTerm()
@@ -178,6 +176,10 @@ namespace Engine
                            };
 
             context.JobTerms.AddRange(jobTerms);
+            
+            // Build Final Term/Doc Matrix
+
+            var matrix = new DenseMatrix(termsList.Count, NumDocs);
 
             foreach (var termDocCount in termDocCounts)
             {
@@ -311,6 +313,35 @@ namespace Engine
                         });
                     }
 
+                    //var jobDocsLookup = job.JobDocuments.ToLookup(d => d.OrdinalIndex);
+                    //var jobDocDistances = new List<JobDocumentDistance>();
+
+                    //for(var i = 0; i < newVMatrix.ColumnCount; i++)
+                    //{
+                    //    var sourceDoc = jobDocsLookup[i].First();
+
+                    //    for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                    //    {
+                    //        if (m == i) continue;
+
+                    //        var targetDoc = jobDocsLookup[m].First();
+
+                    //        jobDocDistances.Add(new JobDocumentDistance()
+                    //        {
+                    //            JobId = job.Id,
+                    //            SourceJobDocumentId = sourceDoc.Id,
+                    //            TargetJobDocumentId = targetDoc.Id,
+                    //            Distance = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray())
+                    //        });
+                    //    }
+                    //}
+
+                    //using (var bulkInsertContext = new SvdEntities())
+                    //{
+                    //    bulkInsertContext.JobDocumentDistances.AddRange(jobDocDistances);
+                    //    bulkInsertContext.BulkSaveChanges(false);
+                    //}
+
                     job.Dimensions = dimensions;
                     job.Status = JobStatus.Complete;
 
@@ -367,96 +398,50 @@ namespace Engine
 
         public static void GetMatrixContainer()
         {
-            // Get Dimensions
-
-            var dimensionStream = new FileStream("D:/Wiki/" + NumDocs + "/dimensions.dat", FileMode.Open);
-
-            var dimensionFormatter = new BinaryFormatter();
-
-            var dimensions = (int)dimensionFormatter.Deserialize(dimensionStream);
-
-            dimensionStream.Close();
-
-            // Doc Map Get
-
-            var fileStreamDocMap = new FileStream("D:/Wiki/" + NumDocs + "/docMap.dat", FileMode.Open);
-
-            var binaryFormatterDocMap = new BinaryFormatter();
-
-            var docNameMap = (List<string>)binaryFormatterDocMap.Deserialize(fileStreamDocMap);
-
-            fileStreamDocMap.Close();
-
-            // Term-Index Map Get
-
-            var fileStreamTermsMap = new FileStream("D:/Wiki/" + NumDocs + "/termsMap.dat", FileMode.Open);
-
-            var binaryFormatterTermsMap = new BinaryFormatter();
-
-            var termsList = (List<string>)binaryFormatterTermsMap.Deserialize(fileStreamTermsMap);
-
-            fileStreamTermsMap.Close();
-
-            // V Get
-
-            var fileStreamV = new FileStream("D:/Wiki/" + NumDocs + "/v.dat", FileMode.Open);
-
-            var binaryFormatterV = new BinaryFormatter();
-
-            float[] vValues = (float[])binaryFormatterV.Deserialize(fileStreamV);
-
-            fileStreamV.Close();
-
-            var newVMatrix = new DenseMatrix(dimensions, docNameMap.Count, vValues);
-
-            // U Get
-
-            var fileStreamU = new FileStream("D:/Wiki/" + NumDocs + "/u.dat", FileMode.Open);
-
-            var binaryFormatterU = new BinaryFormatter();
-
-            float[] uValues = (float[])binaryFormatterU.Deserialize(fileStreamU);
-
-            fileStreamU.Close();
-
-            var newUMatrix = new DenseMatrix(termsList.Count(), dimensions, uValues);
-
-            // Calc Distance Map
-            var distanceMap = new float[newVMatrix.ColumnCount,newVMatrix.ColumnCount];
-
-            Enumerable.Range(0, newVMatrix.ColumnCount).AsParallel().ForAll(i =>
+            using (var context = new SvdEntities())
             {
-                for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                var job = context.Jobs.Find(JobId);
+
+                var binaryFormatter = new BinaryFormatter();
+
+                DenseMatrix newUMatrix = null;
+                DenseMatrix newVMatrix = null;
+
+                using (var ms = new MemoryStream(job.UMatrix.SerializedValues))
                 {
-                    distanceMap[i, m] = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray());
+                    var uValues = binaryFormatter.Deserialize(ms) as float[];
+
+                    newUMatrix = new DenseMatrix(job.JobTerms.Count, job.Dimensions, uValues);
                 }
-            });
 
-            MatrixContainer = new MatrixContainer()
-            {
-                Dimensions = dimensions,
-                DocNameMap = docNameMap,
-                Terms = termsList,
-                UMatrix = newUMatrix,
-                VMatrix = newVMatrix,
-                DistanceMap = distanceMap
-            };
+                using (var ms = new MemoryStream(job.VMatrix.SerializedValues))
+                {
+                    var vValues = binaryFormatter.Deserialize(ms) as float[];
+
+                    newVMatrix = new DenseMatrix(job.Dimensions, job.JobDocuments.Count, vValues);
+                }
+
+                // Calc Distance Map
+                var distanceMap = new float[newVMatrix.ColumnCount, newVMatrix.ColumnCount];
+
+                Enumerable.Range(0, newVMatrix.ColumnCount).AsParallel().ForAll(i =>
+                {
+                    for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                    {
+                        distanceMap[i, m] = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray());
+                    }
+                });
+
+                MatrixContainer = new MatrixContainer()
+                {
+                    Dimensions = job.Dimensions,
+                    DocNameMap = job.JobDocuments.OrderBy(jd => jd.OrdinalIndex).Select(d => d.Document.Name).ToList(),
+                    Terms = job.JobTerms.OrderBy(jt => jt.OrdinalIndex).Select(t => t.Term.Value).ToList(),
+                    UMatrix = newUMatrix,
+                    VMatrix = newVMatrix,
+                    DistanceMap = distanceMap
+                };
+            }
         }
-    }
-
-    public class DocResult
-    {
-        public string Name { get; set; }
-        public double Distance { get; set; }
-    }
-
-    public class MatrixContainer
-    {
-        public int Dimensions { get; set; }
-        public List<string> DocNameMap { get; set; }
-        public List<string> Terms { get; set; }
-        public DenseMatrix UMatrix { get; set; }
-        public DenseMatrix VMatrix { get; set; }
-        public float[,] DistanceMap { get; set; }
     }
 }

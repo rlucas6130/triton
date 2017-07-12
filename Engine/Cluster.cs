@@ -174,6 +174,7 @@ namespace Engine
             {             
                 context.ClusterCalculations.Add(new ClusterCalculation()
                 {
+                    JobId = LSA.JobId,
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
                     ClusterSi = ClusterSiAverage,
