@@ -12,15 +12,15 @@ namespace Engine
     using System;
     using System.Collections.Generic;
     
-    public partial class DocumentDistance
+    public partial class JobDocumentDistance
     {
         public int JobId { get; set; }
-        public int SourceDocumentId { get; set; }
-        public int TargetDocumentId { get; set; }
+        public int SourceJobDocumentId { get; set; }
+        public int TargetJobDocumentId { get; set; }
         public float Distance { get; set; }
     
         public virtual Job Job { get; set; }
-        public virtual Document SourceDocument { get; set; }
-        public virtual Document TargetDocument { get; set; }
+        public virtual JobDocument SourceJobDocument { get; set; }
+        public virtual JobDocument TargetJobDocument { get; set; }
     }
 }

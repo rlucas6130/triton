@@ -14,11 +14,23 @@ namespace Engine
     
     public partial class JobDocument
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public JobDocument()
+        {
+            this.SourceJobDocumentDistances = new HashSet<JobDocumentDistance>();
+            this.TargetJobDocumentDistances = new HashSet<JobDocumentDistance>();
+        }
+    
         public int JobId { get; set; }
         public int DocumentId { get; set; }
         public int OrdinalIndex { get; set; }
+        public int Id { get; set; }
     
         public virtual Document Document { get; set; }
         public virtual Job Job { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<JobDocumentDistance> SourceJobDocumentDistances { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<JobDocumentDistance> TargetJobDocumentDistances { get; set; }
     }
 }

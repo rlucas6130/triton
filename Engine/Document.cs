@@ -17,8 +17,6 @@ namespace Engine
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Document()
         {
-            this.SourceDocumentDistances = new HashSet<DocumentDistance>();
-            this.TargetDocumentDistances = new HashSet<DocumentDistance>();
             this.JobDocuments = new HashSet<JobDocument>();
             this.TermDocumentCounts = new HashSet<TermDocumentCount>();
         }
@@ -26,10 +24,6 @@ namespace Engine
         public int Id { get; set; }
         public string Name { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DocumentDistance> SourceDocumentDistances { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DocumentDistance> TargetDocumentDistances { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<JobDocument> JobDocuments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

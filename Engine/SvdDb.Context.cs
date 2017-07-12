@@ -26,7 +26,6 @@ namespace Engine
         }
     
         public virtual DbSet<ClusterCalculation> ClusterCalculations { get; set; }
-        public virtual DbSet<DocumentDistance> DocumentDistances { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<JobDocument> JobDocuments { get; set; }
         public virtual DbSet<Job> Jobs { get; set; }
@@ -35,5 +34,6 @@ namespace Engine
         public virtual DbSet<UMatrix> UMatrices { get; set; }
         public virtual DbSet<VMatrix> VMatrices { get; set; }
         public virtual DbSet<TermDocumentCount> TermDocumentCounts { get; set; }
+        public virtual DbSet<JobDocumentDistance> JobDocumentDistances { get; set; }
     }
 }

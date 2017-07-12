@@ -74,14 +74,14 @@
     <Compile Include="Document.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="DocumentDistance.cs">
-      <DependentUpon>SvdDb.tt</DependentUpon>
-    </Compile>
     <Compile Include="Engine.cs" />
     <Compile Include="Job.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
     <Compile Include="JobDocument.cs">
+      <DependentUpon>SvdDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="JobDocumentDistance.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
     <Compile Include="JobStatusEnum.cs" />

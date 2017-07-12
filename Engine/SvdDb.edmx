@@ -16,17 +16,6 @@
           <Property Name="DocumentCount" Type="int" />
           <Property Name="JobId" Type="int" Nullable="false" />
         </EntityType>
-        <EntityType Name="DocumentDistances">
-          <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="SourceDocumentId" />
-            <PropertyRef Name="TargetDocumentId" />
-          </Key>
-          <Property Name="JobId" Type="int" Nullable="false" />
-          <Property Name="SourceDocumentId" Type="int" Nullable="false" />
-          <Property Name="TargetDocumentId" Type="int" Nullable="false" />
-          <Property Name="Distance" Type="real" Nullable="false" />
-        </EntityType>
         <EntityType Name="Documents">
           <Key>
             <PropertyRef Name="Id" />
@@ -34,12 +23,22 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="300" Nullable="false" />
         </EntityType>
-        <EntityType Name="JobDocuments">
+        <EntityType Name="JobDocumentDistances">
           <Key>
             <PropertyRef Name="JobId" />
-            <PropertyRef Name="DocumentId" />
-            <PropertyRef Name="OrdinalIndex" />
+            <PropertyRef Name="SourceJobDocumentId" />
+            <PropertyRef Name="TargetJobDocumentId" />
           </Key>
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="SourceJobDocumentId" Type="int" Nullable="false" />
+          <Property Name="TargetJobDocumentId" Type="int" Nullable="false" />
+          <Property Name="Distance" Type="real" Nullable="false" />
+        </EntityType>
+        <EntityType Name="JobDocuments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="JobId" Type="int" Nullable="false" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
           <Property Name="OrdinalIndex" Type="int" Nullable="false" />
@@ -106,15 +105,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DocumentDistances_Job">
+        <Association Name="FK_JobDocumentDistances_Job">
           <End Role="Jobs" Type="Self.Jobs" Multiplicity="1" />
-          <End Role="DocumentDistances" Type="Self.DocumentDistances" Multiplicity="*" />
+          <End Role="JobDocumentDistances" Type="Self.JobDocumentDistances" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Jobs">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="DocumentDistances">
+            <Dependent Role="JobDocumentDistances">
               <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JobDocumentDistances_SourceJobDocument">
+          <End Role="JobDocuments" Type="Self.JobDocuments" Multiplicity="1" />
+          <End Role="JobDocumentDistances" Type="Self.JobDocumentDistances" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocuments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="JobDocumentDistances">
+              <PropertyRef Name="SourceJobDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JobDocumentDistances_TargetJobDocument">
+          <End Role="JobDocuments" Type="Self.JobDocuments" Multiplicity="1" />
+          <End Role="JobDocumentDistances" Type="Self.JobDocumentDistances" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocuments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="JobDocumentDistances">
+              <PropertyRef Name="TargetJobDocumentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -163,30 +186,6 @@
             </Principal>
             <Dependent Role="JobTerms">
               <PropertyRef Name="TermId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SourceDocument_Documents">
-          <End Role="Documents" Type="Self.Documents" Multiplicity="1" />
-          <End Role="DocumentDistances" Type="Self.DocumentDistances" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Documents">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DocumentDistances">
-              <PropertyRef Name="SourceDocumentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TargetDocument_Documents">
-          <End Role="Documents" Type="Self.Documents" Multiplicity="1" />
-          <End Role="DocumentDistances" Type="Self.DocumentDistances" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Documents">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DocumentDistances">
-              <PropertyRef Name="TargetDocumentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -240,8 +239,8 @@
         </Association>
         <EntityContainer Name="SvdModelStoreContainer">
           <EntitySet Name="ClusterCalculations" EntityType="Self.ClusterCalculations" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="DocumentDistances" EntityType="Self.DocumentDistances" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JobDocumentDistances" EntityType="Self.JobDocumentDistances" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobDocuments" EntityType="Self.JobDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Jobs" EntityType="Self.Jobs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobTerms" EntityType="Self.JobTerms" Schema="dbo" store:Type="Tables" />
@@ -253,9 +252,17 @@
             <End Role="Jobs" EntitySet="Jobs" />
             <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
           </AssociationSet>
-          <AssociationSet Name="FK_DocumentDistances_Job" Association="Self.FK_DocumentDistances_Job">
+          <AssociationSet Name="FK_JobDocumentDistances_Job" Association="Self.FK_JobDocumentDistances_Job">
             <End Role="Jobs" EntitySet="Jobs" />
-            <End Role="DocumentDistances" EntitySet="DocumentDistances" />
+            <End Role="JobDocumentDistances" EntitySet="JobDocumentDistances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JobDocumentDistances_SourceJobDocument" Association="Self.FK_JobDocumentDistances_SourceJobDocument">
+            <End Role="JobDocuments" EntitySet="JobDocuments" />
+            <End Role="JobDocumentDistances" EntitySet="JobDocumentDistances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JobDocumentDistances_TargetJobDocument" Association="Self.FK_JobDocumentDistances_TargetJobDocument">
+            <End Role="JobDocuments" EntitySet="JobDocuments" />
+            <End Role="JobDocumentDistances" EntitySet="JobDocumentDistances" />
           </AssociationSet>
           <AssociationSet Name="FK_JobDocuments_Documents" Association="Self.FK_JobDocuments_Documents">
             <End Role="Documents" EntitySet="Documents" />
@@ -272,14 +279,6 @@
           <AssociationSet Name="FK_JobTerms_Terms" Association="Self.FK_JobTerms_Terms">
             <End Role="Terms" EntitySet="Terms" />
             <End Role="JobTerms" EntitySet="JobTerms" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SourceDocument_Documents" Association="Self.FK_SourceDocument_Documents">
-            <End Role="Documents" EntitySet="Documents" />
-            <End Role="DocumentDistances" EntitySet="DocumentDistances" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TargetDocument_Documents" Association="Self.FK_TargetDocument_Documents">
-            <End Role="Documents" EntitySet="Documents" />
-            <End Role="DocumentDistances" EntitySet="DocumentDistances" />
           </AssociationSet>
           <AssociationSet Name="FK_TermDocumentCounts_Document" Association="Self.FK_TermDocumentCounts_Document">
             <End Role="Documents" EntitySet="Documents" />
@@ -304,7 +303,6 @@
       <Schema Namespace="SvdModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="SvdEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ClusterCalculations" EntityType="SvdModel.ClusterCalculation" />
-          <EntitySet Name="DocumentDistances" EntityType="SvdModel.DocumentDistance" />
           <EntitySet Name="Documents" EntityType="SvdModel.Document" />
           <EntitySet Name="JobDocuments" EntityType="SvdModel.JobDocument" />
           <EntitySet Name="Jobs" EntityType="SvdModel.Job" />
@@ -315,18 +313,6 @@
           <AssociationSet Name="FK_ClusterCalculation_Job" Association="SvdModel.FK_ClusterCalculation_Job">
             <End Role="Job" EntitySet="Jobs" />
             <End Role="ClusterCalculation" EntitySet="ClusterCalculations" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DocumentDistances_Job" Association="SvdModel.FK_DocumentDistances_Job">
-            <End Role="Job" EntitySet="Jobs" />
-            <End Role="DocumentDistance" EntitySet="DocumentDistances" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SourceDocument_Documents" Association="SvdModel.FK_SourceDocument_Documents">
-            <End Role="Document" EntitySet="Documents" />
-            <End Role="DocumentDistance" EntitySet="DocumentDistances" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TargetDocument_Documents" Association="SvdModel.FK_TargetDocument_Documents">
-            <End Role="Document" EntitySet="Documents" />
-            <End Role="DocumentDistance" EntitySet="DocumentDistances" />
           </AssociationSet>
           <AssociationSet Name="FK_JobDocuments_Documents" Association="SvdModel.FK_JobDocuments_Documents">
             <End Role="Document" EntitySet="Documents" />
@@ -361,6 +347,19 @@
             <End Role="Term" EntitySet="Terms" />
             <End Role="TermDocumentCount" EntitySet="TermDocumentCounts" />
           </AssociationSet>
+          <EntitySet Name="JobDocumentDistances" EntityType="SvdModel.JobDocumentDistance" />
+          <AssociationSet Name="FK_JobDocumentDistances_Job" Association="SvdModel.FK_JobDocumentDistances_Job">
+            <End Role="Job" EntitySet="Jobs" />
+            <End Role="JobDocumentDistance" EntitySet="JobDocumentDistances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JobDocumentDistances_SourceJobDocument" Association="SvdModel.FK_JobDocumentDistances_SourceJobDocument">
+            <End Role="JobDocument" EntitySet="JobDocuments" />
+            <End Role="JobDocumentDistance" EntitySet="JobDocumentDistances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JobDocumentDistances_TargetJobDocument" Association="SvdModel.FK_JobDocumentDistances_TargetJobDocument">
+            <End Role="JobDocument" EntitySet="JobDocuments" />
+            <End Role="JobDocumentDistance" EntitySet="JobDocumentDistances" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="ClusterCalculation">
           <Key>
@@ -374,42 +373,27 @@
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="ClusterCalculation" ToRole="Job" />
         </EntityType>
-        <EntityType Name="DocumentDistance">
-          <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="SourceDocumentId" />
-            <PropertyRef Name="TargetDocumentId" />
-          </Key>
-          <Property Name="JobId" Type="Int32" Nullable="false" />
-          <Property Name="SourceDocumentId" Type="Int32" Nullable="false" />
-          <Property Name="TargetDocumentId" Type="Int32" Nullable="false" />
-          <Property Name="Distance" Type="Single" Nullable="false" />
-          <NavigationProperty Name="Job" Relationship="SvdModel.FK_DocumentDistances_Job" FromRole="DocumentDistance" ToRole="Job" />
-          <NavigationProperty Name="SourceDocument" Relationship="SvdModel.FK_SourceDocument_Documents" FromRole="DocumentDistance" ToRole="Document" />
-          <NavigationProperty Name="TargetDocument" Relationship="SvdModel.FK_TargetDocument_Documents" FromRole="DocumentDistance" ToRole="Document" />
-        </EntityType>
         <EntityType Name="Document">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="SourceDocumentDistances" Relationship="SvdModel.FK_SourceDocument_Documents" FromRole="Document" ToRole="DocumentDistance" />
-          <NavigationProperty Name="TargetDocumentDistances" Relationship="SvdModel.FK_TargetDocument_Documents" FromRole="Document" ToRole="DocumentDistance" />
           <NavigationProperty Name="JobDocuments" Relationship="SvdModel.FK_JobDocuments_Documents" FromRole="Document" ToRole="JobDocument" />
           <NavigationProperty Name="TermDocumentCounts" Relationship="SvdModel.FK_TermDocumentCounts_Document" FromRole="Document" ToRole="TermDocumentCount" />
         </EntityType>
         <EntityType Name="JobDocument">
           <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="DocumentId" />
-            <PropertyRef Name="OrdinalIndex" />
+            <PropertyRef Name="Id" />
           </Key>
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <Property Name="DocumentId" Type="Int32" Nullable="false" />
           <Property Name="OrdinalIndex" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Document" Relationship="SvdModel.FK_JobDocuments_Documents" FromRole="JobDocument" ToRole="Document" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_JobDocuments_Jobs" FromRole="JobDocument" ToRole="Job" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="SourceJobDocumentDistances" Relationship="SvdModel.FK_JobDocumentDistances_SourceJobDocument" FromRole="JobDocument" ToRole="JobDocumentDistance" />
+          <NavigationProperty Name="TargetJobDocumentDistances" Relationship="SvdModel.FK_JobDocumentDistances_TargetJobDocument" FromRole="JobDocument" ToRole="JobDocumentDistance" />
         </EntityType>
         <EntityType Name="Job">
           <Key>
@@ -421,11 +405,11 @@
           <Property Name="Dimensions" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="SvdModel.JobStatus" Nullable="false" />
           <NavigationProperty Name="ClusterCalculations" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="Job" ToRole="ClusterCalculation" />
-          <NavigationProperty Name="DocumentDistances" Relationship="SvdModel.FK_DocumentDistances_Job" FromRole="Job" ToRole="DocumentDistance" />
           <NavigationProperty Name="JobDocuments" Relationship="SvdModel.FK_JobDocuments_Jobs" FromRole="Job" ToRole="JobDocument" />
           <NavigationProperty Name="JobTerms" Relationship="SvdModel.FK_JobTerms_Job" FromRole="Job" ToRole="JobTerm" />
           <NavigationProperty Name="UMatrix" Relationship="SvdModel.FK_U_Job" FromRole="Job" ToRole="UMatrix" />
           <NavigationProperty Name="VMatrix" Relationship="SvdModel.FK_VMatrices_Jobs" FromRole="Job" ToRole="VMatrix" />
+          <NavigationProperty Name="JobDocumentDistances" Relationship="SvdModel.FK_JobDocumentDistances_Job" FromRole="Job" ToRole="JobDocumentDistance" />
         </EntityType>
         <EntityType Name="JobTerm">
           <Key>
@@ -473,42 +457,6 @@
             </Principal>
             <Dependent Role="ClusterCalculation">
               <PropertyRef Name="JobId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DocumentDistances_Job">
-          <End Type="SvdModel.Job" Role="Job" Multiplicity="1" />
-          <End Type="SvdModel.DocumentDistance" Role="DocumentDistance" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Job">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DocumentDistance">
-              <PropertyRef Name="JobId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SourceDocument_Documents">
-          <End Type="SvdModel.Document" Role="Document" Multiplicity="1" />
-          <End Type="SvdModel.DocumentDistance" Role="DocumentDistance" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Document">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DocumentDistance">
-              <PropertyRef Name="SourceDocumentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TargetDocument_Documents">
-          <End Type="SvdModel.Document" Role="Document" Multiplicity="1" />
-          <End Type="SvdModel.DocumentDistance" Role="DocumentDistance" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Document">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DocumentDistance">
-              <PropertyRef Name="TargetDocumentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -620,6 +568,56 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="JobDocumentDistance">
+          <Key>
+            <PropertyRef Name="JobId" />
+            <PropertyRef Name="SourceJobDocumentId" />
+            <PropertyRef Name="TargetJobDocumentId" />
+          </Key>
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="SourceJobDocumentId" Type="Int32" Nullable="false" />
+          <Property Name="TargetJobDocumentId" Type="Int32" Nullable="false" />
+          <Property Name="Distance" Type="Single" Nullable="false" />
+          <NavigationProperty Name="Job" Relationship="SvdModel.FK_JobDocumentDistances_Job" FromRole="JobDocumentDistance" ToRole="Job" />
+          <NavigationProperty Name="SourceJobDocument" Relationship="SvdModel.FK_JobDocumentDistances_SourceJobDocument" FromRole="JobDocumentDistance" ToRole="JobDocument" />
+          <NavigationProperty Name="TargetJobDocument" Relationship="SvdModel.FK_JobDocumentDistances_TargetJobDocument" FromRole="JobDocumentDistance" ToRole="JobDocument" />
+        </EntityType>
+        <Association Name="FK_JobDocumentDistances_Job">
+          <End Type="SvdModel.Job" Role="Job" Multiplicity="1" />
+          <End Type="SvdModel.JobDocumentDistance" Role="JobDocumentDistance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Job">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="JobDocumentDistance">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JobDocumentDistances_SourceJobDocument">
+          <End Type="SvdModel.JobDocument" Role="JobDocument" Multiplicity="1" />
+          <End Type="SvdModel.JobDocumentDistance" Role="JobDocumentDistance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="JobDocumentDistance">
+              <PropertyRef Name="SourceJobDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JobDocumentDistances_TargetJobDocument">
+          <End Type="SvdModel.JobDocument" Role="JobDocument" Multiplicity="1" />
+          <End Type="SvdModel.JobDocumentDistance" Role="JobDocumentDistance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="JobDocumentDistance">
+              <PropertyRef Name="TargetJobDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -638,16 +636,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DocumentDistances">
-            <EntityTypeMapping TypeName="SvdModel.DocumentDistance">
-              <MappingFragment StoreEntitySet="DocumentDistances">
-                <ScalarProperty Name="Distance" ColumnName="Distance" />
-                <ScalarProperty Name="TargetDocumentId" ColumnName="TargetDocumentId" />
-                <ScalarProperty Name="SourceDocumentId" ColumnName="SourceDocumentId" />
-                <ScalarProperty Name="JobId" ColumnName="JobId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Documents">
             <EntityTypeMapping TypeName="SvdModel.Document">
               <MappingFragment StoreEntitySet="Documents">
@@ -659,6 +647,7 @@
           <EntitySetMapping Name="JobDocuments">
             <EntityTypeMapping TypeName="SvdModel.JobDocument">
               <MappingFragment StoreEntitySet="JobDocuments">
+                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="OrdinalIndex" ColumnName="OrdinalIndex" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
@@ -715,6 +704,16 @@
                 <ScalarProperty Name="Count" ColumnName="Count" />
                 <ScalarProperty Name="TermId" ColumnName="TermId" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JobDocumentDistances">
+            <EntityTypeMapping TypeName="SvdModel.JobDocumentDistance">
+              <MappingFragment StoreEntitySet="JobDocumentDistances">
+                <ScalarProperty Name="Distance" ColumnName="Distance" />
+                <ScalarProperty Name="TargetJobDocumentId" ColumnName="TargetJobDocumentId" />
+                <ScalarProperty Name="SourceJobDocumentId" ColumnName="SourceJobDocumentId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

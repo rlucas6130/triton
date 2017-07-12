@@ -63,7 +63,6 @@
   <ItemGroup>
     <Build Include="dbo\Tables\Terms.sql" />
     <Build Include="dbo\Tables\Documents.sql" />
-    <Build Include="dbo\Tables\DocumentDistances.sql" />
     <Build Include="dbo\Tables\VMatrices.sql" />
     <Build Include="dbo\Tables\UMatrices.sql" />
     <Build Include="dbo\Tables\JobTerms.sql" />
@@ -71,5 +70,6 @@
     <Build Include="dbo\Tables\JobDocuments.sql" />
     <Build Include="dbo\Tables\ClusterCalculations.sql" />
     <Build Include="dbo\Tables\TermDocumentCounts.sql" />
+    <Build Include="dbo\Tables\JobDocumentDistances.sql" />
   </ItemGroup>
 </Project>

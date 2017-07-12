@@ -20,7 +20,7 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 100;
+        public static int NumDocs = 200;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
@@ -49,7 +49,7 @@ namespace Engine
                 context.SaveChanges();
             }
 
-            return terms;            
+            return terms;
         }
 
         public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
@@ -80,8 +80,10 @@ namespace Engine
             var newDocuments = new List<Document>();
             var jobDocuments = new List<JobDocument>();
 
+            List<TermDocumentCount> termDocCounts = new List<TermDocumentCount>();
+
             // Create Documents
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 var docEntity = context.Documents.FirstOrDefault(d => d.Name == file);
 
@@ -93,6 +95,10 @@ namespace Engine
                     };
 
                     newDocuments.Add(docEntity);
+                }
+                else
+                {
+                    termDocCounts.AddRange(docEntity.TermDocumentCounts);
                 }
 
                 jobDocuments.Add(new JobDocument()
@@ -112,16 +118,12 @@ namespace Engine
             context.SaveChanges();
 
             // Setup Parallel Collections
-            ConcurrentBag<TermDocumentCount> termDocCountsBag = new ConcurrentBag<TermDocumentCount>();
+            
             ConcurrentBag<TermDocumentCount> termDocCountsBagCalculated = new ConcurrentBag<TermDocumentCount>();
 
             documentEntities.AsParallel().ForAll((documentEntity) =>
             {
-                if (documentEntity.TermDocumentCounts.Count > 0)
-                {
-                    documentEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCountsBag.Add(tdc));
-                }
-                else
+                if (documentEntity.TermDocumentCounts.Count == 0)
                 {
                     var html = File.ReadAllText(documentEntity.Name, Encoding.UTF8);
 
@@ -148,8 +150,6 @@ namespace Engine
                     });
                 }
             });
-
-            var termDocCounts = termDocCountsBag.ToList();
 
             var newTdc = from tdc in termDocCountsBagCalculated
                          group tdc by new { DocumentId = tdc.Document.Id, TermId = tdc.Term.Id } into g
@@ -312,6 +312,7 @@ namespace Engine
                     }
 
                     job.Dimensions = dimensions;
+                    job.Status = JobStatus.Complete;
 
                     context.SaveChanges();
                 }
