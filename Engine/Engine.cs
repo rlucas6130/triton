@@ -20,7 +20,7 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 100;
+        public static int NumDocs = 20;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
@@ -55,6 +55,7 @@ namespace Engine
         public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
         {
             var terms = GetOrAddTerms(context);
+            var termLookup = terms.ToLookup(t => t.Value);
 
             SetJobStatus(context, job, JobStatus.BuildingMatrix);
 
@@ -74,38 +75,55 @@ namespace Engine
             }
 
             var files = Enumerable.Range(0, NumDocs).ToList().Select(i => allFiles.ElementAt(fileIndexes.ElementAt(i))).ToList();
-            ConcurrentBag<TermDocumentCount> termDocCountsBag = new ConcurrentBag<TermDocumentCount>();
-            ConcurrentDictionary<int, SvdEntities> threadContexts = new ConcurrentDictionary<int, SvdEntities>();
-            ConcurrentDictionary<int, Job> threadJobs = new ConcurrentDictionary<int, Job>();
-            ConcurrentDictionary<int, ConcurrentBag<TermDocumentCount>> threadTermDocCounts = new ConcurrentDictionary<int, ConcurrentBag<TermDocumentCount>>();
-            ConcurrentDictionary<int, List<Term>> threadTerms = new ConcurrentDictionary<int, List<Term>>();
 
-            files.AsParallel().ForAll((file) =>
+            var documentEntities = new List<Document>();
+            var newDocuments = new List<Document>();
+            var jobDocuments = new List<JobDocument>();
+
+            // Create Documents
+            foreach(var file in files)
             {
-                var threadContext = threadContexts.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new SvdEntities());
-                var threadJob = threadJobs.GetOrAdd(Thread.CurrentThread.ManagedThreadId, threadContext.Jobs.Find(job.Id));
-                var threadTermDocCountList = threadTermDocCounts.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new ConcurrentBag<TermDocumentCount>());
-                var threadTermsList = threadTerms.GetOrAdd(Thread.CurrentThread.ManagedThreadId, GetOrAddTerms(threadContext).ToList());
+                var docEntity = context.Documents.FirstOrDefault(d => d.Name == file);
 
-                // TODO: Update predicate to use text hash code (update Documents table)
-                var docEntity = threadContext.Documents.FirstOrDefault(d => d.Name == file);
-
-                if (docEntity != null && docEntity.TermDocumentCounts.Count > 0)
+                if(docEntity == null)
                 {
-                    docEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCountsBag.Add(tdc));
+                    docEntity = new Document()
+                    {
+                        Name = file
+                    };
+
+                    newDocuments.Add(docEntity);
+                }
+
+                jobDocuments.Add(new JobDocument()
+                {
+                    Job = job,
+                    Document = docEntity, 
+                    // THIS MIGHT CAUSE AN ISSUE????
+                    OrdinalIndex = files.IndexOf(file)
+                });
+
+                documentEntities.Add(docEntity);
+            }
+
+            context.Documents.AddRange(newDocuments);
+            context.JobDocuments.AddRange(jobDocuments);
+
+            context.SaveChanges();
+
+            // Setup Parallel Collections
+            ConcurrentBag<TermDocumentCount> termDocCountsBag = new ConcurrentBag<TermDocumentCount>();
+            ConcurrentBag<TermDocumentCount> termDocCountsBagCalculated = new ConcurrentBag<TermDocumentCount>();
+
+            documentEntities.AsParallel().ForAll((documentEntity) =>
+            {
+                if (documentEntity.TermDocumentCounts.Count > 0)
+                {
+                    documentEntity.TermDocumentCounts.ToList().ForEach(tdc => termDocCountsBag.Add(tdc));
                 }
                 else
                 {
-                    // Save Entities
-                    if(docEntity == null)
-                    {
-                        docEntity = threadContext.Documents.Add(new Document()
-                        {
-                            Name = file
-                        });
-                    }
-
-                    var html = File.ReadAllText(file, Encoding.UTF8);
+                    var html = File.ReadAllText(documentEntity.Name, Encoding.UTF8);
 
                     HtmlDocument doc = new HtmlDocument();
 
@@ -125,41 +143,37 @@ namespace Engine
 
                             text = new string(chars);
 
-                            ParseDocumentData(text, docEntity, threadTermDocCountList, threadTermsList);
+                            ParseDocumentData(text, documentEntity, termDocCountsBagCalculated, termLookup);
                         }
                     });
                 }
-
-                threadContext.JobDocuments.Add(new JobDocument()
-                {
-                    Job = threadJob,
-                    Document = docEntity,
-                    OrdinalIndex = files.IndexOf(file)
-                });
             });
 
             var termDocCounts = termDocCountsBag.ToList();
 
-            foreach(var threadContextKvp in threadContexts)
-            {
-                threadContextKvp.Value.TermDocumentCounts.AddRange(threadTermDocCounts[threadContextKvp.Key]);
+            var newTdc = from tdc in termDocCountsBagCalculated
+                         group tdc by new { DocumentId = tdc.Document.Id, TermId = tdc.Term.Id } into g
+                         let tdc = g.First()
+                         select new TermDocumentCount() {
+                             Document = tdc.Document,
+                             Term = tdc.Term,
+                             DocumentId = g.Key.DocumentId,
+                             TermId = g.Key.TermId,
+                             Count = g.Count()
+                         };
 
-                threadContextKvp.Value.SaveChanges();
-
-                termDocCounts.AddRange(threadTermDocCounts[threadContextKvp.Key]);
-            }
+            termDocCounts.AddRange(newTdc);
 
             var termsList = termDocCounts.Select(tdc => tdc.Term.Value).Distinct().ToList();
             var matrix = new DenseMatrix(termsList.Count, NumDocs);
-            var termLookup = terms.ToLookup(t => t.Value);
-
+            
             // Save Job Terms
             var jobTerms = from t in termsList
                            let termEntity = termLookup[t].First()
                            select new JobTerm()
                            {
                                Job = job,
-                               Term = termEntity,
+                               TermId = termEntity.Id,
                                OrdinalIndex = termsList.IndexOf(t)
                            };
 
@@ -177,35 +191,42 @@ namespace Engine
             return matrix;
         }
 
-        public static void ParseDocumentData(string rawText, Document document, ConcurrentBag<TermDocumentCount> termDocCounts, IEnumerable<Term> terms)
+        public static void ParseDocumentData(string rawText, Document document, ConcurrentBag<TermDocumentCount> termDocCounts, ILookup<string,Term> termsLookup)
         {
             foreach (var _token in rawText.Trim().Split(' '))
             {
                 var miniToken = _token.Trim().ToLower();
 
-                var term = terms.FirstOrDefault(t => t.Value == miniToken);
+                var termList = termsLookup[miniToken].ToList();
 
-                if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && term != null)
+                if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && termList.Count > 0)
                 {
-                    AddTermDocumentCount(term, document, termDocCounts);
+                    AddTermDocumentCount(termList.First(), document, termDocCounts);
                 }
             }
         }
 
         public static void AddTermDocumentCount(Term term, Document document, ConcurrentBag<TermDocumentCount> termDocCounts)
         {
-            var termDocCount = termDocCounts.FirstOrDefault(tdc => tdc.Document.Name == document.Name && tdc.Term.Value == term.Value);
 
-            if(termDocCount == null)
-                termDocCounts.Add(new TermDocumentCount()
-                {
-                    Document = document,
-                    Term = term,
-                    Count = 1
-                });
-             else
-                ++termDocCount.Count;
-            
+            //var termDocCount = termDocCounts.FirstOrDefault(tdc => tdc.Document.Name == document.Name && tdc.Term.Value == term.Value);
+
+            //if(termDocCount == null)
+            //    termDocCounts.Add(new TermDocumentCount()
+            //    {
+            //        Document = document,
+            //        Term = term,
+            //        Count = 1
+            //    });
+            // else
+            //    ++termDocCount.Count;
+
+            termDocCounts.Add(new TermDocumentCount()
+            {
+                Document = document,
+                Term = term
+            });
+
         }
 
         public static Svd<float> GetSvd(SvdEntities context, Job job, DenseMatrix termDocMatrix)
