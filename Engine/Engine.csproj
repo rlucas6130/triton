@@ -86,9 +86,6 @@
     <Compile Include="JobDocument.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="JobDocumentDistance.cs">
-      <DependentUpon>SvdDb.tt</DependentUpon>
-    </Compile>
     <Compile Include="JobStatusEnum.cs" />
     <Compile Include="JobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>

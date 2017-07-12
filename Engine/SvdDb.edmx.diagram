@@ -23,10 +23,6 @@
         <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.5" PointX="10.125" PointY="3.75" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Document" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Terms" />
-        <EntityTypeShape EntityType="SvdModel.JobDocumentDistance" Width="2.5" PointX="6.125" PointY="0.625" />
-        <AssociationConnector Association="SvdModel.FK_JobDocumentDistances_Job" />
-        <AssociationConnector Association="SvdModel.FK_JobDocumentDistances_SourceJobDocument" />
-        <AssociationConnector Association="SvdModel.FK_JobDocumentDistances_TargetJobDocument" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

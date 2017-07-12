@@ -34,6 +34,5 @@ namespace Engine
         public virtual DbSet<UMatrix> UMatrices { get; set; }
         public virtual DbSet<VMatrix> VMatrices { get; set; }
         public virtual DbSet<TermDocumentCount> TermDocumentCounts { get; set; }
-        public virtual DbSet<JobDocumentDistance> JobDocumentDistances { get; set; }
     }
 }
