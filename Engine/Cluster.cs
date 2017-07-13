@@ -28,7 +28,7 @@ namespace Engine
         public float ClusterSiAverage { get; set; }
         public int Clusters { get; set; }
 
-        public Cluster(Random generator, int k = 2, int maxIteration = 100)
+        public Cluster(Random generator, int k = 2, int maxIteration = 200)
         {
             Clusters = k;
 
