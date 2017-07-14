@@ -313,35 +313,6 @@ namespace Engine
                         });
                     }
 
-                    //var jobDocsLookup = job.JobDocuments.ToLookup(d => d.OrdinalIndex);
-                    //var jobDocDistances = new List<JobDocumentDistance>();
-
-                    //for(var i = 0; i < newVMatrix.ColumnCount; i++)
-                    //{
-                    //    var sourceDoc = jobDocsLookup[i].First();
-
-                    //    for (var m = 0; m < newVMatrix.ColumnCount; m++)
-                    //    {
-                    //        if (m == i) continue;
-
-                    //        var targetDoc = jobDocsLookup[m].First();
-
-                    //        jobDocDistances.Add(new JobDocumentDistance()
-                    //        {
-                    //            JobId = job.Id,
-                    //            SourceJobDocumentId = sourceDoc.Id,
-                    //            TargetJobDocumentId = targetDoc.Id,
-                    //            Distance = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray())
-                    //        });
-                    //    }
-                    //}
-
-                    //using (var bulkInsertContext = new SvdEntities())
-                    //{
-                    //    bulkInsertContext.JobDocumentDistances.AddRange(jobDocDistances);
-                    //    bulkInsertContext.BulkSaveChanges(false);
-                    //}
-
                     job.Dimensions = dimensions;
                     job.Status = JobStatus.Complete;
 
@@ -394,6 +365,15 @@ namespace Engine
             }
 
             Console.ReadLine();
+        }
+
+        public static List<Job> GetJobs()
+        {
+            using (var context = new SvdEntities())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                return context.Jobs.ToList();
+            }
         }
 
         public static void GetMatrixContainer()

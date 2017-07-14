@@ -1,0 +1,9 @@
+﻿<div>
+    <h4>Created Jobs</h4>
+    <div>
+        <div *ngFor="let job of jobs">
+            {{ job.id }}
+            {{ job.created | date:'medium' }}
+        </div>
+    </div>
+</div>
