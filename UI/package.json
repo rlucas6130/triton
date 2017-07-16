@@ -38,7 +38,8 @@
     "core-js": "^2.4.1",
     "rxjs": "5.4.2",
     "zone.js": "^0.8.4",
-    "ngx-bootstrap": "1.7.1"
+    "ngx-bootstrap": "1.7.1",
+    "font-awesome": "^4.7.0"
   },
   "devDependencies": {
     "concurrently": "^3.2.0",

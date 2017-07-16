@@ -1,0 +1,56 @@
+﻿
+div.container-fluid {
+    background-color: #20202f;
+}
+
+
+h1 {
+    color:#FFF;
+}
+
+h1 i {
+    position:relative;
+    top:-3px;
+    font-size:80%;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 300;
+  color: #a4a4b0;
+  text-transform: uppercase;
+  margin: 15px 0;
+  cursor: pointer;
+  
+  -webkit-transition: all .2s ease-out;
+  -moz-transition: all .2s ease-out;
+  -o-transition: all .2s ease-out;
+  transition: all .2s ease-out;
+}
+
+h3 i {
+    padding-right:30px
+}
+
+h3:hover, .active h3 {
+    color:#FFF;
+}
+
+div.main-container {
+    height:calc(100% - 53px);
+}
+
+div.col-2 {
+    /*height:100%;*/
+}
+
+div.col-10 {
+    padding:0;
+    /*height:100%;*/
+}
+
+div.col-12 {
+    padding-left:4px;
+    border-bottom:1px solid #ddd;
+    background-color:#20202f;
+}

@@ -141,7 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -953,6 +952,8 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="src\app\app.component.html" />
+    <Content Include="src\app\app.component.css" />
     <Content Include="src\app\jobs.component.css" />
     <Content Include="src\app\jobs.component.html" />
     <Content Include="src\favicon.ico" />
@@ -1013,6 +1014,7 @@
     <TypeScriptCompile Include="src\app\app.component.ts" />
     <TypeScriptCompile Include="src\app\app.module.ts" />
     <TypeScriptCompile Include="src\app\job.ts" />
+    <TypeScriptCompile Include="src\app\createJob.component.ts" />
     <TypeScriptCompile Include="src\app\jobs.component.ts" />
     <TypeScriptCompile Include="src\app\job.service.ts" />
     <TypeScriptCompile Include="src\main.ts" />

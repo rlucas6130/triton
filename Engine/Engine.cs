@@ -17,8 +17,8 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 2000;
-        public static int JobId = 13;
+        public static int NumDocs = 500;
+        public static int JobId = 28;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }

@@ -1,5 +1,7 @@
 ﻿export class Job {
     id: number;
-    name: string;
+    created: string;
     status: string;
+    documentCount: string;
+    dimensions: string;
 }

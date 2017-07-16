@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
+import { CreateJobComponent } from './createJob.component';
 import { JobService } from './job.service';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -23,7 +24,8 @@ import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
     ],
     declarations: [
         AppComponent,
-        JobsComponent
+        JobsComponent,
+        CreateJobComponent
     ],
     providers: [ JobService ],
     bootstrap: [ AppComponent ]

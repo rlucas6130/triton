@@ -1,13 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  template: `
-        <h1>{{title}}</h1>
-        <nav>
-            <a routerLink="/jobs" routerLinkActive="active">Jobs</a>
-        </nav>
-        <router-outlet></router-outlet>
-    `,
+    selector: 'triton-app',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
 })
 export class AppComponent  { title = 'Triton'; } 

@@ -13,7 +13,7 @@ namespace UI.Controllers
         // GET api/<controller>
         public IEnumerable<Job> Get()
         {
-            return LSA.GetJobs();
+            return LSA.GetJobs().OrderByDescending(i => i.Created);
         }
 
         // GET api/<controller>/5

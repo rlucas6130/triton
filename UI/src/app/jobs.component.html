@@ -1,9 +1,28 @@
-﻿<div>
-    <h4>Created Jobs</h4>
-    <div>
-        <div *ngFor="let job of jobs">
-            {{ job.id }}
-            {{ job.created | date:'medium' }}
+﻿<div class="container-fluid">
+    <h4><i class="fa fa-fw fa-database"></i> Created Jobs</h4>
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Document Count</th>
+                        <th>Created</th>
+                        <th>Dimensions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let job of jobs">
+                        <th scope="row">{{job.id}}</th>
+                        <td>{{job.documentCount}}</td>
+                        <td>{{job.created | date:'medium' }}</td>
+                        <td>{{job.dimensions}}</td>
+                        <td>{{jobStatusMap[job.status]}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        
     </div>
 </div>
