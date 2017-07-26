@@ -4,8 +4,15 @@
     [Created]       DATETIME2 (7) CONSTRAINT [DF_Table_1_CreationDate] DEFAULT (sysdatetime()) NOT NULL,
     [Dimensions]    INT           CONSTRAINT [DF_Job_Dimensions] DEFAULT ((300)) NOT NULL,
     [Status]        INT           CONSTRAINT [DF_Job_Status] DEFAULT ((0)) NOT NULL,
+    [Completed]     DATETIME2 (7) NULL,
     CONSTRAINT [PK_Job] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
+
+
+
+
 
 
 

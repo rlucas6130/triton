@@ -10,22 +10,26 @@ import { JobService } from './job.service';
 })
 export class JobsComponent implements OnInit {
     jobs: Job[] = [];
-    jobStatusMap: {} = {
-        0: 'New',
-
-        1: 'Building Term/Doc Matrix',
-        2: 'Running SVD',
-        3: 'Completed',
-        4: 'Failed'
+    jobStatus: {} = {
+        New: JobStatus.New,
+        BuildingMatrix: JobStatus.BuildingMatrix,
+        SVD: JobStatus.SVD,
+        Completed: JobStatus.Completed,
+        Failed: JobStatus.Failed
     };
 
     constructor(private jobService: JobService) { }
 
     ngOnInit(): void {
-
-
-
         this.jobService.getJobs()
             .then(jobs => this.jobs = jobs);
     }
+}
+
+enum JobStatus {
+    New, 
+    BuildingMatrix,
+    SVD,
+    Completed,
+    Failed
 }

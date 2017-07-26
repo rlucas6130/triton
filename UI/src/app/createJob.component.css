@@ -1,0 +1,7 @@
+﻿div.container-fluid {
+    background-color:#FFF;
+    padding-top:20px;
+    padding-left:30px;
+    overflow-y:auto;
+    border-top-left-radius:12px;
+}

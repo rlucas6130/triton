@@ -177,8 +177,7 @@ namespace Engine
                     JobId = LSA.JobId,
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
-                    ClusterSi = ClusterSiAverage,
-                    DocumentCount = LSA.NumDocs
+                    ClusterSi = ClusterSiAverage
                 });
 
                 context.SaveChanges();

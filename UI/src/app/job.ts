@@ -4,4 +4,5 @@
     status: string;
     documentCount: string;
     dimensions: string;
+    totalCalculationTimeString: string;
 }

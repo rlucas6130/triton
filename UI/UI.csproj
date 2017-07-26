@@ -954,6 +954,8 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="src\app\app.component.html" />
     <Content Include="src\app\app.component.css" />
+    <Content Include="src\app\createJob.component.html" />
+    <Content Include="src\app\createJob.component.css" />
     <Content Include="src\app\jobs.component.css" />
     <Content Include="src\app\jobs.component.html" />
     <Content Include="src\favicon.ico" />
@@ -1013,6 +1015,8 @@
     <TypeScriptCompile Include="src\app\app.component.spec.ts" />
     <TypeScriptCompile Include="src\app\app.component.ts" />
     <TypeScriptCompile Include="src\app\app.module.ts" />
+    <TypeScriptCompile Include="src\app\document.service.ts" />
+    <TypeScriptCompile Include="src\app\document.ts" />
     <TypeScriptCompile Include="src\app\job.ts" />
     <TypeScriptCompile Include="src\app\createJob.component.ts" />
     <TypeScriptCompile Include="src\app\jobs.component.ts" />

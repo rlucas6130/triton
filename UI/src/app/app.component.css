@@ -14,18 +14,22 @@ h1 i {
     font-size:80%;
 }
 
+nav a:hover {
+    text-decoration:none;
+}
+
 h3 {
-  font-size: 16px;
-  font-weight: 300;
-  color: #a4a4b0;
-  text-transform: uppercase;
-  margin: 15px 0;
-  cursor: pointer;
+    font-size: 16px;
+    font-weight: 300;
+    color: #a4a4b0;
+    text-transform: uppercase;
+    margin: 15px 0;
+    cursor: pointer;
   
-  -webkit-transition: all .2s ease-out;
-  -moz-transition: all .2s ease-out;
-  -o-transition: all .2s ease-out;
-  transition: all .2s ease-out;
+    -webkit-transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+    transition: all .2s ease-out;
 }
 
 h3 i {
@@ -38,10 +42,6 @@ h3:hover, .active h3 {
 
 div.main-container {
     height:calc(100% - 53px);
-}
-
-div.col-2 {
-    /*height:100%;*/
 }
 
 div.col-10 {

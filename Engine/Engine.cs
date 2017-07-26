@@ -17,17 +17,17 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 500;
-        public static int JobId = 28;
+        public static int NumDocs = 200;
+        public static int JobId = 63;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
 
-        public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered" };
+        public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered", "portal", "views", "free", "recent", "search", "details", "license", "encyclopedia", "page", "terms", "current", "content", "foundation", "categories", "help", "changes", "discussion", "users", "featured", "article" };
 
         public static IEnumerable<Term> GetOrAddTerms(SvdEntities context)
         {
-            var terms = context.Terms.Where(t => !Exclusions.Contains(t.Value)).ToList();
+            var terms = context.Terms.ToList();
 
             if (!terms.Any()) {
                 var fileStreamDict = new StreamReader(DictionaryPath);
@@ -148,19 +148,25 @@ namespace Engine
             // Build New Term/Doc Count Entites
 
             var newTdc = from tdc in termDocCountsBagCalculated
-                         group tdc by new { DocumentId = tdc.Document.Id, TermId = tdc.Term.Id } into g
-                         let tdc = g.First()
-                         select new TermDocumentCount() {
-                             Document = tdc.Document,
-                             Term = tdc.Term,
-                             DocumentId = g.Key.DocumentId,
-                             TermId = g.Key.TermId,
-                             Count = g.Count()
-                         };
+                            group tdc by new
+                            {
+                                DocumentId = tdc.Document.Id,
+                                TermId = tdc.Term.Id
+                            } into g
+                        let tdc = g.First()
+                        select new TermDocumentCount() {
+                            Document = tdc.Document,
+                            Term = tdc.Term,
+                            DocumentId = g.Key.DocumentId,
+                            TermId = g.Key.TermId,
+                            Count = g.Count()
+                        };
 
             context.TermDocumentCounts.AddRange(newTdc);
-
             termDocCounts.AddRange(newTdc);
+
+            // Remove Exclusions from saved list
+            termDocCounts = termDocCounts.Where(tdc => !Exclusions.Contains(tdc.Term.Value)).ToList();
 
             // Save Job Terms
 
@@ -267,11 +273,9 @@ namespace Engine
 
                     for (var i = 0; i < dimensions; i++)
                     {
-                        var singularValue = svd.S[i];
-
                         for (var m = 0; m < matrix.RowCount; m++)
                         {
-                            newUMatrix[m, i] = svd.U[m, i] * singularValue;
+                            newUMatrix[m, i] = svd.U[m, i] * svd.S[i];
                         }
                     }
 
@@ -314,6 +318,7 @@ namespace Engine
                     }
 
                     job.Dimensions = dimensions;
+                    job.Completed = DateTime.Now;
                     job.Status = JobStatus.Complete;
 
                     context.SaveChanges();
@@ -321,6 +326,7 @@ namespace Engine
                 catch (Exception)
                 {
                     job.Status = JobStatus.Failed;
+                    job.Completed = DateTime.Now;
                     context.SaveChanges();
 
                     throw;
@@ -328,43 +334,60 @@ namespace Engine
             }
         }
 
-        public static void RunQueryFromFile(string query)
+        public static void RunQueryFromFile()
         {
             GetMatrixContainer();
 
-            //// Locate Query index in U Table
+            string query = null;
 
-            var queryIndex = MatrixContainer.Terms.ToList().IndexOf(query);
+            while(query != "") {
+                query = Console.ReadLine();
 
-            var queryVector = MatrixContainer.UMatrix.Row(queryIndex).ToArray();
+                //// Locate Query index in U Table
 
-            Console.WriteLine("Query: " + query);
-            Console.WriteLine("Query Vector: " + queryVector.ToString());
-            Console.WriteLine("Dimensions: " + MatrixContainer.Dimensions);
+                var splitQuery = query.Split(' ');
+                var totalQueryVector = new DenseVector(MatrixContainer.Dimensions);
 
-            var docResults = new List<DocResult>();
-
-            for (var i = 0; i < MatrixContainer.DocNameMap.Count; i++)
-            {
-                var documentVector = MatrixContainer.VMatrix.Column(i).ToArray();
-
-                // Always do 1 minus to get the correct relation
-
-                var distance = 1 - Distance.Cosine(documentVector, queryVector);
-
-                docResults.Add(new DocResult()
+                foreach (var miniQuery in splitQuery)
                 {
-                    Name = MatrixContainer.DocNameMap[i],
-                    Distance = distance
-                });
-            }
+                    var qI = MatrixContainer.Terms.ToList().IndexOf(miniQuery);
 
-            foreach (var result in docResults.OrderByDescending(d => Math.Abs(d.Distance)).Take(5))
-            {
-                Console.WriteLine(result.Name + " Distance: " + result.Distance);
-            }
+                    if(qI >= 0)
+                    {
+                        var qV = MatrixContainer.UMatrix.Row(qI) as DenseVector;
 
-            Console.ReadLine();
+                        totalQueryVector += qV;
+                    }
+                }
+
+                var queryVector = (totalQueryVector / splitQuery.Length).ToArray();
+
+                Console.WriteLine("Query: " + query);
+                Console.WriteLine("Query Vector: " + queryVector.ToString());
+                Console.WriteLine("Dimensions: " + MatrixContainer.Dimensions);
+
+                var docResults = new List<DocResult>();
+
+                for (var i = 0; i < MatrixContainer.DocNameMap.Count; i++)
+                {
+                    var documentVector = MatrixContainer.VMatrix.Column(i).ToArray();
+
+                    // Always do 1 minus to get the correct relation
+
+                    var distance = Distance.Cosine(documentVector, queryVector);
+
+                    docResults.Add(new DocResult()
+                    {
+                        Name = MatrixContainer.DocNameMap[i],
+                        Distance = distance
+                    });
+                }
+
+                foreach (var result in docResults.OrderBy(d => d.Distance).Take(5))
+                {
+                    Console.WriteLine(result.Name + " Distance: " + result.Distance);
+                }
+            }
         }
 
         public static List<Job> GetJobs()
@@ -378,6 +401,9 @@ namespace Engine
 
         public static void GetMatrixContainer()
         {
+            if (MatrixContainer != null) return;
+
+
             using (var context = new SvdEntities())
             {
                 var job = context.Jobs.Find(JobId);

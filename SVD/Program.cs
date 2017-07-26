@@ -22,6 +22,7 @@ namespace SVD
         {
             //LSA.GetMatrixContainer();
             LSA.ProcessAndStore();
+            //LSA.RunQueryFromFile();
             //ClusterOptimizer.OptimizeRange(50, 200, 1, 10);
         }
     }

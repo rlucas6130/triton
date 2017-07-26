@@ -11,7 +11,9 @@ import { JobService } from './job.service';
 export class CreateJobComponent implements OnInit {
     jobs: Job[] = [];
 
-    constructor(private jobService: JobService) { }
+    constructor(private jobService: JobService) {
+
+    }
 
     ngOnInit(): void {
         this.jobService.getJobs()

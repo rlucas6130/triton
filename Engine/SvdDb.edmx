@@ -13,7 +13,6 @@
           <Property Name="ClusterCount" Type="int" Nullable="false" />
           <Property Name="GlobalSi" Type="real" Nullable="false" />
           <Property Name="ClusterSi" Type="real" Nullable="false" />
-          <Property Name="DocumentCount" Type="int" />
           <Property Name="JobId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Documents">
@@ -41,6 +40,7 @@
           <Property Name="Created" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Dimensions" Type="int" Nullable="false" />
           <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Completed" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="JobTerms">
           <Key>
@@ -296,7 +296,6 @@
           <Property Name="ClusterCount" Type="Int32" Nullable="false" />
           <Property Name="GlobalSi" Type="Single" Nullable="false" />
           <Property Name="ClusterSi" Type="Single" Nullable="false" />
-          <Property Name="DocumentCount" Type="Int32" />
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="ClusterCalculation" ToRole="Job" />
         </EntityType>
@@ -334,6 +333,7 @@
           <NavigationProperty Name="JobTerms" Relationship="SvdModel.FK_JobTerms_Job" FromRole="Job" ToRole="JobTerm" />
           <NavigationProperty Name="UMatrix" Relationship="SvdModel.FK_U_Job" FromRole="Job" ToRole="UMatrix" />
           <NavigationProperty Name="VMatrix" Relationship="SvdModel.FK_VMatrices_Jobs" FromRole="Job" ToRole="VMatrix" />
+          <Property Name="Completed" Type="DateTime" Precision="7" />
         </EntityType>
         <EntityType Name="JobTerm">
           <Key>
@@ -502,7 +502,6 @@
             <EntityTypeMapping TypeName="SvdModel.ClusterCalculation">
               <MappingFragment StoreEntitySet="ClusterCalculations">
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
-                <ScalarProperty Name="DocumentCount" ColumnName="DocumentCount" />
                 <ScalarProperty Name="ClusterSi" ColumnName="ClusterSi" />
                 <ScalarProperty Name="GlobalSi" ColumnName="GlobalSi" />
                 <ScalarProperty Name="ClusterCount" ColumnName="ClusterCount" />
@@ -531,6 +530,7 @@
           <EntitySetMapping Name="Jobs">
             <EntityTypeMapping TypeName="SvdModel.Job">
               <MappingFragment StoreEntitySet="Jobs">
+                <ScalarProperty Name="Completed" ColumnName="Completed" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Dimensions" ColumnName="Dimensions" />
                 <ScalarProperty Name="Created" ColumnName="Created" />

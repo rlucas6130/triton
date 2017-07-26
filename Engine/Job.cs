@@ -27,6 +27,7 @@ namespace Engine
         public System.DateTime Created { get; set; }
         public int Dimensions { get; set; }
         public Engine.JobStatus Status { get; set; }
+        public Nullable<System.DateTime> Completed { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClusterCalculation> ClusterCalculations { get; set; }
