@@ -18,11 +18,11 @@ export class JobService {
             .then(() => job)
             .catch(this.handleError);
     }
-    create(name: string): Promise<Job> {
+    create(): Promise<boolean> {
         return this.http
-            .post(this.jobUrl, JSON.stringify({ name: name }), { headers: this.headers })
+            .post(this.jobUrl, JSON.stringify({}), { headers: this.headers })
             .toPromise()
-            .then(res => res.json().data as Job)
+            .then(res => true)
             .catch(this.handleError);
     }
     delete(id: number): Promise<void> {

@@ -3,50 +3,50 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { Job } from './job';
+import { Document } from './document';
 
 @Injectable()
 export class DocumentService {
-    private jobUrl = '/api/documents';
+    private documentUrl = '/api/documents';
     private headers = new Headers({ 'Content-Type': 'application/json' });
     constructor(private http: Http) { }
-    update(job: Job): Promise<Job> {
-        const url = `${this.jobUrl}/${job.id}`;
+    update(document: Document): Promise<Document> {
+        const url = `${this.documentUrl}/${document.id}`;
         return this.http
-            .put(url, JSON.stringify(job), { headers: this.headers })
+            .put(url, JSON.stringify(document), { headers: this.headers })
             .toPromise()
-            .then(() => job)
+            .then(() => document)
             .catch(this.handleError);
     }
-    create(name: string): Promise<Job> {
+    create(name: string): Promise<Document> {
         return this.http
-            .post(this.jobUrl, JSON.stringify({ name: name }), { headers: this.headers })
+            .post(this.documentUrl, JSON.stringify({ name: name }), { headers: this.headers })
             .toPromise()
-            .then(res => res.json().data as Job)
+            .then(res => res.json().data as Document)
             .catch(this.handleError);
     }
     delete(id: number): Promise<void> {
-        const url = `${this.jobUrl}/${id}`;
+        const url = `${this.documentUrl}/${id}`;
         return this.http.delete(url, { headers: this.headers })
             .toPromise()
             .then(() => null)
             .catch(this.handleError);
     }
-    getJobs(): Promise<Job[]> {
-        return this.http.get(this.jobUrl)
+    getDocuments(): Promise<Document[]> {
+        return this.http.get(this.documentUrl)
             .toPromise()
-            .then(response => response.json() as Job[])
+            .then(response => response.json() as Document[])
             .catch(this.handleError)
     }
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
-    getJob(id: number): Promise<Job> {
-        const url = `${this.jobUrl}/${id}`;
+    getDocument(id: number): Promise<Document> {
+        const url = `${this.documentUrl}/${id}`;
         return this.http.get(url)
             .toPromise()
-            .then(response => response.json().data as Job)
+            .then(response => response.json().data as Document)
             .catch(this.handleError);
     }
 }

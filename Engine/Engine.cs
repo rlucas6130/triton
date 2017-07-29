@@ -399,6 +399,15 @@ namespace Engine
             }
         }
 
+        public static List<Document> GetDocuments()
+        {
+            using (var context = new SvdEntities())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                return context.Documents.ToList();
+            }
+        }
+
         public static void GetMatrixContainer()
         {
             if (MatrixContainer != null) return;

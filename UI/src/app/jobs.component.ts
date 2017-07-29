@@ -10,7 +10,7 @@ import { JobService } from './job.service';
 })
 export class JobsComponent implements OnInit {
     jobs: Job[] = [];
-    jobStatus: {} = {
+    public jobStatus: {} = {
         New: JobStatus.New,
         BuildingMatrix: JobStatus.BuildingMatrix,
         SVD: JobStatus.SVD,
@@ -22,7 +22,16 @@ export class JobsComponent implements OnInit {
 
     ngOnInit(): void {
         this.jobService.getJobs()
-            .then(jobs => this.jobs = jobs);
+            .then(jobs => this.jobs = jobs)
+            .then(jobs => {
+                for (let job of jobs.filter((job) => job.status == JobStatus.SVD || job.status == JobStatus.BuildingMatrix)) {
+                    var intervalId = setInterval(() => {
+
+                        this.jobService.getJob(job.id).then(j => job = j);
+
+                    }, 1000);
+                }
+            });
     }
 }
 

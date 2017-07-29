@@ -1,40 +1,24 @@
 ﻿<div class="container-fluid">
-    <h4><i class="fa fa-fw fa-database"></i> Created Jobs</h4>
+    <h4 class="display-4"><i class="fa fa-fw fa-gears"></i> Create Job <small class="text-muted">Select documents for analysis</small></h4>
     <div class="row">
-        <div class="col">
-            <table class="table table-hover">
+        <div class="col-12">
+            <button (click)="startProcessingJob()" type="button" class="btn btn-primary">Start Processing Job</button>
+            <table class="table table-hover table-sm table-bordered">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Document Count</th>
-                        <th>Created</th>
-                        <th>Dimensions</th>
-                        <th>Status</th>
+                        <th>
+                            <i [class.fa-square-o]="!allDocsSelected" [class.fa-check-square-o]="allDocsSelected" (click)="selectAllDocuments()" class="fa"></i>                           
+                        </th>
+
+                        <th>Document Name</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let job of jobs">
-                        <th scope="row">{{job.id}}</th>
-                        <td>{{job.documentCount}}</td>
-                        <td>{{job.created | date:'medium' }}</td>
-                        <td>{{job.dimensions}}</td>
-                        <td [ngSwitch]="job.status">
-                            <div *ngSwitchCase="jobStatus.New">
-                                <i class="fa fa-fw fa-bolt"></i> New
-                            </div>
-                            <div *ngSwitchCase="jobStatus.BuildingMatrix">
-                                <i class="fa fa-fw fa-hourglass-start"></i> Building Term/Doc Matrix
-                            </div>
-                            <div *ngSwitchCase="jobStatus.SVD">
-                                <i class="fa fa-fw fa-microchip"></i> Running SVD
-                            </div>
-                            <div *ngSwitchCase="jobStatus.Completed">
-                                <i class="fa fa-fw fa-check-square-o"></i> Completed
-                            </div>
-                            <div *ngSwitchCase="jobStatus.Failed">
-                                <i class="fa fa-fw fa-bomb"></i> Failed
-                            </div>
-                        </td>
+                    <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents">
+                        <th scope="row">
+                            <i [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
+                        </th>
+                        <td>{{doc.name}}</td>
                     </tr>
                 </tbody>
             </table>

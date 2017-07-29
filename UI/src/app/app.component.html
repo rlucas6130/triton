@@ -1,29 +1,48 @@
-﻿<div class="container-fluid">
+﻿
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" routerLink="/jobs"><i class="fa fa-fw fa-bolt"></i>{{title}}</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" routerLink="/jobs" routerLinkActive="active">Jobs <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Settings</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <h1><i class="fa fa-fw fa-bolt"></i>{{title}}</h1>
-        </div>
-    </div>
-    <div class="row main-container">
-        <div class="col-2">
-            <nav>
-                <a routerLink="/jobs" routerLinkActive="active">
-                    <h3><i class="fa fa-fw fa-database"></i> Jobs</h3>
-                </a>
-                <a routerLink="/createJob" routerLinkActive="active">
-                    <h3><i class="fa fa-fw fa-gears"></i>Create Job</h3>
-                </a>
-                <a routerLink="/createJob" routerLinkActive="active">
-                    <h3><i class="fa fa-fw fa-sitemap"></i>Clusters</h3>
-                </a>
-
-                <a target="_self" href="/home/index">
-                    <h3><i class="fa fa-fw fa-sitemap"></i>Clusters Old</h3>
-                </a>
-            </nav>
-        </div>
-        <div class="col-10">
+        <nav class="col-2 sidebar">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/jobs" routerLinkActive="active">
+                        <i class="fa fa-fw fa-database"></i> Jobs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/createJob" routerLinkActive="active">
+                        <i class="fa fa-fw fa-gears"></i> Create Job
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/clusters" routerLinkActive="active">
+                        <i class="fa fa-fw fa-sitemap"></i> Clusters
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_self" href="/home/index">
+                        <i class="fa fa-fw fa-sitemap"></i> Clusters Old
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <main class="col-10 offset-2 pt-3">
             <router-outlet></router-outlet>
-        </div>
-    </div>
+        </main>
+    </div>   
 </div>

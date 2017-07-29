@@ -1,7 +1,7 @@
 ﻿<div class="container-fluid">
-    <h4><i class="fa fa-fw fa-database"></i> Jobs</h4>
+    <h1><i class="fa fa-fw fa-database"></i> Jobs</h1>
     <div class="row">
-        <div class="col">
+        <div class="col-12">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -21,31 +21,29 @@
                         <td>{{job.dimensions}}</td>
                         <td>{{job.totalCalculationTimeString}}</td>
                         <td [ngSwitch]="job.status">
-                            <div *ngSwitchCase="jobStatus.New">
-                                <span class="badge badge-primary">
+
+                                <span *ngSwitchCase="jobStatus.New" class="badge badge-primary">
                                     <i class="fa fa-fw fa-bolt"></i> New
                                 </span>
-                            </div>
-                            <div *ngSwitchCase="jobStatus.BuildingMatrix">
-                                <span class="badge badge-info">
+
+
+                                <span *ngSwitchCase="jobStatus.BuildingMatrix" class="badge badge-info">
                                     <i class="fa fa-fw fa-hourglass-start"></i> Building Term/Doc Matrix
                                 </span>
-                            </div>
-                            <div *ngSwitchCase="jobStatus.SVD">
-                                <span class="badge badge-warning">
+
+                                <span *ngSwitchCase="jobStatus.SVD" class="badge badge-warning">
                                     <i class="fa fa-fw fa-microchip"></i> Running SVD
                                 </span>
-                            </div>
-                            <div *ngSwitchCase="jobStatus.Completed">
-                                <span class="badge badge-success">
+
+                                <span *ngSwitchCase="jobStatus.Completed" class="badge badge-success">
                                     <i class="fa fa-fw fa-check-square-o"></i> Completed
                                 </span>
-                            </div>
-                            <div *ngSwitchCase="jobStatus.Failed">
-                                <span class="badge badge-danger">
+
+                                <span *ngSwitchCase="jobStatus.Failed" class="badge badge-danger">
                                     <i class="fa fa-fw fa-bomb"></i> Failed
-                                </span>     
-                            </div>
+                                </span>
+
+                                <i *ngIf="job.status == jobStatus.BuildingMatrix || job.status == jobStatus.SVD" class="fa fa-spinner fa-pulse fa-fw"></i>
                         </td>
                     </tr>
                 </tbody>

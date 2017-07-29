@@ -1,4 +1,7 @@
 ﻿using Engine;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +28,7 @@ namespace UI.Controllers
         // POST api/<controller>
         public void Post([FromBody]string value)
         {
+            SendProcessingRequestMessage();
         }
 
         // PUT api/<controller>/5
@@ -35,6 +39,25 @@ namespace UI.Controllers
         // DELETE api/<controller>/5
         public void Delete(int id)
         {
+        }
+
+        private void SendProcessingRequestMessage()
+        {
+            // Parse the connection string and return a reference to the storage account.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                CloudConfigurationManager.GetSetting("AzureWebJobsStorage"));
+
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to a container.
+            CloudQueue queue = queueClient.GetQueueReference("buildqueue");
+
+            // Create the queue if it doesn't already exist
+            queue.CreateIfNotExists();
+
+            // Create a message and add it to the queue.
+            CloudQueueMessage message = new CloudQueueMessage("MySuperAwesomeTest");
+            queue.AddMessage(message);
         }
     }
 }

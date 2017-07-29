@@ -11,3 +11,5 @@ Engine/bin/
 SvdDatabase/SvdDatabase.dbmdl
 SvdDatabase/SvdDatabase.jfm
 .vs/SVD/v15/.suo
+JobBuilderWebJob/bin/
+JobBuilderWebJob/obj/

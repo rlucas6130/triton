@@ -1,7 +1,7 @@
 ﻿export class Job {
     id: number;
     created: string;
-    status: string;
+    status: number;
     documentCount: string;
     dimensions: string;
     totalCalculationTimeString: string;

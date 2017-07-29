@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
 import { JobService } from './job.service';
+import { DocumentService } from './document.service';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
@@ -27,7 +28,10 @@ import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
         JobsComponent,
         CreateJobComponent
     ],
-    providers: [ JobService ],
+    providers: [
+        JobService,
+        DocumentService
+    ],
     bootstrap: [ AppComponent ]
 })
 export class AppModule { }
