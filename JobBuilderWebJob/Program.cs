@@ -21,7 +21,10 @@ namespace JobBuilderWebJob
                 config.UseDevelopmentSettings();
             }
 
-            var host = new JobHost();
+            config.Queues.MaxPollingInterval = TimeSpan.FromSeconds(15);
+
+            var host = new JobHost(config);
+            
             // The following code ensures that the WebJob will be running continuously
             host.RunAndBlock();
         }

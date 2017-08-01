@@ -12,7 +12,7 @@ table th:first-child {
     text-align:center;
 }
 
-table th:first-child i {
+table th:first-child i:first-child {
     cursor:pointer;
 }
 
@@ -29,19 +29,6 @@ input[type=file] {
     position: absolute;
     z-index: -1;
 }
-
-/*input[type=file] + label {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: white;
-    background-color: black;
-    display: inline-block;
-}
-
-input[type=file]:focus + label,
-input[type=file] + label:hover {
-    background-color: red;
-}*/
 
 input[type=file] + label {
     margin-bottom:0;

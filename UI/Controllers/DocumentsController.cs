@@ -2,6 +2,7 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,12 +67,15 @@ namespace UI.Controllers
                 foreach (var fileData in provider.FileData)
                 {
                     var filename = fileData.LocalFileName;
-                    var blob = blobContainer.GetBlockBlobReference(filename);
+                    var blob = blobContainer.GetBlockBlobReference(fileData.Headers.ContentDisposition.FileName);
 
                     using (var filestream = File.OpenRead(fileData.LocalFileName))
                     {
                         blob.UploadFromStream(filestream);
                     }
+
+                    SendDocumentUploadedRequestMessage(fileData.Headers.ContentDisposition.FileName);
+
                     File.Delete(fileData.LocalFileName);
                 }
 
@@ -98,6 +102,25 @@ namespace UI.Controllers
             container.CreateIfNotExists();
 
             return container;
+        }
+
+        private void SendDocumentUploadedRequestMessage(string filename)
+        {
+            // Parse the connection string and return a reference to the storage account.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                CloudConfigurationManager.GetSetting("AzureWebJobsStorage"));
+
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to a container.
+            CloudQueue queue = queueClient.GetQueueReference("documentqueue");
+
+            // Create the queue if it doesn't already exist
+            queue.CreateIfNotExists();
+
+            // Create a message and add it to the queue.
+            CloudQueueMessage message = new CloudQueueMessage(filename);
+            queue.AddMessage(message);
         }
     }
 }

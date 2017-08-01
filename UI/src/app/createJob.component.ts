@@ -16,7 +16,6 @@ import * as _ from 'lodash';
 export class CreateJobComponent implements OnInit, DoCheck {
     documents: Document[] = [];
     allDocsSelected: boolean;
-    uploadQueue: FileItem[] = [];
     constructor(
         private documentService: DocumentService,
         private jobService: JobService,
@@ -36,11 +35,14 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
         for (let file of this.uploader.queue)
         {
-            this.documents.unshift({ 
-                id: 0,
-                name: file.file.name,
-                isSelected: false        
-            } as Document);
+            if (!_.some(this.documents, { name: file.file.name })) {
+                this.documents.unshift({
+                    id: 0,
+                    name: file.file.name,
+                    isSelected: false,
+                    isUploading: false
+                } as Document);
+            }
         }
 
         this.documents = _.uniqBy(this.documents, 'name');
@@ -53,6 +55,21 @@ export class CreateJobComponent implements OnInit, DoCheck {
         for (let doc of this.documents) {
             doc.isSelected = this.allDocsSelected;
         }
+    }
+
+    public uploadAll(): void {
+
+        this.uploader.uploadAll();
+
+        for (let doc of this.documents) {
+            if (doc.id == 0) {
+                doc.isUploading = true;
+            }
+        }
+    }
+
+    public docIdTracker(index: number, doc: Document): string {
+        return doc.name;
     }
 
     public startProcessingJob(): void {

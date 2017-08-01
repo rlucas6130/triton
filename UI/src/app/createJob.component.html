@@ -12,7 +12,7 @@
                         <th>Document Name</th>
                         <th class="upload-menu">
                             <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="!uploader.queue.length">
-                                <button type="button" (click)="uploader.uploadAll()" class="btn btn-sm btn-info">
+                                <button type="button" (click)="uploadAll()" class="btn btn-sm btn-info">
                                     <i class="fa fa-fw fa-cloud-upload"></i> Upload All
                                 </button>
                                 <button type="button" class="btn btn-sm btn-warning">
@@ -23,13 +23,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents">
+                    <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents; trackBy:docIdTracker">
                         <th scope="row">
-                            <i [class.fa-cloud-upload]="!doc.id" [class.fa-square-o]="!doc.isSelected && doc.id" [class.fa-check-square-o]="doc.isSelected && doc.id" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
+                            <i [hidden]="!doc.id" [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
+                            <i [hidden]="doc.id" class="fa" [class.fa-spin]="doc.isUploading"  [class.fa-spinner]="doc.isUploading"  [class.fa-cloud-upload]="!doc.isUploading"></i>
                         </th>
                         <td>{{doc.name}}</td>
-                        <td class="upload-menu">
-                            <div class="btn-group" role="group" aria-label="Basic example" [hidden]="doc.id">
+                        <td class="upload-menu"> 
+                            <div class="btn-group" role="group" aria-label="Basic example" [hidden]="doc.id || doc.isUploading">
                                 <button type="button" class="btn btn-sm btn-info">
                                     <i class="fa fa-fw fa-cloud-upload"></i> Upload
                                 </button>

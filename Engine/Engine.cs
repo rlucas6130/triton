@@ -25,6 +25,84 @@ namespace Engine
 
         public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered", "portal", "views", "free", "recent", "search", "details", "license", "encyclopedia", "page", "terms", "current", "content", "foundation", "categories", "help", "changes", "discussion", "users", "featured", "article" };
 
+        public static void CreateDocument(Stream blobStream, string documentName)
+        {
+            using (var context = new SvdEntities())
+            {
+                var document = context.Documents.FirstOrDefault(d => d.Name == documentName);
+
+                if (document == null)
+                {
+                    var termLookup = GetOrAddTerms(context).ToLookup(t => t.Value);
+                    var sr = new StreamReader(blobStream);
+                    var html = sr.ReadToEnd();
+
+                    document = context.Documents.Add(new Document()
+                    {
+                        Name = documentName.Trim('"')
+                    });
+
+                    HtmlDocument doc = new HtmlDocument();
+
+                    doc.LoadHtml(HttpUtility.HtmlDecode(html));
+
+                    var termDocCounts = new List<TermDocumentCount>();
+
+                    doc.DocumentNode.SelectNodes("//body//text()").ToList().ForEach(node =>
+                    {
+                        var text = node.InnerText.Trim();
+
+                        if (!string.IsNullOrEmpty(text) && !string.IsNullOrWhiteSpace(text))
+                        {
+                            var chars = text.Where(c => (
+                                char.IsLetterOrDigit(c) ||
+                                char.IsWhiteSpace(c) ||
+                                c == '-'))
+                                .ToArray();
+
+                            text = new string(chars);
+
+                            foreach (var _token in text.Trim().Split(' '))
+                            {
+                                var miniToken = _token.Trim().ToLower();
+
+                                var termList = termLookup[miniToken].ToList();
+
+                                if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && termList.Count > 0)
+                                {
+                                    termDocCounts.Add(new TermDocumentCount()
+                                    {
+                                        Document = document,
+                                        Term = termList.First()
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    var newTdc = from tdc in termDocCounts
+                                 group tdc by new
+                                 {
+                                     DocumentId = tdc.Document.Id,
+                                     TermId = tdc.Term.Id
+                                 } into g
+                                 let tdc = g.First()
+                                 select new TermDocumentCount()
+                                 {
+                                     Document = tdc.Document,
+                                     Term = tdc.Term,
+                                     DocumentId = g.Key.DocumentId,
+                                     TermId = g.Key.TermId,
+                                     Count = g.Count()
+                                 };
+
+
+                    context.TermDocumentCounts.AddRange(newTdc);
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public static IEnumerable<Term> GetOrAddTerms(SvdEntities context)
         {
             var terms = context.Terms.ToList();
