@@ -43,7 +43,9 @@ namespace UI.Controllers
         {
         }
 
-        public async Task<HttpResponseMessage> UploadDocuments()
+        [HttpPost]
+        [Route("api/documents/upload")]
+        public async Task<HttpResponseMessage> Upload()
         {
             // Check if the request contains multipart/form-data.
             if (!Request.Content.IsMimeMultipartContent())

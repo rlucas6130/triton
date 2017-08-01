@@ -36,7 +36,7 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
     providers: [
         JobService,
         DocumentService,
-        { provide: FileUploader, useFactory: () => { return new FileUploader({url: '', autoUpload: false} as FileUploaderOptions) } }
+        { provide: FileUploader, useFactory: () => { return new FileUploader({ url: '/api/documents/upload' } as FileUploaderOptions) } }
     ],
     bootstrap: [ AppComponent ]
 })
