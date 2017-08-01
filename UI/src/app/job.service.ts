@@ -46,7 +46,7 @@ export class JobService {
         const url = `${this.jobUrl}/${id}`;
         return this.http.get(url)
             .toPromise()
-            .then(response => response.json().data as Job)
+            .then(response => response.json() as Job)
             .catch(this.handleError);
     }
 }

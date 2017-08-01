@@ -43,7 +43,7 @@
                                     <i class="fa fa-fw fa-bomb"></i> Failed
                                 </span>
 
-                                <i *ngIf="job.status == jobStatus.BuildingMatrix || job.status == jobStatus.SVD" class="fa fa-spinner fa-pulse fa-fw"></i>
+                                <i *ngIf="job.status == jobStatus.New || job.status == jobStatus.BuildingMatrix || job.status == jobStatus.SVD" class="fa fa-spinner fa-pulse fa-fw"></i>
                         </td>
                     </tr>
                 </tbody>

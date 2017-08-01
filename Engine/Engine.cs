@@ -17,7 +17,7 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 200;
+        public static int NumDocs = 500;
         public static int JobId = 63;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
@@ -101,10 +101,9 @@ namespace Engine
                 {
                     Job = job,
                     Document = docEntity, 
-                    // THIS MIGHT CAUSE AN ISSUE????
                     OrdinalIndex = files.IndexOf(file)
                 });
-            }
+            } 
 
             context.Documents.AddRange(newDocuments);
             context.JobDocuments.AddRange(jobDocuments);
@@ -192,8 +191,6 @@ namespace Engine
                 matrix[termsList.IndexOf(termDocCount.Term.Value), files.IndexOf(termDocCount.Document.Name)] = termDocCount.Count;
             }
 
-            matrix.CoerceZero(.0000001);
-
             Debug.WriteLine($"Read File Calc Time: {DateTime.Now.Subtract(readFilesStart).TotalMilliseconds} Milliseconds");
 
             return matrix;
@@ -209,18 +206,13 @@ namespace Engine
 
                 if (!string.IsNullOrEmpty(miniToken) && miniToken != "-" && miniToken != "\n" && termList.Count > 0)
                 {
-                    AddTermDocumentCount(termList.First(), document, termDocCounts);
+                    termDocCounts.Add(new TermDocumentCount()
+                    {
+                        Document = document,
+                        Term = termList.First()
+                    });
                 }
             }
-        }
-
-        public static void AddTermDocumentCount(Term term, Document document, ConcurrentBag<TermDocumentCount> termDocCounts)
-        {
-            termDocCounts.Add(new TermDocumentCount()
-            {
-                Document = document,
-                Term = term
-            });
         }
 
         public static Svd<float> GetSvd(SvdEntities context, Job job, DenseMatrix termDocMatrix)
@@ -242,22 +234,29 @@ namespace Engine
             context.SaveChanges();
         }
 
-        public static void ProcessAndStore()
+        public static void ProcessAndStore(int? jobId = null)
         {
-            Job job = null;
-
             using (var context = new SvdEntities())
             {
+                Job job = null;
+
                 try
                 {
-                    // Create Job With All default values (must set dimensions if different than default '300')
-                    job = context.Jobs.Add(new Job()
+                    if(jobId == null)
                     {
-                        DocumentCount = NumDocs,
-                        Created = DateTime.Now
-                    });
+                        // Create Job With All default values (must set dimensions if different than default '300')
+                        job = context.Jobs.Add(new Job()
+                        {
+                            DocumentCount = NumDocs,
+                            Created = DateTime.Now
+                        });
 
-                    context.SaveChanges();
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        job = context.Jobs.Find(jobId.GetValueOrDefault());
+                    }
 
                     // Process
                     var matrix = GetTermDocMatrix(context, job);
@@ -390,12 +389,37 @@ namespace Engine
             }
         }
 
+        public static Job CreateNewJob()
+        {
+            using (var context = new SvdEntities())
+            {
+                var job = context.Jobs.Add(new Job()
+                {
+                    DocumentCount = NumDocs,
+                    Created = DateTime.Now
+                });
+
+                context.SaveChanges();
+
+                return job;
+            }
+        }
+
         public static List<Job> GetJobs()
         {
             using (var context = new SvdEntities())
             {
                 context.Configuration.ProxyCreationEnabled = false;
                 return context.Jobs.ToList();
+            }
+        }
+
+        public static Job GetJob(int id)
+        {
+            using (var context = new SvdEntities())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                return context.Jobs.Find(id);
             }
         }
 

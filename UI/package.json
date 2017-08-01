@@ -39,7 +39,8 @@
     "rxjs": "5.4.2",
     "zone.js": "^0.8.4",
     "ngx-bootstrap": "1.7.1",
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "ng2-file-upload": "^1.2.1"
   },
   "devDependencies": {
     "concurrently": "^3.2.0",
@@ -59,7 +60,8 @@
     "rimraf": "^2.5.4",
 
     "@types/node": "^6.0.46",
-    "@types/jasmine": "2.5.36"
+    "@types/jasmine": "2.5.36",
+    "@types/lodash": "4.14.71"
   },
   "repository": {}
 }

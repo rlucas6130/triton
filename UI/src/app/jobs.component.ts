@@ -1,7 +1,10 @@
 ﻿import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { Job } from './job';
 import { JobService } from './job.service';
+
+import 'rxjs/add/operator/switchMap';
 
 @Component({
     selector: 'jobs',
@@ -18,20 +21,45 @@ export class JobsComponent implements OnInit {
         Failed: JobStatus.Failed
     };
 
-    constructor(private jobService: JobService) { }
+    constructor(private jobService: JobService, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
+
         this.jobService.getJobs()
-            .then(jobs => this.jobs = jobs)
-            .then(jobs => {
-                for (let job of jobs.filter((job) => job.status == JobStatus.SVD || job.status == JobStatus.BuildingMatrix)) {
-                    var intervalId = setInterval(() => {
+            .then(jobs => this.jobs = jobs);
 
-                        this.jobService.getJob(job.id).then(j => job = j);
+        if (this.route.snapshot.paramMap.get('refreshUntilComplete') == 'true') {
+            var jobsListIntervalId = setInterval(() => {
 
-                    }, 1000);
-                }
-            });
+                this.jobService.getJobs()
+                    .then(jobs => this.jobs = jobs)
+                    .then(jobs => {
+
+                        var processingJobs = jobs.filter((job) => job.status == JobStatus.New || job.status == JobStatus.SVD || job.status == JobStatus.BuildingMatrix);
+
+                        if (processingJobs.length > 0) {
+                            clearInterval(jobsListIntervalId); 
+                        }
+
+                        for (let job of processingJobs) {
+
+                            var intervalId = setInterval((j: Job) => {
+
+                                this.jobService.getJob(j.id).then(jj => {
+
+                                    if (jj.status == JobStatus.Completed || jj.status == JobStatus.Failed) {                                      
+                                        j.dimensions = jj.dimensions;
+                                        clearInterval(intervalId);
+                                    }
+
+                                    j.totalCalculationTimeString = jj.totalCalculationTimeString;
+                                    j.status = jj.status;
+                                });
+                            }, 1000, job);
+                        }
+                    });
+            }, 5000);
+        }
     }
 }
 

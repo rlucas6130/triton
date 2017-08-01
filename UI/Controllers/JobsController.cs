@@ -20,15 +20,17 @@ namespace UI.Controllers
         }
 
         // GET api/<controller>/5
-        public string Get(int id)
+        public Job Get(int id)
         {
-            return "value";
+            return LSA.GetJob(id);
         }
 
         // POST api/<controller>
         public void Post([FromBody]string value)
         {
-            SendProcessingRequestMessage();
+            var job = LSA.CreateNewJob();
+
+            SendProcessingRequestMessage(job.Id);
         }
 
         // PUT api/<controller>/5
@@ -41,7 +43,7 @@ namespace UI.Controllers
         {
         }
 
-        private void SendProcessingRequestMessage()
+        private void SendProcessingRequestMessage(int jobId)
         {
             // Parse the connection string and return a reference to the storage account.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -56,7 +58,7 @@ namespace UI.Controllers
             queue.CreateIfNotExists();
 
             // Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage("MySuperAwesomeTest");
+            CloudQueueMessage message = new CloudQueueMessage(jobId.ToString());
             queue.AddMessage(message);
         }
     }

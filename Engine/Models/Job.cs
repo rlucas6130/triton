@@ -5,7 +5,7 @@ namespace Engine
 {
     public partial class Job
     {
-        public TimeSpan TotalCalculationTime { get { return this.Completed.GetValueOrDefault().Subtract(this.Created); } }
+        public TimeSpan TotalCalculationTime { get { return this.Completed.GetValueOrDefault(DateTime.Now).Subtract(this.Created); } }
         public string TotalCalculationTimeString {
             get
             {

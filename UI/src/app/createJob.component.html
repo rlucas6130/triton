@@ -2,7 +2,6 @@
     <h4 class="display-4"><i class="fa fa-fw fa-gears"></i> Create Job <small class="text-muted">Select documents for analysis</small></h4>
     <div class="row">
         <div class="col-12">
-            <button (click)="startProcessingJob()" type="button" class="btn btn-primary">Start Processing Job</button>
             <table class="table table-hover table-sm table-bordered">
                 <thead>
                     <tr>
@@ -11,18 +10,46 @@
                         </th>
 
                         <th>Document Name</th>
+                        <th class="upload-menu">
+                            <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="!uploader.queue.length">
+                                <button type="button" (click)="uploader.uploadAll()" class="btn btn-sm btn-info">
+                                    <i class="fa fa-fw fa-cloud-upload"></i> Upload All
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning">
+                                    <i class="fa fa-fw fa-close"></i> Remove All
+                                </button>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents">
                         <th scope="row">
-                            <i [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
+                            <i [class.fa-cloud-upload]="!doc.id" [class.fa-square-o]="!doc.isSelected && doc.id" [class.fa-check-square-o]="doc.isSelected && doc.id" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
                         </th>
                         <td>{{doc.name}}</td>
+                        <td class="upload-menu">
+                            <div class="btn-group" role="group" aria-label="Basic example" [hidden]="doc.id">
+                                <button type="button" class="btn btn-sm btn-info">
+                                    <i class="fa fa-fw fa-cloud-upload"></i> Upload
+                                </button>
+                                <button type="button" class="btn btn-sm btn-warning">
+                                    <i class="fa fa-fw fa-close"></i> Remove
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        
+        <div class="container">
+            <div class="row">
+                <nav class="nav col-10 offset-2 justify-content-end fixed-bottom navbar-light bg-faded">
+                    <input id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple />
+                    <label for="docfile" class="btn btn-secondary">Upload Documents</label>
+                    <button (click)="startProcessingJob()" type="button" class="btn btn-primary">Start Processing Job</button>
+                </nav>
+            </div>
+        </div>
     </div>
 </div>

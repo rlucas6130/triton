@@ -3,6 +3,6 @@
     created: string;
     status: number;
     documentCount: string;
-    dimensions: string;
+    dimensions: number;
     totalCalculationTimeString: string;
 }
