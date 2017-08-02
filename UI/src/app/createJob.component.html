@@ -11,11 +11,11 @@
 
                         <th>Document Name</th>
                         <th class="upload-menu">
-                            <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="!uploader.queue.length">
+                            <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="!uploader.getNotUploadedItems().length">
                                 <button type="button" (click)="uploadAll()" class="btn btn-sm btn-info">
                                     <i class="fa fa-fw fa-cloud-upload"></i> Upload All
                                 </button>
-                                <button type="button" class="btn btn-sm btn-warning">
+                                <button type="button" (click)="removeAllUploads()" class="btn btn-sm btn-warning">
                                     <i class="fa fa-fw fa-close"></i> Remove All
                                 </button>
                             </div>
@@ -31,10 +31,10 @@
                         <td>{{doc.name}}</td>
                         <td class="upload-menu"> 
                             <div class="btn-group" role="group" aria-label="Basic example" [hidden]="doc.id || doc.isUploading">
-                                <button type="button" class="btn btn-sm btn-info">
+                                <button type="button" (click)="uploadDocument(doc)" class="btn btn-sm btn-info">
                                     <i class="fa fa-fw fa-cloud-upload"></i> Upload
                                 </button>
-                                <button type="button" class="btn btn-sm btn-warning">
+                                <button type="button" (click)="removeDocument(doc)" class="btn btn-sm btn-warning">
                                     <i class="fa fa-fw fa-close"></i> Remove
                                 </button>
                             </div>
