@@ -105,7 +105,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
                         }
                     }
                 });
-        }, 1000);
+        }, 3000);
     }
 
     public removeDocument(document: Document): void {
@@ -122,6 +122,10 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     public docIdTracker(index: number, doc: Document): string {
         return doc.name;
+    }
+
+    public hideGlobalMenu(): boolean {
+        return !_.some(this.documents, doc => doc.id == 0 && doc.isUploading == false);
     }
 
     public startProcessingJob(): void {

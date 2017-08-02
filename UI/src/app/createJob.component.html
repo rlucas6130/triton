@@ -11,7 +11,7 @@
 
                         <th>Document Name</th>
                         <th class="upload-menu">
-                            <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="!uploader.getNotUploadedItems().length">
+                            <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="hideGlobalMenu()">
                                 <button type="button" (click)="uploadAll()" class="btn btn-sm btn-info">
                                     <i class="fa fa-fw fa-cloud-upload"></i> Upload All
                                 </button>
@@ -46,7 +46,7 @@
         <div class="container">
             <div class="row">
                 <nav class="nav col-10 offset-2 justify-content-end fixed-bottom navbar-light bg-faded">
-                    <input id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple />
+                    <input id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
                     <label for="docfile" class="btn btn-secondary">Upload Documents</label>
                     <button (click)="startProcessingJob()" type="button" class="btn btn-primary">Start Processing Job</button>
                 </nav>
