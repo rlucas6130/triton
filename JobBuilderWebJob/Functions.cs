@@ -14,12 +14,12 @@ namespace JobBuilderWebJob
     {
         // This function will get triggered/executed when a new message is written 
         // on an Azure Queue called queue.
-        public static void StartProcessingJob([QueueTrigger("buildqueue")] string jobId, TextWriter log)
+        public static void StartProcessingJob([QueueTrigger("buildqueue")] Tuple<int, IEnumerable<int>> jobTuple, TextWriter log)
         {
-            log.WriteLine(jobId);
+            log.WriteLine(jobTuple.Item1);
             Task.Factory.StartNew(() =>
             {
-                LSA.ProcessAndStore(int.Parse(jobId));
+                LSA.ProcessAndStore(jobTuple.Item1, jobTuple.Item2);
             });
         }
 

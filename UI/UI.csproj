@@ -994,6 +994,7 @@
     <Content Include="src\systemjs-angular-loader.js" />
     <Content Include="src\systemjs.config.extras.js" />
     <Content Include="src\systemjs.config.js" />
+    <Content Include="Triton-Todo.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

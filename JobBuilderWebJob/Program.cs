@@ -21,7 +21,8 @@ namespace JobBuilderWebJob
                 config.UseDevelopmentSettings();
             }
 
-            config.Queues.MaxPollingInterval = TimeSpan.FromSeconds(15);
+            config.Queues.MaxPollingInterval = TimeSpan.FromSeconds(2);
+            config.Queues.BatchSize = 32;
 
             var host = new JobHost(config);
             

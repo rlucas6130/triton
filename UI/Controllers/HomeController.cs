@@ -29,23 +29,13 @@ namespace UI.Controllers
             return View();
         }
 
-        public void LoadMatrixData()
-        {
-            try
-            {
-                LSA.GetMatrixContainer();
-            }
-            catch (Exception e) { }
-            
-        }
-
-        public JsonResult GetClusters(int k = 2)
+        public JsonResult GetClusters(int jobId, int k = 2)
         {
             var nameList = new Dictionary<string, List<string>>();
 
             var start = DateTime.Now;
 
-            var cluster = ClusterOptimizer.OptimizeRange(20, 20, 1, 200);
+            var cluster = ClusterOptimizer.OptimizeRange(jobId, 20, 20, 1, 200);
 
             cluster.BuildCategoryNameMap();
 

@@ -1,0 +1,11 @@
+Documents / Create Job Page: 
+	- Search component (for docs)
+	- Better Uploading Animations - UI elements (use 'progress' field from uploader)
+	- Make a 'View Document' button/link on each row
+	- Add Client-SIde Paging
+
+Create Documents Detail Page - 
+
+Term Doc Counts 
+Cluster statistics 
+Closest relations 

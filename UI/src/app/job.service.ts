@@ -18,9 +18,9 @@ export class JobService {
             .then(() => job)
             .catch(this.handleError);
     }
-    create(): Promise<boolean> {
+    create(docIds: number[]): Promise<boolean> {
         return this.http
-            .post(this.jobUrl, JSON.stringify({}), { headers: this.headers })
+            .post(this.jobUrl, JSON.stringify(docIds), { headers: this.headers })
             .toPromise()
             .then(res => true)
             .catch(this.handleError);

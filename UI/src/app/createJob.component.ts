@@ -129,7 +129,10 @@ export class CreateJobComponent implements OnInit, DoCheck {
     }
 
     public startProcessingJob(): void {
-        this.jobService.create()
+
+        var docIds = _.filter(this.documents, doc => doc.isSelected).map(doc => doc.id);
+
+        this.jobService.create(docIds)
             .then(job => this.router.navigate(['/jobs', { 'refreshUntilComplete': 'true' }]));
     }
 }

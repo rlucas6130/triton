@@ -2,6 +2,7 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,11 @@ namespace UI.Controllers
         }
 
         // POST api/<controller>
-        public void Post([FromBody]string value)
+        public void Post([FromBody]IEnumerable<int> docIds)
         {
-            var job = LSA.CreateNewJob();
+            var job = LSA.CreateNewJob(docIds.Count());
 
-            SendProcessingRequestMessage(job.Id);
+            SendProcessingRequestMessage(job.Id, docIds);
         }
 
         // PUT api/<controller>/5
@@ -43,7 +44,7 @@ namespace UI.Controllers
         {
         }
 
-        private void SendProcessingRequestMessage(int jobId)
+        private void SendProcessingRequestMessage(int jobId, IEnumerable<int> docIds)
         {
             // Parse the connection string and return a reference to the storage account.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -58,7 +59,7 @@ namespace UI.Controllers
             queue.CreateIfNotExists();
 
             // Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage(jobId.ToString());
+            CloudQueueMessage message = new CloudQueueMessage(JsonConvert.SerializeObject(Tuple.Create(jobId, docIds)));
             queue.AddMessage(message);
         }
     }

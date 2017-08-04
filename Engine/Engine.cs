@@ -17,8 +17,6 @@ namespace Engine
 {
     public static class LSA
     {
-        public static int NumDocs = 500;
-        public static int JobId = 63;
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
@@ -128,28 +126,16 @@ namespace Engine
             return terms;
         }
 
-        public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job)
+        public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job, IEnumerable<int> docIds)
         {
             var termLookup = GetOrAddTerms(context).ToLookup(t => t.Value);
-
+            
             SetJobStatus(context, job, JobStatus.BuildingMatrix);
 
             var readFilesStart = DateTime.Now;
 
-            var allFiles = Directory.EnumerateFiles("D:/Wiki/", "*.html", SearchOption.AllDirectories).ToList();
-
-            var fileCount = allFiles.Count;
-
-            var random = new Random();
-
-            var fileIndexes = new HashSet<int>();
-
-            while (fileIndexes.Count <= NumDocs)
-            {
-                fileIndexes.Add(random.Next(fileCount));
-            }
-
-            var files = Enumerable.Range(0, NumDocs).ToList().Select(i => allFiles.ElementAt(fileIndexes.ElementAt(i))).ToList();
+            var _docIds = docIds.ToArray();
+            var files = context.Documents.Where(d => _docIds.Contains(d.Id)).Select(d => d.Name).ToList();
 
             var newDocuments = new List<Document>();
             var jobDocuments = new List<JobDocument>();
@@ -262,7 +248,7 @@ namespace Engine
             
             // Build Final Term/Doc Matrix
 
-            var matrix = new DenseMatrix(termsList.Count, NumDocs);
+            var matrix = new DenseMatrix(termsList.Count, _docIds.Length);
 
             foreach (var termDocCount in termDocCounts)
             {
@@ -312,32 +298,35 @@ namespace Engine
             context.SaveChanges();
         }
 
-        public static void ProcessAndStore(int? jobId = null)
+        public static void ProcessAndStore(int jobId, IEnumerable<int> docIds)
         {
             using (var context = new SvdEntities())
             {
                 Job job = null;
+                var _docIds = docIds.ToArray();
 
                 try
                 {
-                    if(jobId == null)
-                    {
-                        // Create Job With All default values (must set dimensions if different than default '300')
-                        job = context.Jobs.Add(new Job()
-                        {
-                            DocumentCount = NumDocs,
-                            Created = DateTime.Now
-                        });
+                    //if(jobId == null)
+                    //{
+                    //    // Create Job With All default values (must set dimensions if different than default '300')
+                    //    job = context.Jobs.Add(new Job()
+                    //    {
+                    //        DocumentCount = docIds.Count(),
+                    //        Created = DateTime.Now
+                    //    });
 
-                        context.SaveChanges();
-                    }
-                    else
-                    {
-                        job = context.Jobs.Find(jobId.GetValueOrDefault());
-                    }
+                    //    context.SaveChanges();
+                    //}
+                    //else
+                    //{
+                    //    job = context.Jobs.Find(jobId.GetValueOrDefault());
+                    //}
+
+                    job = context.Jobs.Find(jobId);
 
                     // Process
-                    var matrix = GetTermDocMatrix(context, job);
+                    var matrix = GetTermDocMatrix(context, job, _docIds);
                     var svd = GetSvd(context, job, matrix);
 
                     var dimensions = svd.S.Count <= 300 ? svd.S.Count : 300;
@@ -371,11 +360,11 @@ namespace Engine
 
                     // Reduction Step - V Table
 
-                    var newVMatrix = new DenseMatrix(dimensions, NumDocs);
+                    var newVMatrix = new DenseMatrix(dimensions, _docIds.Length);
 
                     for (var i = 0; i < dimensions; i++)
                     {
-                        for (var m = 0; m < NumDocs; m++)
+                        for (var m = 0; m < _docIds.Length; m++)
                         {
                             newVMatrix[i, m] = svd.VT[i, m] * svd.S[i];
                         }
@@ -411,9 +400,9 @@ namespace Engine
             }
         }
 
-        public static void RunQueryFromFile()
+        public static void RunQueryFromFile(int jobId)
         {
-            GetMatrixContainer();
+            GetMatrixContainer(jobId);
 
             string query = null;
 
@@ -467,13 +456,13 @@ namespace Engine
             }
         }
 
-        public static Job CreateNewJob()
+        public static Job CreateNewJob(int docCount)
         {
             using (var context = new SvdEntities())
             {
                 var job = context.Jobs.Add(new Job()
                 {
-                    DocumentCount = NumDocs,
+                    DocumentCount = docCount,
                     Created = DateTime.Now
                 });
 
@@ -510,14 +499,14 @@ namespace Engine
             }
         }
 
-        public static void GetMatrixContainer()
+        public static void GetMatrixContainer(int jobId)
         {
             if (MatrixContainer != null) return;
 
 
             using (var context = new SvdEntities())
             {
-                var job = context.Jobs.Find(JobId);
+                var job = context.Jobs.Find(jobId);
 
                 var binaryFormatter = new BinaryFormatter();
 

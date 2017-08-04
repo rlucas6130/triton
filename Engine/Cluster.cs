@@ -27,8 +27,9 @@ namespace Engine
         public float GlobalSi { get; set; }
         public float ClusterSiAverage { get; set; }
         public int Clusters { get; set; }
+        public int JobId { get; set; }
 
-        public Cluster(Random generator, int k = 2, int maxIteration = 200)
+        public Cluster(Random generator, int jobId, int k = 2, int maxIteration = 200)
         {
             Clusters = k;
 
@@ -42,10 +43,11 @@ namespace Engine
             IsOptimized = false;
             OptimizationVarianceThreshold = .00000002F;
             MaxIterations = maxIteration;
+            JobId = jobId;
 
             if (LSA.MatrixContainer == null)
             {
-                LSA.GetMatrixContainer();
+                LSA.GetMatrixContainer(JobId);
             }
 
             var clusterCentersDocIndex = new HashSet<int>();
@@ -174,7 +176,7 @@ namespace Engine
             {             
                 context.ClusterCalculations.Add(new ClusterCalculation()
                 {
-                    JobId = LSA.JobId,
+                    JobId = jobId,
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
                     ClusterSi = ClusterSiAverage
