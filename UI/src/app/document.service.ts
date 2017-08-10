@@ -32,8 +32,8 @@ export class DocumentService {
             .then(() => null)
             .catch(this.handleError);
     }
-    getDocuments(): Promise<Document[]> {
-        return this.http.get(this.documentUrl)
+    getDocuments(page: number = 1, docsPerPage: number = 20): Promise<Document[]> {
+        return this.http.get(this.documentUrl, { params: { page: page, docsPerPage: docsPerPage } })
             .toPromise()
             .then(response => response.json() as Document[])
             .catch(this.handleError)

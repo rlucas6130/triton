@@ -1,5 +1,12 @@
 ﻿import { Input, Component, OnInit, DoCheck } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
+import {
+    trigger,
+    state,
+    style,
+    animate,
+    transition
+} from '@angular/animations';
 
 import { Document } from './document';
 import { DocumentService } from './document.service';
@@ -11,11 +18,30 @@ import * as _ from 'lodash';
 @Component({
     selector: 'createJob',
     templateUrl: './createJob.component.html',
-    styleUrls: ['./createJob.component.css']
+    styleUrls: ['./createJob.component.css'],
+    animations: [
+        trigger('flyInOut', [
+            state('in', style({ opacity: 1, transform: 'translateX(0)' })),
+            transition('void => *', [
+                style({
+                    opacity: 0,
+                    transform: 'translateX(-100%)'
+                }),
+                animate('0.2s ease-in')
+            ]),
+            transition('* => void', [
+                animate('0.2s 0.1s ease-out', style({
+                    opacity: 0,
+                    transform: 'translateX(100%)'
+                }))
+            ])
+        ])
+    ]
 })
 export class CreateJobComponent implements OnInit, DoCheck {
     documents: Document[] = [];
     allDocsSelected: boolean;
+    initialUploadCount: number;
     constructor(
         private documentService: DocumentService,
         private jobService: JobService,
@@ -45,11 +71,32 @@ export class CreateJobComponent implements OnInit, DoCheck {
                         id: 0,
                         name: file.file.name,
                         isSelected: false,
-                        isUploading: false
+                        isUploading: false,
+                        fileItem: file
                     } as Document);
                 }
             }
         }
+    }
+
+    public getSelectedDocuments(): Document[]
+    {
+        return _.filter(this.documents, doc => doc.isSelected);
+    }
+
+    public getPercentCompleted(): number 
+    {
+        return Math.round((this.initialUploadCount - this.getUploadingDocuments().length) * 100 / this.initialUploadCount);
+    }
+
+    public getUploadingDocuments(): Document[]
+    {
+        return _.filter(this.documents, doc => doc.isUploading);
+    }
+
+    public getAvailableDocuments(): Document[]
+    {
+        return _.filter(this.documents, doc => doc.id > 0);
     }
 
     public selectAllDocuments(): void {
@@ -63,6 +110,8 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     public uploadAll(): void {
 
+        this.initialUploadCount = this.uploader.queue.length;
+
         this.uploader.uploadAll();
 
         for (let doc of this.documents) {
@@ -75,11 +124,16 @@ export class CreateJobComponent implements OnInit, DoCheck {
     }
 
     public uploadDocument(document: Document): void {
-        _.find(this.uploader.queue, (fI) => fI.file.name == document.name).upload();
+        if (!document.isUploading) {
 
-        document.isUploading = true;
+            this.initialUploadCount = 1;
 
-        this.waitUntilComplete();
+            _.find(this.uploader.queue, (fI) => fI.file.name == document.name).upload();
+
+            document.isUploading = true;
+
+            this.waitUntilComplete();
+        }
     }
 
     private waitUntilComplete(): void {
@@ -102,6 +156,9 @@ export class CreateJobComponent implements OnInit, DoCheck {
                             var docsIndex = _.findIndex(this.documents, (doc) => doc.name == uploadingDoc.name);
                             this.documents[docsIndex].id = savedDoc.id;
                             this.documents[docsIndex].isUploading = false;
+                            this.documents[docsIndex].isSelected = true;
+                            this.documents[docsIndex].isNew = true;
+                            this.documents[docsIndex].totalTermDocCount = savedDoc.totalTermDocCount;
                         }
                     }
                 });
@@ -130,7 +187,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     public startProcessingJob(): void {
 
-        var docIds = _.filter(this.documents, doc => doc.isSelected).map(doc => doc.id);
+        var docIds = this.getSelectedDocuments().map(doc => doc.id);
 
         this.jobService.create(docIds)
             .then(job => this.router.navigate(['/jobs', { 'refreshUntilComplete': 'true' }]));

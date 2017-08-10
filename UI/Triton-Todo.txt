@@ -1,3 +1,5 @@
+Loading Graphics
+
 Documents / Create Job Page: 
 	- Search component (for docs)
 	- Better Uploading Animations - UI elements (use 'progress' field from uploader)

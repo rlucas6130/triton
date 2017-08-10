@@ -18,9 +18,9 @@ namespace UI.Controllers
     public class DocumentsController : ApiController
     {
         // GET api/<controller>
-        public IEnumerable<Document> Get()
+        public IEnumerable<Document> Get(int page = 1, int docsPerPage = 20)
         {
-            return LSA.GetDocuments().OrderBy(i => i.Name);
+            return LSA.GetDocuments(page, docsPerPage);
         }
 
         // GET api/<controller>/5

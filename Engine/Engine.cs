@@ -307,22 +307,6 @@ namespace Engine
 
                 try
                 {
-                    //if(jobId == null)
-                    //{
-                    //    // Create Job With All default values (must set dimensions if different than default '300')
-                    //    job = context.Jobs.Add(new Job()
-                    //    {
-                    //        DocumentCount = docIds.Count(),
-                    //        Created = DateTime.Now
-                    //    });
-
-                    //    context.SaveChanges();
-                    //}
-                    //else
-                    //{
-                    //    job = context.Jobs.Find(jobId.GetValueOrDefault());
-                    //}
-
                     job = context.Jobs.Find(jobId);
 
                     // Process
@@ -490,19 +474,36 @@ namespace Engine
             }
         }
 
-        public static List<Document> GetDocuments()
+        public static List<Document> GetDocuments(int page, int docsPerPage)
         {
             using (var context = new SvdEntities())
             {
                 context.Configuration.ProxyCreationEnabled = false;
-                return context.Documents.ToList();
+
+                var docs = context.Documents.OrderBy(i => i.Name)/*.Skip(page * docsPerPage).Take(docsPerPage)*/.ToList();
+
+                foreach (var doc in docs)
+                {
+                    doc.TotalTermDocCount = context.TermDocumentCounts.Count(tdc => tdc.DocumentId == doc.Id);
+                }
+
+                return docs;
+            }
+        }
+
+        public static List<TermDocumentCount> GetTermDocumentCounts(int docId)
+        {
+            using (var context = new SvdEntities())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+
+                return context.TermDocumentCounts.Where(tdc => tdc.DocumentId == docId).ToList();
             }
         }
 
         public static void GetMatrixContainer(int jobId)
         {
             if (MatrixContainer != null) return;
-
 
             using (var context = new SvdEntities())
             {

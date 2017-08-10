@@ -1,8 +1,10 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
+
 
 import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
@@ -13,18 +15,16 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { FileDropDirective, FileSelectDirective } from 'ng2-file-upload';
 
-import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
+//import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
 @NgModule({
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         FormsModule,
         HttpModule,
-        AppRoutingModule,
-        AlertModule.forRoot(),
-        ModalModule.forRoot(),
-        BsDropdownModule.forRoot()
+        AppRoutingModule
     ],
     declarations: [
         AppComponent,

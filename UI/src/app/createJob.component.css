@@ -43,3 +43,49 @@ input[type=file]:focus + label {
 .upload-menu {
     text-align:center;
 }
+
+nav p {
+    margin:0;
+}
+
+@keyframes showHide {
+    from {opacity:0}
+    to {opacity:1}
+}
+
+.fa-cloud-upload.upload-mini-btn, .fa-spinner.upload-mini-btn {
+    color: #5bc0de;
+    cursor:pointer;
+}
+
+.fadeIn {
+    animation-name: showHide;
+    animation-duration: 2s;
+}
+
+.fadeOut {
+    animation-name: showHide;
+    animation-duration: 4s;
+    animation-direction:reverse;
+}
+
+.progress {
+    /*position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;*/
+    padding:0;
+}
+
+.progress-bar {
+    height:100%;
+    padding-top:6px;
+    /*border-top-right-radius:30px;
+    border-bottom-right-radius:30px;*/
+}
+
+.progress-bar:nth-child(2n) {
+    opacity:.2;
+    color:#000;
+}

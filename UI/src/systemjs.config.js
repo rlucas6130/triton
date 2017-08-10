@@ -22,6 +22,9 @@
       '@angular/http': 'npm:@angular/http/bundles/http.umd.js',
       '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
+      '@angular/animations': 'npm:@angular/animations/bundles/animations.umd.js',
+      '@angular/platform-browser/animations': 'npm:@angular/platform-browser/bundles/platform-browser-animations.umd.js',
+      '@angular/animations/browser': 'npm:@angular/animations/bundles/animations-browser.umd.js',
 
       // other libraries
       'rxjs':'npm:rxjs',
@@ -29,7 +32,8 @@
       "ngx-bootstrap": "npm:/ngx-bootstrap/bundles/ngx-bootstrap.umd.js",
       "ng2-file-upload": "npm:/ng2-file-upload/bundles/ng2-file-upload.umd.js",
       'moment': 'npm:moment/moment.js',
-      "lodash": "npm:lodash/lodash.js"
+      "lodash": "npm:lodash/lodash.js",
+      "three": "npm:three/build/three.js"
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {

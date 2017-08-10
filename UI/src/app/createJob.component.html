@@ -10,6 +10,7 @@
                         </th>
 
                         <th>Document Name</th>
+                        <th>Terms</th>
                         <th class="upload-menu">
                             <div class="btn-group" role="group" aria-label="Upload Menu" [hidden]="hideGlobalMenu()">
                                 <button type="button" (click)="uploadAll()" class="btn btn-sm btn-info">
@@ -25,10 +26,14 @@
                 <tbody>
                     <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents; trackBy:docIdTracker">
                         <th scope="row">
-                            <i [hidden]="!doc.id" [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
-                            <i [hidden]="doc.id" class="fa" [class.fa-spin]="doc.isUploading"  [class.fa-spinner]="doc.isUploading"  [class.fa-cloud-upload]="!doc.isUploading"></i>
+                            <i [hidden]="!doc.id" [class.fadeIn]="doc.isNew" [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
+                            <i (click)="uploadDocument(doc)" [hidden]="doc.id" class="fa upload-mini-btn" [class.fa-spin]="doc.isUploading"  [class.fa-spinner]="doc.isUploading"  [class.fa-cloud-upload]="!doc.isUploading"></i>
                         </th>
-                        <td>{{doc.name}}</td>
+                        <td>
+                            {{doc.name}} 
+                            <span [hidden]="!doc.isNew" [class.fadeIn]="doc.isNew" class="badge badge-pill badge-success">New</span>
+                        </td>
+                        <td>{{doc.totalTermDocCount}}</td>
                         <td class="upload-menu"> 
                             <div class="btn-group" role="group" aria-label="Basic example" [hidden]="doc.id || doc.isUploading">
                                 <button type="button" (click)="uploadDocument(doc)" class="btn btn-sm btn-info">
@@ -46,9 +51,31 @@
         <div class="container">
             <div class="row">
                 <nav class="nav col-10 offset-2 justify-content-end fixed-bottom navbar-light bg-faded">
+                    <div class="container">
+                        <div class="row">
+                            <p class="col-3 lead">
+                                <strong>{{getAvailableDocuments().length}}</strong> documents available.
+                            </p>
+                            <p class="col-3 lead">
+                                <strong>{{getSelectedDocuments().length}}</strong> documents selected.
+                            </p>
+                            <p [hidden]="!uploader.queue.length || getUploadingDocuments().length" class="col-6 lead">
+                                <strong>{{uploader.queue.length}}</strong> documents queued for upload.
+                            </p>
+                            <div class="progress col-6" [hidden]="!getUploadingDocuments().length">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" [attr.aria-valuenow]="getPercentCompleted()" aria-valuemin="0" aria-valuemax="100" [style.width.%]="getPercentCompleted()">
+                                    <span [hidden]="getPercentCompleted() < 2">{{getPercentCompleted()}}%</span>
+                                </div>
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" [attr.aria-valuenow]="100 - getPercentCompleted()" aria-valuemin="0" aria-valuemax="100" [style.width.%]="100 - getPercentCompleted()">
+                                    <span [hidden]="(100 - getPercentCompleted()) < 10">{{getUploadingDocuments().length}} Remaining</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
                     <label for="docfile" class="btn btn-secondary">Upload Documents</label>
-                    <button (click)="startProcessingJob()" type="button" class="btn btn-primary">Start Processing Job</button>
+                    <button (click)="startProcessingJob()" [disabled]="getSelectedDocuments().length < 2 || uploader.isUploading" type="button" class="btn btn-primary">Start Processing Job</button>
                 </nav>
             </div>
         </div>
