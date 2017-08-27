@@ -49,4 +49,19 @@ export class JobService {
             .then(response => response.json() as Job)
             .catch(this.handleError);
     }
+    clusterAnalysis(jobId: number, parameters: ClusterAnalysisParameters): Promise<boolean> {
+        const url = `${this.jobUrl}/clusterAnalysis?jobId=${jobId}`;
+        return this.http
+            .post(url, JSON.stringify(parameters), { headers: this.headers })
+            .toPromise()
+            .then(res => true)
+            .catch(this.handleError);
+    }
+}
+
+export interface ClusterAnalysisParameters {
+    minimumClusterCount: number;
+    maximumClusterCount: number;
+    iterationsPerCluster: number;
+    maximumOptimizationsCount: number;
 }

@@ -1,0 +1,93 @@
+﻿<div class="container-fluid">
+    <h1>Visualize</h1>
+    <!--<div class="row">
+        <svg #jobViewport class="col-12">
+            <circle class="circleClass" cx="1" cy="1" r="26" />
+        </svg>
+    </div>-->
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <h3 class="card-header display-4">Job Details</h3>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Number Of Documents: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.documentCount}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Created: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.created | date:'medium'}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Number Of Dimension: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.dimensions}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Total Calculation Time: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.totalCalculationTimeString}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card">
+                <h3 class="card-header display-4">Cluster Analysis</h3>
+                <div class="card-block">
+                    <form #clusterForm="ngForm" (ngSubmit)="createNewClusterJob()">
+                        <div class="form-group row">
+                            <label for="minimumClusterCount" class="col-6 col-form-label display-4">
+                                Minimum Cluster Count (k-)
+                            </label>
+                            <div class="col-6">
+                                <input class="form-control" [(ngModel)]="clusterParams.minimumClusterCount" type="number" required id="minimumClusterCount" name="minimumClusterCount">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="maximumClusterCount" class="col-6 col-form-label display-4">
+                                Maximum Cluster Count (k+)
+                            </label>
+                            <div class="col-6">
+                                <input class="form-control" [(ngModel)]="clusterParams.maximumClusterCount" type="number" required id="maximumClusterCount" name="maximumClusterCount">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="iterationsPerCluster" class="col-6 col-form-label display-4">Iterations Per Cluster (k)</label>
+                            <div class="col-6">
+                                <input class="form-control" [(ngModel)]="clusterParams.iterationsPerCluster" type="number" required value="1" id="iterationsPerCluster" name="iterationsPerCluster">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="maximumOptimizationsCount" class="col-6 col-form-label display-4">Maximum Optimizations Performed</label>
+                            <div class="col-6">
+                                <input class="form-control" [(ngModel)]="clusterParams.maximumOptimizationsCount" type="number" required id="maximumOptimizationsCount" name="maximumOptimizationsCount">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button [disabled]="!clusterForm.form.valid" type="submit" class="btn btn-primary">
+                                <i class="fa fa-fw fa-plus-square"></i>Create New Cluster Analysis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> 
+</div>

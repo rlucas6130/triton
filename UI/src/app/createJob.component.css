@@ -86,6 +86,6 @@ nav p {
 }
 
 .progress-bar:nth-child(2n) {
-    opacity:.2;
+    opacity:.5;
     color:#000;
 }

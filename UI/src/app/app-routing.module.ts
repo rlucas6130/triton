@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
+import { VisualizeJobComponent } from './visualizeJob.component';
 
 const routes: Routes = [
     {
@@ -17,6 +18,10 @@ const routes: Routes = [
     {
         path: 'createJob',
         component: CreateJobComponent
+    },
+    {
+        path: 'visualize/:jobId',
+        component: VisualizeJobComponent
     }
 ];
 

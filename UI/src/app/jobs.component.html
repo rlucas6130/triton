@@ -11,6 +11,7 @@
                         <th>Dimensions</th>
                         <th>Total Calculation Time</th>
                         <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +44,12 @@
                                 </span>
 
                                 <i *ngIf="job.status == jobStatus.New || job.status == jobStatus.BuildingMatrix || job.status == jobStatus.SVD" class="fa fa-spinner fa-pulse fa-fw"></i>
+                        </td>
+                        <td>
+                            <a [hidden]="job.status != jobStatus.Completed" role="button" [routerLink]="['/visualize', job.id]" class="btn btn-primary btn-sm">
+                                <i class="fa fa-fw fa-cubes"></i> 
+                                Visualize
+                            </a>
                         </td>
                     </tr>
                 </tbody>

@@ -6,6 +6,8 @@ import { JobService } from './job.service';
 
 import 'rxjs/add/operator/switchMap';
 
+import * as THREE from 'three'; 
+
 @Component({
     selector: 'jobs',
     templateUrl: './jobs.component.html',

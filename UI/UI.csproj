@@ -986,6 +986,8 @@
     <Content Include="src\app\app.component.css" />
     <Content Include="src\app\createJob.component.html" />
     <Content Include="src\app\createJob.component.css" />
+    <Content Include="src\app\visualizeJob.component.html" />
+    <Content Include="src\app\visualizeJob.component.css" />
     <Content Include="src\app\jobs.component.css" />
     <Content Include="src\app\jobs.component.html" />
     <Content Include="src\favicon.ico" />
@@ -1050,6 +1052,7 @@
     <TypeScriptCompile Include="src\app\document.ts" />
     <TypeScriptCompile Include="src\app\job.ts" />
     <TypeScriptCompile Include="src\app\createJob.component.ts" />
+    <TypeScriptCompile Include="src\app\visualizeJob.component.ts" />
     <TypeScriptCompile Include="src\app\jobs.component.ts" />
     <TypeScriptCompile Include="src\app\job.service.ts" />
     <TypeScriptCompile Include="src\main.ts" />

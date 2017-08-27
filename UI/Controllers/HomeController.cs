@@ -37,8 +37,6 @@ namespace UI.Controllers
 
             var cluster = ClusterOptimizer.OptimizeRange(jobId, 20, 20, 1, 200);
 
-            cluster.BuildCategoryNameMap();
-
             Debug.WriteLine($"Total Optimization Time: {DateTime.Now.Subtract(start).TotalMilliseconds} Milliseconds");
 
             for (var i = 0; i < cluster.ClusterMap.Count; i++)

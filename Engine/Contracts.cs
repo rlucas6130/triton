@@ -21,5 +21,13 @@ namespace Engine
             public DenseMatrix VMatrix { get; set; }
             public float[,] DistanceMap { get; set; }
         }
+
+        public class ClusterAnalysisParameters
+        {
+            public int MinimumClusterCount { get; set; }
+            public int MaximumClusterCount { get; set; }
+            public int IterationsPerCluster { get; set; }
+            public int MaximumOptimizationsCount { get; set; }
+        }
     }
 }

@@ -9,6 +9,7 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
+import { VisualizeJobComponent } from './visualizeJob.component';
 import { JobService } from './job.service';
 import { DocumentService } from './document.service';
 import { AppRoutingModule } from './app-routing.module';
@@ -30,6 +31,7 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
         AppComponent,
         JobsComponent,
         CreateJobComponent,
+        VisualizeJobComponent,
         FileDropDirective,
         FileSelectDirective
     ],

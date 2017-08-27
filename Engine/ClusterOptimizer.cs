@@ -38,9 +38,13 @@ namespace Engine
             var clusters = (from k in Enumerable.Range(kStart, (kEnd - kStart) + 1)
                             select Optimize(randGen, jobId, k, iterations, maxOptimizationIterations)).ToList();
 
-            return clusters
+            var optimizedCluster = clusters
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.ClusterSiAverage).First();
+
+            optimizedCluster.BuildCategoryNameMap();
+
+            return optimizedCluster;
         }
     }
 }

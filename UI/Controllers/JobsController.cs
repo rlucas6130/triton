@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace UI.Controllers
@@ -42,6 +43,15 @@ namespace UI.Controllers
         // DELETE api/<controller>/5
         public void Delete(int id)
         {
+        }
+
+        [HttpPost]
+        [Route("api/jobs/clusterAnalysis")]
+        public async Task<HttpResponseMessage> ClusterAnalysis(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
+        {
+            var cluster = ClusterOptimizer.OptimizeRange(jobId, 20, 20, 1, 200);
+
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         private void SendProcessingRequestMessage(int jobId, IEnumerable<int> docIds)
