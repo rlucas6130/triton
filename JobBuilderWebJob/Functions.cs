@@ -29,5 +29,15 @@ namespace JobBuilderWebJob
         {
             LSA.CreateDocument(blobStream, blobName);
         }
+
+        // This function will get triggered/executed when a new message is written 
+        // on an Azure Queue called queue.
+        public static void StartClusterAnalysis([QueueTrigger("clusterqueue")] Tuple<int, Contracts.ClusterAnalysisParameters> clusterParams, TextWriter log)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                var cluster = ClusterOptimizer.OptimizeRange(clusterParams.Item1, clusterParams.Item2);
+            });
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace UI.Controllers
         {
             var job = LSA.CreateNewJob(docIds.Count());
 
-            SendProcessingRequestMessage(job.Id, docIds);
+            SendProcessingRequestMessage("buildqueue", job.Id, docIds);
         }
 
         // PUT api/<controller>/5
@@ -47,14 +47,12 @@ namespace UI.Controllers
 
         [HttpPost]
         [Route("api/jobs/clusterAnalysis")]
-        public async Task<HttpResponseMessage> ClusterAnalysis(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
+        public void ClusterAnalysis(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
         {
-            var cluster = ClusterOptimizer.OptimizeRange(jobId, 20, 20, 1, 200);
-
-            return Request.CreateResponse(HttpStatusCode.OK);
+            SendProcessingRequestMessage("clusterqueue", jobId, clusterParams);
         }
 
-        private void SendProcessingRequestMessage(int jobId, IEnumerable<int> docIds)
+        private void SendProcessingRequestMessage(string queueName, int jobId, object serializableRequestPayload)
         {
             // Parse the connection string and return a reference to the storage account.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -63,14 +61,15 @@ namespace UI.Controllers
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             // Retrieve a reference to a container.
-            CloudQueue queue = queueClient.GetQueueReference("buildqueue");
+            CloudQueue queue = queueClient.GetQueueReference(queueName);
 
             // Create the queue if it doesn't already exist
             queue.CreateIfNotExists();
 
             // Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage(JsonConvert.SerializeObject(Tuple.Create(jobId, docIds)));
-            queue.AddMessage(message);
+            CloudQueueMessage message = new CloudQueueMessage(JsonConvert.SerializeObject(Tuple.Create(jobId, serializableRequestPayload)));
+
+            queue.AddMessageAsync(message);
         }
     }
 }

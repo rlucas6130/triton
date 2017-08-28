@@ -35,7 +35,12 @@ namespace UI.Controllers
 
             var start = DateTime.Now;
 
-            var cluster = ClusterOptimizer.OptimizeRange(jobId, 20, 20, 1, 200);
+            var cluster = ClusterOptimizer.OptimizeRange(jobId, new Contracts.ClusterAnalysisParameters() {
+                MinimumClusterCount = 20,
+                MaximumClusterCount = 20,
+                IterationsPerCluster = 1,
+                MaximumOptimizationsCount = 200
+            });
 
             Debug.WriteLine($"Total Optimization Time: {DateTime.Now.Subtract(start).TotalMilliseconds} Milliseconds");
 

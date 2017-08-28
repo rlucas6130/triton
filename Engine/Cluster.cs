@@ -171,16 +171,27 @@ namespace Engine
             Debug.WriteLine($"****{Clusters}***** GlobalSi: {GlobalSi}");
             Debug.WriteLine($"****{Clusters}***** ClusterSiAverage: {ClusterSiAverage}");
             Debug.WriteLine($"----{Clusters}---- Total Cluster SI Calc: {DateTime.Now.Subtract(calcSiStart).TotalMilliseconds} Milliseconds");
+        }
 
-            using(var context = new SvdEntities())
-            {             
-                context.ClusterCalculations.Add(new ClusterCalculation()
+        public void Save()
+        {
+            using (var context = new SvdEntities())
+            {
+                var clusterCalculation = context.ClusterCalculations.Add(new ClusterCalculation()
                 {
-                    JobId = jobId,
+                    JobId = JobId,
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
                     ClusterSi = ClusterSiAverage
                 });
+
+                //foreach(var kvp in ClusterMap)
+                //{
+                //    var docIndex = kvp.Key;
+                //    var clusterIndex = kvp.Value;
+
+                //    context.
+                //}
 
                 context.SaveChanges();
             }

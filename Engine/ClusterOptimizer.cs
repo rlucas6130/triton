@@ -31,18 +31,19 @@ namespace Engine
                 .ThenByDescending(c => c.ClusterSiAverage).First();
         }
 
-        public static Cluster OptimizeRange(int jobId, int kStart = 2, int kEnd = 100, int iterations = 4, int maxOptimizationIterations = 200)
+        public static Cluster OptimizeRange(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
         {
             var randGen = new Random();
 
-            var clusters = (from k in Enumerable.Range(kStart, (kEnd - kStart) + 1)
-                            select Optimize(randGen, jobId, k, iterations, maxOptimizationIterations)).ToList();
+            var clusters = (from k in Enumerable.Range(clusterParams.MinimumClusterCount, (clusterParams.MaximumClusterCount - clusterParams.MinimumClusterCount) + 1)
+                            select Optimize(randGen, jobId, k, clusterParams.IterationsPerCluster, clusterParams.MaximumOptimizationsCount)).ToList();
 
             var optimizedCluster = clusters
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.ClusterSiAverage).First();
 
             optimizedCluster.BuildCategoryNameMap();
+            optimizedCluster.Save();
 
             return optimizedCluster;
         }
