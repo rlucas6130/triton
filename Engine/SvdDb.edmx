@@ -15,6 +15,36 @@
           <Property Name="ClusterSi" Type="real" Nullable="false" />
           <Property Name="JobId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="ClusterJobDocuments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="int" Nullable="false" />
+          <Property Name="JobDocumentId" Type="int" Nullable="false" />
+          <Property Name="ClusterId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ClusterJobTerms">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="int" Nullable="false" />
+          <Property Name="JobTermId" Type="int" Nullable="false" />
+          <Property Name="ClusterId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Clusters">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="int" Nullable="false" />
+          <Property Name="CenterVectorSerialized" Type="varbinary(max)" />
+          <Property Name="Si" Type="real" />
+        </EntityType>
         <EntityType Name="Documents">
           <Key>
             <PropertyRef Name="Id" />
@@ -90,6 +120,114 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="ClusterCalculations">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_ClusterCalculation">
+          <End Role="ClusterCalculations" Type="Self.ClusterCalculations" Multiplicity="1" />
+          <End Role="ClusterJobDocuments" Type="Self.ClusterJobDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocuments">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_Clusters">
+          <End Role="Clusters" Type="Self.Clusters" Multiplicity="1" />
+          <End Role="ClusterJobDocuments" Type="Self.ClusterJobDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clusters">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocuments">
+              <PropertyRef Name="ClusterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_JobDocument">
+          <End Role="JobDocuments" Type="Self.JobDocuments" Multiplicity="1" />
+          <End Role="ClusterJobDocuments" Type="Self.ClusterJobDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocuments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocuments">
+              <PropertyRef Name="JobDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_Jobs">
+          <End Role="Jobs" Type="Self.Jobs" Multiplicity="1" />
+          <End Role="ClusterJobDocuments" Type="Self.ClusterJobDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Jobs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocuments">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_ClusterCalculation">
+          <End Role="ClusterCalculations" Type="Self.ClusterCalculations" Multiplicity="1" />
+          <End Role="ClusterJobTerms" Type="Self.ClusterJobTerms" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerms">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_Clusters">
+          <End Role="Clusters" Type="Self.Clusters" Multiplicity="1" />
+          <End Role="ClusterJobTerms" Type="Self.ClusterJobTerms" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clusters">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerms">
+              <PropertyRef Name="ClusterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_Jobs">
+          <End Role="Jobs" Type="Self.Jobs" Multiplicity="1" />
+          <End Role="ClusterJobTerms" Type="Self.ClusterJobTerms" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Jobs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerms">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Clusters_ClusterCalculations">
+          <End Role="ClusterCalculations" Type="Self.ClusterCalculations" Multiplicity="1" />
+          <End Role="Clusters" Type="Self.Clusters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Clusters">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Clusters_Jobs">
+          <End Role="Jobs" Type="Self.Jobs" Multiplicity="1" />
+          <End Role="Clusters" Type="Self.Clusters" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Jobs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Clusters">
               <PropertyRef Name="JobId" />
             </Dependent>
           </ReferentialConstraint>
@@ -192,6 +330,9 @@
         </Association>
         <EntityContainer Name="SvdModelStoreContainer">
           <EntitySet Name="ClusterCalculations" EntityType="Self.ClusterCalculations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClusterJobDocuments" EntityType="Self.ClusterJobDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClusterJobTerms" EntityType="Self.ClusterJobTerms" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Clusters" EntityType="Self.Clusters" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JobDocuments" EntityType="Self.JobDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Jobs" EntityType="Self.Jobs" Schema="dbo" store:Type="Tables" />
@@ -203,6 +344,42 @@
           <AssociationSet Name="FK_ClusterCalculation_Job" Association="Self.FK_ClusterCalculation_Job">
             <End Role="Jobs" EntitySet="Jobs" />
             <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_ClusterCalculation" Association="Self.FK_ClusterJobDocuments_ClusterCalculation">
+            <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
+            <End Role="ClusterJobDocuments" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_Clusters" Association="Self.FK_ClusterJobDocuments_Clusters">
+            <End Role="Clusters" EntitySet="Clusters" />
+            <End Role="ClusterJobDocuments" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_JobDocument" Association="Self.FK_ClusterJobDocuments_JobDocument">
+            <End Role="JobDocuments" EntitySet="JobDocuments" />
+            <End Role="ClusterJobDocuments" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_Jobs" Association="Self.FK_ClusterJobDocuments_Jobs">
+            <End Role="Jobs" EntitySet="Jobs" />
+            <End Role="ClusterJobDocuments" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_ClusterCalculation" Association="Self.FK_ClusterJobTerms_ClusterCalculation">
+            <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
+            <End Role="ClusterJobTerms" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_Clusters" Association="Self.FK_ClusterJobTerms_Clusters">
+            <End Role="Clusters" EntitySet="Clusters" />
+            <End Role="ClusterJobTerms" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_Jobs" Association="Self.FK_ClusterJobTerms_Jobs">
+            <End Role="Jobs" EntitySet="Jobs" />
+            <End Role="ClusterJobTerms" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Clusters_ClusterCalculations" Association="Self.FK_Clusters_ClusterCalculations">
+            <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
+            <End Role="Clusters" EntitySet="Clusters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Clusters_Jobs" Association="Self.FK_Clusters_Jobs">
+            <End Role="Jobs" EntitySet="Jobs" />
+            <End Role="Clusters" EntitySet="Clusters" />
           </AssociationSet>
           <AssociationSet Name="FK_JobDocuments_Documents" Association="Self.FK_JobDocuments_Documents">
             <End Role="Documents" EntitySet="Documents" />
@@ -287,6 +464,45 @@
             <End Role="Term" EntitySet="Terms" />
             <End Role="TermDocumentCount" EntitySet="TermDocumentCounts" />
           </AssociationSet>
+          <EntitySet Name="ClusterJobDocuments" EntityType="SvdModel.ClusterJobDocument" />
+          <EntitySet Name="ClusterJobTerms" EntityType="SvdModel.ClusterJobTerm" />
+          <EntitySet Name="Clusters" EntityType="SvdModel.Cluster" />
+          <AssociationSet Name="FK_ClusterJobDocuments_ClusterCalculation" Association="SvdModel.FK_ClusterJobDocuments_ClusterCalculation">
+            <End Role="ClusterCalculation" EntitySet="ClusterCalculations" />
+            <End Role="ClusterJobDocument" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_ClusterCalculation" Association="SvdModel.FK_ClusterJobTerms_ClusterCalculation">
+            <End Role="ClusterCalculation" EntitySet="ClusterCalculations" />
+            <End Role="ClusterJobTerm" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Clusters_ClusterCalculations" Association="SvdModel.FK_Clusters_ClusterCalculations">
+            <End Role="ClusterCalculation" EntitySet="ClusterCalculations" />
+            <End Role="Cluster" EntitySet="Clusters" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_Clusters" Association="SvdModel.FK_ClusterJobDocuments_Clusters">
+            <End Role="Cluster" EntitySet="Clusters" />
+            <End Role="ClusterJobDocument" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_JobDocument" Association="SvdModel.FK_ClusterJobDocuments_JobDocument">
+            <End Role="JobDocument" EntitySet="JobDocuments" />
+            <End Role="ClusterJobDocument" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobDocuments_Jobs" Association="SvdModel.FK_ClusterJobDocuments_Jobs">
+            <End Role="Job" EntitySet="Jobs" />
+            <End Role="ClusterJobDocument" EntitySet="ClusterJobDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_Clusters" Association="SvdModel.FK_ClusterJobTerms_Clusters">
+            <End Role="Cluster" EntitySet="Clusters" />
+            <End Role="ClusterJobTerm" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_Jobs" Association="SvdModel.FK_ClusterJobTerms_Jobs">
+            <End Role="Job" EntitySet="Jobs" />
+            <End Role="ClusterJobTerm" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Clusters_Jobs" Association="SvdModel.FK_Clusters_Jobs">
+            <End Role="Job" EntitySet="Jobs" />
+            <End Role="Cluster" EntitySet="Clusters" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="ClusterCalculation">
           <Key>
@@ -298,6 +514,9 @@
           <Property Name="ClusterSi" Type="Single" Nullable="false" />
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="ClusterCalculation" ToRole="Job" />
+          <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_ClusterCalculation" FromRole="ClusterCalculation" ToRole="ClusterJobDocument" />
+          <NavigationProperty Name="ClusterJobTerms" Relationship="SvdModel.FK_ClusterJobTerms_ClusterCalculation" FromRole="ClusterCalculation" ToRole="ClusterJobTerm" />
+          <NavigationProperty Name="Clusters" Relationship="SvdModel.FK_Clusters_ClusterCalculations" FromRole="ClusterCalculation" ToRole="Cluster" />
         </EntityType>
         <EntityType Name="Document">
           <Key>
@@ -318,6 +537,7 @@
           <NavigationProperty Name="Document" Relationship="SvdModel.FK_JobDocuments_Documents" FromRole="JobDocument" ToRole="Document" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_JobDocuments_Jobs" FromRole="JobDocument" ToRole="Job" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_JobDocument" FromRole="JobDocument" ToRole="ClusterJobDocument" />
           </EntityType>
         <EntityType Name="Job">
           <Key>
@@ -334,6 +554,9 @@
           <NavigationProperty Name="UMatrix" Relationship="SvdModel.FK_U_Job" FromRole="Job" ToRole="UMatrix" />
           <NavigationProperty Name="VMatrix" Relationship="SvdModel.FK_VMatrices_Jobs" FromRole="Job" ToRole="VMatrix" />
           <Property Name="Completed" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_Jobs" FromRole="Job" ToRole="ClusterJobDocument" />
+          <NavigationProperty Name="ClusterJobTerms" Relationship="SvdModel.FK_ClusterJobTerms_Jobs" FromRole="Job" ToRole="ClusterJobTerm" />
+          <NavigationProperty Name="Clusters" Relationship="SvdModel.FK_Clusters_Jobs" FromRole="Job" ToRole="Cluster" />
         </EntityType>
         <EntityType Name="JobTerm">
           <Key>
@@ -492,6 +715,155 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ClusterJobDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="Int32" Nullable="false" />
+          <Property Name="JobDocumentId" Type="Int32" Nullable="false" />
+          <Property Name="ClusterId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ClusterCalculation" Relationship="SvdModel.FK_ClusterJobDocuments_ClusterCalculation" FromRole="ClusterJobDocument" ToRole="ClusterCalculation" />
+          <NavigationProperty Name="Cluster" Relationship="SvdModel.FK_ClusterJobDocuments_Clusters" FromRole="ClusterJobDocument" ToRole="Cluster" />
+          <NavigationProperty Name="JobDocument" Relationship="SvdModel.FK_ClusterJobDocuments_JobDocument" FromRole="ClusterJobDocument" ToRole="JobDocument" />
+          <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterJobDocuments_Jobs" FromRole="ClusterJobDocument" ToRole="Job" />
+        </EntityType>
+        <EntityType Name="ClusterJobTerm">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="Int32" Nullable="false" />
+          <Property Name="JobTermId" Type="Int32" Nullable="false" />
+          <Property Name="ClusterId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ClusterCalculation" Relationship="SvdModel.FK_ClusterJobTerms_ClusterCalculation" FromRole="ClusterJobTerm" ToRole="ClusterCalculation" />
+          <NavigationProperty Name="Cluster" Relationship="SvdModel.FK_ClusterJobTerms_Clusters" FromRole="ClusterJobTerm" ToRole="Cluster" />
+          <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterJobTerms_Jobs" FromRole="ClusterJobTerm" ToRole="Job" />
+        </EntityType>
+        <EntityType Name="Cluster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="ClusterCalculationId" Type="Int32" Nullable="false" />
+          <Property Name="CenterVectorSerialized" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="Si" Type="Single" />
+          <NavigationProperty Name="ClusterCalculation" Relationship="SvdModel.FK_Clusters_ClusterCalculations" FromRole="Cluster" ToRole="ClusterCalculation" />
+          <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_Clusters" FromRole="Cluster" ToRole="ClusterJobDocument" />
+          <NavigationProperty Name="ClusterJobTerms" Relationship="SvdModel.FK_ClusterJobTerms_Clusters" FromRole="Cluster" ToRole="ClusterJobTerm" />
+          <NavigationProperty Name="Job" Relationship="SvdModel.FK_Clusters_Jobs" FromRole="Cluster" ToRole="Job" />
+        </EntityType>
+        <Association Name="FK_ClusterJobDocuments_ClusterCalculation">
+          <End Type="SvdModel.ClusterCalculation" Role="ClusterCalculation" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobDocument" Role="ClusterJobDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculation">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocument">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_ClusterCalculation">
+          <End Type="SvdModel.ClusterCalculation" Role="ClusterCalculation" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobTerm" Role="ClusterJobTerm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculation">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerm">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Clusters_ClusterCalculations">
+          <End Type="SvdModel.ClusterCalculation" Role="ClusterCalculation" Multiplicity="1" />
+          <End Type="SvdModel.Cluster" Role="Cluster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClusterCalculation">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cluster">
+              <PropertyRef Name="ClusterCalculationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_Clusters">
+          <End Type="SvdModel.Cluster" Role="Cluster" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobDocument" Role="ClusterJobDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cluster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocument">
+              <PropertyRef Name="ClusterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_JobDocument">
+          <End Type="SvdModel.JobDocument" Role="JobDocument" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobDocument" Role="ClusterJobDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocument">
+              <PropertyRef Name="JobDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobDocuments_Jobs">
+          <End Type="SvdModel.Job" Role="Job" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobDocument" Role="ClusterJobDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Job">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobDocument">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_Clusters">
+          <End Type="SvdModel.Cluster" Role="Cluster" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobTerm" Role="ClusterJobTerm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cluster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerm">
+              <PropertyRef Name="ClusterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_Jobs">
+          <End Type="SvdModel.Job" Role="Job" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobTerm" Role="ClusterJobTerm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Job">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerm">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Clusters_Jobs">
+          <End Type="SvdModel.Job" Role="Job" Multiplicity="1" />
+          <End Type="SvdModel.Cluster" Role="Cluster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Job">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Cluster">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -578,6 +950,39 @@
                 <ScalarProperty Name="Count" ColumnName="Count" />
                 <ScalarProperty Name="TermId" ColumnName="TermId" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClusterJobDocuments">
+            <EntityTypeMapping TypeName="SvdModel.ClusterJobDocument">
+              <MappingFragment StoreEntitySet="ClusterJobDocuments">
+                <ScalarProperty Name="ClusterId" ColumnName="ClusterId" />
+                <ScalarProperty Name="JobDocumentId" ColumnName="JobDocumentId" />
+                <ScalarProperty Name="ClusterCalculationId" ColumnName="ClusterCalculationId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ClusterJobTerms">
+            <EntityTypeMapping TypeName="SvdModel.ClusterJobTerm">
+              <MappingFragment StoreEntitySet="ClusterJobTerms">
+                <ScalarProperty Name="ClusterId" ColumnName="ClusterId" />
+                <ScalarProperty Name="JobTermId" ColumnName="JobTermId" />
+                <ScalarProperty Name="ClusterCalculationId" ColumnName="ClusterCalculationId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clusters">
+            <EntityTypeMapping TypeName="SvdModel.Cluster">
+              <MappingFragment StoreEntitySet="Clusters">
+                <ScalarProperty Name="Si" ColumnName="Si" />
+                <ScalarProperty Name="CenterVectorSerialized" ColumnName="CenterVectorSerialized" />
+                <ScalarProperty Name="ClusterCalculationId" ColumnName="ClusterCalculationId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

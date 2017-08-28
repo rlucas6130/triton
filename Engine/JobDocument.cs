@@ -14,6 +14,12 @@ namespace Engine
     
     public partial class JobDocument
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public JobDocument()
+        {
+            this.ClusterJobDocuments = new HashSet<ClusterJobDocument>();
+        }
+    
         public int JobId { get; set; }
         public int DocumentId { get; set; }
         public int OrdinalIndex { get; set; }
@@ -21,5 +27,7 @@ namespace Engine
     
         public virtual Document Document { get; set; }
         public virtual Job Job { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ClusterJobDocument> ClusterJobDocuments { get; set; }
     }
 }

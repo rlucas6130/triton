@@ -13,7 +13,7 @@ using System.Text;
 using System.Web;
 using static Engine.Contracts;
 
-namespace Engine
+namespace Engine.Core
 {
     public static class LSA
     {

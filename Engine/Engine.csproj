@@ -70,16 +70,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cluster.cs" />
+    <Compile Include="Cluster.cs">
+      <DependentUpon>SvdDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Cluster.cs" />
     <Compile Include="ClusterCalculation.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="ClusterOptimizer.cs" />
+    <Compile Include="ClusterJobDocument.cs">
+      <DependentUpon>SvdDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ClusterJobTerm.cs">
+      <DependentUpon>SvdDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\ClusterOptimizer.cs" />
     <Compile Include="Contracts.cs" />
     <Compile Include="Document.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Engine.cs" />
+    <Compile Include="Core\Engine.cs" />
     <Compile Include="Job.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
@@ -153,6 +162,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Engine
+namespace Engine.Core
 {
     public class ClusterOptimizer
     {
@@ -42,7 +37,7 @@ namespace Engine
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.ClusterSiAverage).First();
 
-            optimizedCluster.BuildCategoryNameMap();
+            //optimizedCluster.BuildCategoryNameMap();
             optimizedCluster.Save();
 
             return optimizedCluster;
