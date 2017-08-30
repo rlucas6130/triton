@@ -7,6 +7,9 @@
     CONSTRAINT [PK_ClusterJobTerms] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ClusterJobTerms_ClusterCalculation] FOREIGN KEY ([ClusterCalculationId]) REFERENCES [dbo].[ClusterCalculations] ([Id]),
     CONSTRAINT [FK_ClusterJobTerms_Clusters] FOREIGN KEY ([ClusterId]) REFERENCES [dbo].[Clusters] ([Id]),
-    CONSTRAINT [FK_ClusterJobTerms_Jobs] FOREIGN KEY ([JobId]) REFERENCES [dbo].[Jobs] ([Id])
+    CONSTRAINT [FK_ClusterJobTerms_Jobs] FOREIGN KEY ([JobId]) REFERENCES [dbo].[Jobs] ([Id]),
+    CONSTRAINT [FK_ClusterJobTerms_JobTerms] FOREIGN KEY ([JobTermId]) REFERENCES [dbo].[JobTerms] ([Id])
 );
+
+
 

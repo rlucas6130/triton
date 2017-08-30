@@ -19,6 +19,7 @@ namespace Engine
         public int ClusterCalculationId { get; set; }
         public int JobDocumentId { get; set; }
         public int ClusterId { get; set; }
+        public float Si { get; set; }
     
         public virtual ClusterCalculation ClusterCalculation { get; set; }
         public virtual Cluster Cluster { get; set; }

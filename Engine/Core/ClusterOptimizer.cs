@@ -23,7 +23,7 @@ namespace Engine.Core
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)
-                .ThenByDescending(c => c.ClusterSiAverage).First();
+                .ThenByDescending(c => c.GlobalClusterSiAverage).First();
         }
 
         public static Cluster OptimizeRange(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
@@ -35,10 +35,9 @@ namespace Engine.Core
 
             var optimizedCluster = clusters
                 .OrderByDescending(c => c.GlobalSi)
-                .ThenByDescending(c => c.ClusterSiAverage).First();
+                .ThenByDescending(c => c.GlobalClusterSiAverage).First();
 
-            //optimizedCluster.BuildCategoryNameMap();
-            optimizedCluster.Save();
+            optimizedCluster.Save(clusterParams);
 
             return optimizedCluster;
         }

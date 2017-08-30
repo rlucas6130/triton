@@ -14,6 +14,10 @@
           <Property Name="GlobalSi" Type="real" Nullable="false" />
           <Property Name="ClusterSi" Type="real" Nullable="false" />
           <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="MinimumClusterCount" Type="int" Nullable="false" />
+          <Property Name="MaximumClusterCount" Type="int" Nullable="false" />
+          <Property Name="IterationsPerCluster" Type="int" Nullable="false" />
+          <Property Name="MaximumOptimizationsCount" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ClusterJobDocuments">
           <Key>
@@ -24,6 +28,7 @@
           <Property Name="ClusterCalculationId" Type="int" Nullable="false" />
           <Property Name="JobDocumentId" Type="int" Nullable="false" />
           <Property Name="ClusterId" Type="int" Nullable="false" />
+          <Property Name="Si" Type="real" Nullable="false" />
         </EntityType>
         <EntityType Name="ClusterJobTerms">
           <Key>
@@ -74,10 +79,9 @@
         </EntityType>
         <EntityType Name="JobTerms">
           <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="TermId" />
-            <PropertyRef Name="OrdinalIndex" />
+            <PropertyRef Name="Id" />
           </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="JobId" Type="int" Nullable="false" />
           <Property Name="TermId" Type="int" Nullable="false" />
           <Property Name="OrdinalIndex" Type="int" Nullable="false" />
@@ -205,6 +209,18 @@
             </Principal>
             <Dependent Role="ClusterJobTerms">
               <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClusterJobTerms_JobTerms">
+          <End Role="JobTerms" Type="Self.JobTerms" Multiplicity="1" />
+          <End Role="ClusterJobTerms" Type="Self.ClusterJobTerms" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobTerms">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerms">
+              <PropertyRef Name="JobTermId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -373,6 +389,10 @@
             <End Role="Jobs" EntitySet="Jobs" />
             <End Role="ClusterJobTerms" EntitySet="ClusterJobTerms" />
           </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_JobTerms" Association="Self.FK_ClusterJobTerms_JobTerms">
+            <End Role="JobTerms" EntitySet="JobTerms" />
+            <End Role="ClusterJobTerms" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
           <AssociationSet Name="FK_Clusters_ClusterCalculations" Association="Self.FK_Clusters_ClusterCalculations">
             <End Role="ClusterCalculations" EntitySet="ClusterCalculations" />
             <End Role="Clusters" EntitySet="Clusters" />
@@ -503,6 +523,10 @@
             <End Role="Job" EntitySet="Jobs" />
             <End Role="Cluster" EntitySet="Clusters" />
           </AssociationSet>
+          <AssociationSet Name="FK_ClusterJobTerms_JobTerms" Association="SvdModel.FK_ClusterJobTerms_JobTerms">
+            <End Role="JobTerm" EntitySet="JobTerms" />
+            <End Role="ClusterJobTerm" EntitySet="ClusterJobTerms" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="ClusterCalculation">
           <Key>
@@ -517,6 +541,10 @@
           <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_ClusterCalculation" FromRole="ClusterCalculation" ToRole="ClusterJobDocument" />
           <NavigationProperty Name="ClusterJobTerms" Relationship="SvdModel.FK_ClusterJobTerms_ClusterCalculation" FromRole="ClusterCalculation" ToRole="ClusterJobTerm" />
           <NavigationProperty Name="Clusters" Relationship="SvdModel.FK_Clusters_ClusterCalculations" FromRole="ClusterCalculation" ToRole="Cluster" />
+          <Property Name="MinimumClusterCount" Type="Int32" Nullable="false" />
+          <Property Name="MaximumClusterCount" Type="Int32" Nullable="false" />
+          <Property Name="IterationsPerCluster" Type="Int32" Nullable="false" />
+          <Property Name="MaximumOptimizationsCount" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="Document">
           <Key>
@@ -560,15 +588,15 @@
         </EntityType>
         <EntityType Name="JobTerm">
           <Key>
-            <PropertyRef Name="JobId" />
-            <PropertyRef Name="TermId" />
-            <PropertyRef Name="OrdinalIndex" />
+            <PropertyRef Name="Id" />
           </Key>
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <Property Name="TermId" Type="Int32" Nullable="false" />
           <Property Name="OrdinalIndex" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_JobTerms_Job" FromRole="JobTerm" ToRole="Job" />
           <NavigationProperty Name="Term" Relationship="SvdModel.FK_JobTerms_Terms" FromRole="JobTerm" ToRole="Term" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="ClusterJobTerms" Relationship="SvdModel.FK_ClusterJobTerms_JobTerms" FromRole="JobTerm" ToRole="ClusterJobTerm" />
         </EntityType>
         <EntityType Name="Term">
           <Key>
@@ -679,7 +707,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EnumType Name="JobStatus" a:ExternalTypeName="Engine.JobStatus" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
+        <EnumType Name="JobStatus" a:ExternalTypeName="Engine.Contracts.JobStatus" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
         <EntityType Name="TermDocumentCount">
           <Key>
             <PropertyRef Name="DocumentId" />
@@ -728,6 +756,7 @@
           <NavigationProperty Name="Cluster" Relationship="SvdModel.FK_ClusterJobDocuments_Clusters" FromRole="ClusterJobDocument" ToRole="Cluster" />
           <NavigationProperty Name="JobDocument" Relationship="SvdModel.FK_ClusterJobDocuments_JobDocument" FromRole="ClusterJobDocument" ToRole="JobDocument" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterJobDocuments_Jobs" FromRole="ClusterJobDocument" ToRole="Job" />
+          <Property Name="Si" Type="Single" Nullable="false" />
         </EntityType>
         <EntityType Name="ClusterJobTerm">
           <Key>
@@ -741,6 +770,7 @@
           <NavigationProperty Name="ClusterCalculation" Relationship="SvdModel.FK_ClusterJobTerms_ClusterCalculation" FromRole="ClusterJobTerm" ToRole="ClusterCalculation" />
           <NavigationProperty Name="Cluster" Relationship="SvdModel.FK_ClusterJobTerms_Clusters" FromRole="ClusterJobTerm" ToRole="Cluster" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterJobTerms_Jobs" FromRole="ClusterJobTerm" ToRole="Job" />
+          <NavigationProperty Name="JobTerm" Relationship="SvdModel.FK_ClusterJobTerms_JobTerms" FromRole="ClusterJobTerm" ToRole="JobTerm" />
         </EntityType>
         <EntityType Name="Cluster">
           <Key>
@@ -864,6 +894,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_ClusterJobTerms_JobTerms">
+          <End Type="SvdModel.JobTerm" Role="JobTerm" Multiplicity="1" />
+          <End Type="SvdModel.ClusterJobTerm" Role="ClusterJobTerm" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobTerm">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ClusterJobTerm">
+              <PropertyRef Name="JobTermId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -873,6 +915,10 @@
           <EntitySetMapping Name="ClusterCalculations">
             <EntityTypeMapping TypeName="SvdModel.ClusterCalculation">
               <MappingFragment StoreEntitySet="ClusterCalculations">
+                <ScalarProperty Name="MaximumOptimizationsCount" ColumnName="MaximumOptimizationsCount" />
+                <ScalarProperty Name="IterationsPerCluster" ColumnName="IterationsPerCluster" />
+                <ScalarProperty Name="MaximumClusterCount" ColumnName="MaximumClusterCount" />
+                <ScalarProperty Name="MinimumClusterCount" ColumnName="MinimumClusterCount" />
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
                 <ScalarProperty Name="ClusterSi" ColumnName="ClusterSi" />
                 <ScalarProperty Name="GlobalSi" ColumnName="GlobalSi" />
@@ -914,6 +960,7 @@
           <EntitySetMapping Name="JobTerms">
             <EntityTypeMapping TypeName="SvdModel.JobTerm">
               <MappingFragment StoreEntitySet="JobTerms">
+                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="OrdinalIndex" ColumnName="OrdinalIndex" />
                 <ScalarProperty Name="TermId" ColumnName="TermId" />
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
@@ -956,6 +1003,7 @@
           <EntitySetMapping Name="ClusterJobDocuments">
             <EntityTypeMapping TypeName="SvdModel.ClusterJobDocument">
               <MappingFragment StoreEntitySet="ClusterJobDocuments">
+                <ScalarProperty Name="Si" ColumnName="Si" />
                 <ScalarProperty Name="ClusterId" ColumnName="ClusterId" />
                 <ScalarProperty Name="JobDocumentId" ColumnName="JobDocumentId" />
                 <ScalarProperty Name="ClusterCalculationId" ColumnName="ClusterCalculationId" />

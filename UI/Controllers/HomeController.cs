@@ -1,9 +1,8 @@
 ﻿using Engine;
+using Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace UI.Controllers
@@ -58,10 +57,9 @@ namespace UI.Controllers
 
             return Json(new {
                 GlobalSI = cluster.GlobalSi,
-                ClusterSIAverage = cluster.ClusterSiAverage,
+                ClusterSIAverage = cluster.GlobalClusterSiAverage,
                 ClusterSiList = cluster.ClusterSiAverages,
                 NameList = nameList,
-                CategoryNameMap = cluster.CategoryNameMap,
                 NumClusters = cluster.Clusters
             }, JsonRequestBehavior.AllowGet);
         }

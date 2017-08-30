@@ -23,5 +23,6 @@ namespace Engine
         public virtual ClusterCalculation ClusterCalculation { get; set; }
         public virtual Cluster Cluster { get; set; }
         public virtual Job Job { get; set; }
+        public virtual JobTerm JobTerm { get; set; }
     }
 }

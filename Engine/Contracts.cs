@@ -29,5 +29,14 @@ namespace Engine
             public int IterationsPerCluster { get; set; }
             public int MaximumOptimizationsCount { get; set; }
         }
+
+        public enum JobStatus
+        {
+            New,
+            BuildingMatrix,
+            Svd,
+            Complete,
+            Failed
+        }
     }
 }

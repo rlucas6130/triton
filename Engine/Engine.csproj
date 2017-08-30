@@ -73,7 +73,6 @@
     <Compile Include="Cluster.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Core\Cluster.cs" />
     <Compile Include="ClusterCalculation.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
@@ -83,19 +82,19 @@
     <Compile Include="ClusterJobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Core\Cluster.cs" />
     <Compile Include="Core\ClusterOptimizer.cs" />
     <Compile Include="Contracts.cs" />
+    <Compile Include="Core\Engine.cs" />
     <Compile Include="Document.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Core\Engine.cs" />
     <Compile Include="Job.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
     <Compile Include="JobDocument.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="JobStatusEnum.cs" />
     <Compile Include="JobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>

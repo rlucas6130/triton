@@ -4,15 +4,15 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="ff8a2a2a537447929b9e91beb29b95ae" Name="Svd" ZoomLevel="74">
-        <EntityTypeShape EntityType="SvdModel.ClusterCalculation" Width="1.5" PointX="3.5" PointY="7.125" />
-        <EntityTypeShape EntityType="SvdModel.Document" Width="2.125" PointX="3.375" PointY="0.625" />
-        <EntityTypeShape EntityType="SvdModel.JobDocument" Width="2.375" PointX="2.75" PointY="4" />
-        <EntityTypeShape EntityType="SvdModel.Job" Width="1.75" PointX="5.5" PointY="4" />
-        <EntityTypeShape EntityType="SvdModel.JobTerm" Width="1.5" PointX="8" PointY="6.875" />
-        <EntityTypeShape EntityType="SvdModel.Term" Width="1.5" PointX="10.125" PointY="6.875" />
-        <EntityTypeShape EntityType="SvdModel.UMatrix" Width="1.5" PointX="8" PointY="5.125" />
-        <EntityTypeShape EntityType="SvdModel.VMatrix" Width="1.5" PointX="8" PointY="3.375" />
+      <Diagram DiagramId="ff8a2a2a537447929b9e91beb29b95ae" Name="Svd" ZoomLevel="80">
+        <EntityTypeShape EntityType="SvdModel.ClusterCalculation" Width="2.25" PointX="5.875" PointY="7.75" />
+        <EntityTypeShape EntityType="SvdModel.Document" Width="2.125" PointX="1" PointY="0.5" />
+        <EntityTypeShape EntityType="SvdModel.JobDocument" Width="2.375" PointX="0.75" PointY="3" />
+        <EntityTypeShape EntityType="SvdModel.Job" Width="1.75" PointX="6.125" PointY="3.375" />
+        <EntityTypeShape EntityType="SvdModel.JobTerm" Width="1.5" PointX="11.25" PointY="3" />
+        <EntityTypeShape EntityType="SvdModel.Term" Width="1.875" PointX="11" PointY="0.5" />
+        <EntityTypeShape EntityType="SvdModel.UMatrix" Width="1.5" PointX="8.625" PointY="1.75" />
+        <EntityTypeShape EntityType="SvdModel.VMatrix" Width="1.5" PointX="3.875" PointY="1.75" />
         <AssociationConnector Association="SvdModel.FK_ClusterCalculation_Job" />
         <AssociationConnector Association="SvdModel.FK_JobDocuments_Documents" />
         <AssociationConnector Association="SvdModel.FK_JobDocuments_Jobs" />
@@ -20,12 +20,12 @@
         <AssociationConnector Association="SvdModel.FK_U_Job" />
         <AssociationConnector Association="SvdModel.FK_JobTerms_Terms" />
         <AssociationConnector Association="SvdModel.FK_VMatrices_Jobs" />
-        <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.5" PointX="10.125" PointY="3.75" />
+        <EntityTypeShape EntityType="SvdModel.TermDocumentCount" Width="1.875" PointX="6" PointY="0.5" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Document" />
         <AssociationConnector Association="SvdModel.FK_TermDocumentCounts_Terms" />
-        <EntityTypeShape EntityType="SvdModel.ClusterJobDocument" Width="1.5" PointX="11" PointY="9.625" />
-        <EntityTypeShape EntityType="SvdModel.ClusterJobTerm" Width="1.5" PointX="8" PointY="9.625" />
-        <EntityTypeShape EntityType="SvdModel.Cluster" Width="1.5" PointX="13" PointY="5.625" />
+        <EntityTypeShape EntityType="SvdModel.ClusterJobDocument" Width="1.75" PointX="3.25" PointY="7.25" />
+        <EntityTypeShape EntityType="SvdModel.ClusterJobTerm" Width="1.75" PointX="9" PointY="7.25" />
+        <EntityTypeShape EntityType="SvdModel.Cluster" Width="1.75" PointX="6.125" PointY="12.125" />
         <AssociationConnector Association="SvdModel.FK_ClusterJobDocuments_ClusterCalculation" />
         <AssociationConnector Association="SvdModel.FK_ClusterJobTerms_ClusterCalculation" />
         <AssociationConnector Association="SvdModel.FK_Clusters_ClusterCalculations" />
@@ -35,6 +35,7 @@
         <AssociationConnector Association="SvdModel.FK_ClusterJobTerms_Clusters" />
         <AssociationConnector Association="SvdModel.FK_ClusterJobTerms_Jobs" />
         <AssociationConnector Association="SvdModel.FK_Clusters_Jobs" />
+        <AssociationConnector Association="SvdModel.FK_ClusterJobTerms_JobTerms" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

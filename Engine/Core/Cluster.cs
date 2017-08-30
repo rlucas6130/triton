@@ -5,6 +5,8 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Single;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Engine.Core
 {
@@ -15,12 +17,13 @@ namespace Engine.Core
         public Dictionary<int, int> DocsPerCluster { get; set; }
         public ConcurrentDictionary<int, float[]> Centers { get; set; }
         public ConcurrentBag<Tuple<int, float>> ClusterSi { get; set; }
-        public Dictionary<string, float> ClusterSiAverages { get; set; }
+        public Dictionary<int, float> ClusterSiAverages { get; set; }
+        public Dictionary<int, float> DocumentSi { get; set; }
         public bool IsOptimized { get; set; }
         public float OptimizationVarianceThreshold { get; set; }
         public int MaxIterations { get; set; }
         public float GlobalSi { get; set; }
-        public float ClusterSiAverage { get; set; }
+        public float GlobalClusterSiAverage { get; set; }
         public int Clusters { get; set; }
         public int JobId { get; set; }
 
@@ -33,7 +36,8 @@ namespace Engine.Core
             DocsPerCluster = new Dictionary<int, int>();
             Distances = new ConcurrentDictionary<int, float>();
             ClusterSi = new ConcurrentBag<Tuple<int, float>>();
-            ClusterSiAverages = new Dictionary<string, float>();
+            ClusterSiAverages = new Dictionary<int, float>();
+            DocumentSi = new Dictionary<int, float>();
             IsOptimized = false;
             OptimizationVarianceThreshold = .00000002F;
             MaxIterations = maxIteration;
@@ -77,7 +81,6 @@ namespace Engine.Core
             Debug.WriteLine($"----{Clusters}----Total Cluster Calc: {DateTime.Now.Subtract(start).TotalMilliseconds} Milliseconds");
 
             var calcSiStart = DateTime.Now;
-            var siList = new ConcurrentBag<float>();
 
             // Silhouette (clustering) 
             // https://en.wikipedia.org/wiki/Silhouette_(clustering)
@@ -140,7 +143,7 @@ namespace Engine.Core
 
                 if (!float.IsInfinity(sI) && !float.IsNaN(sI))
                 {
-                    siList.Add(sI);
+                    DocumentSi[kvp.Key] = sI;
 
                     ClusterSi.Add(Tuple.Create(currentCluster, sI));
                 }
@@ -151,7 +154,7 @@ namespace Engine.Core
             {
                 if(ClusterSi.Any(c => c.Item1 == m))
                 {
-                    ClusterSiAverages[m.ToString()] = ClusterSi
+                    ClusterSiAverages[m] = ClusterSi
                         .Where(c => c.Item1 == m)
                         .Select(c => c.Item2)
                         .Average();
@@ -159,69 +162,98 @@ namespace Engine.Core
             }
 
             // Calculate Si Averages
-            GlobalSi = siList.Average();
-            ClusterSiAverage = ClusterSiAverages.Average((kvp) => kvp.Value);
+            GlobalSi = DocumentSi.Average(kvp => kvp.Value);
+            GlobalClusterSiAverage = ClusterSiAverages.Average((kvp) => kvp.Value);
 
             Debug.WriteLine($"****{Clusters}***** GlobalSi: {GlobalSi}");
-            Debug.WriteLine($"****{Clusters}***** ClusterSiAverage: {ClusterSiAverage}");
+            Debug.WriteLine($"****{Clusters}***** GlobalClusterSiAverage: {GlobalClusterSiAverage}");
             Debug.WriteLine($"----{Clusters}---- Total Cluster SI Calc: {DateTime.Now.Subtract(calcSiStart).TotalMilliseconds} Milliseconds");
         }
 
-        public void Save()
+        public void Save(Contracts.ClusterAnalysisParameters clusterParams)
         {
+            var binaryFormatter = new BinaryFormatter();
+
             using (var context = new SvdEntities())
             {
+                var jobDocs = context.JobDocuments.Where(jd => jd.JobId == JobId).ToLookup(jd => jd.OrdinalIndex);
+
                 var clusterCalculationEntity = context.ClusterCalculations.Add(new ClusterCalculation()
                 {
                     JobId = JobId,
                     ClusterCount = Clusters,
                     GlobalSi = GlobalSi,
-                    ClusterSi = ClusterSiAverage
+                    ClusterSi = GlobalClusterSiAverage,
+
+                    // Analysis Parameters
+                    MinimumClusterCount = clusterParams.MinimumClusterCount,
+                    MaximumClusterCount = clusterParams.MaximumClusterCount,
+                    IterationsPerCluster = clusterParams.IterationsPerCluster,
+                    MaximumOptimizationsCount = clusterParams.MaximumOptimizationsCount
                 });
 
                 Enumerable.Range(0, Clusters).ToList().ForEach(cluster =>
                 {
-                    var clusterEntity = context.Clusters.Add(new Engine.Cluster()
+                    using (var memoryStreamCenterVector = new MemoryStream())
                     {
-                        JobId = JobId,
-                        ClusterCalculation = clusterCalculationEntity,
-                        Si = ClusterSi.First(c => c.Item1 == cluster).Item2
-                    });
+                        binaryFormatter.Serialize(memoryStreamCenterVector, Centers[cluster]);
 
-                    foreach (var kvp in ClusterMap.Where(kvp => kvp.Value == cluster))
-                    {
-                        var docIndex = kvp.Key;
+                        memoryStreamCenterVector.Position = 0;
 
-                        clusterEntity.ClusterJobDocuments.Add(new ClusterJobDocument()
+                        var clusterEntity = context.Clusters.Add(new Engine.Cluster()
                         {
-                            ClusterCalculation = clusterCalculationEntity,
-                            Cluster = clusterEntity,
                             JobId = JobId,
-                            JobDocument = context.JobDocuments.FirstOrDefault(jd => jd.JobId == JobId && jd.OrdinalIndex == docIndex)
+                            ClusterCalculation = clusterCalculationEntity,
+                            Si = ClusterSiAverages[cluster],
+                            CenterVectorSerialized = memoryStreamCenterVector.ToArray()
                         });
 
+                        foreach (var kvp in ClusterMap.Where(kvp => kvp.Value == cluster))
+                        {
+                            var docIndex = kvp.Key;
+                            var jobDocument = jobDocs[docIndex].ToList();
+
+                            if (jobDocument.Count > 0)
+                            {
+                                clusterEntity.ClusterJobDocuments.Add(new ClusterJobDocument()
+                                {
+                                    ClusterCalculation = clusterCalculationEntity,
+                                    Cluster = clusterEntity,
+                                    JobId = JobId,
+                                    Si = DocumentSi.ContainsKey(docIndex) ? DocumentSi[docIndex] : 0,
+                                    JobDocument = jobDocument.First()
+                                });
+                            }
+                        }
+
+                        var jobTerms = context.JobTerms.Where(jd => jd.JobId == JobId).ToLookup(jt => jt.Term.Value);
+
+                        foreach(var centerVector in Centers)
+                        {
+                            var termDistanceMap = new Dictionary<string, float>();
+
+                            for (var i = 0; i < LSA.MatrixContainer.UMatrix.RowCount; i++)
+                            {
+                                termDistanceMap[LSA.MatrixContainer.Terms[i]] = Distance.Cosine(centerVector.Value, LSA.MatrixContainer.UMatrix.Row(i).ToArray());
+                            }
+
+                            foreach (var term in termDistanceMap.OrderBy(t => t.Value).Select(t => t.Key).Take(20))
+                            {
+                                var jobTermLookup = jobTerms[term].ToList();
+
+                                if (jobTermLookup.Count > 0)
+                                {
+                                    clusterEntity.ClusterJobTerms.Add(new ClusterJobTerm()
+                                    {
+                                        ClusterCalculation = clusterCalculationEntity,
+                                        Cluster = clusterEntity,
+                                        JobId = JobId,
+                                        JobTerm = jobTermLookup.First()
+                                    });
+                                }
+                            }
+                        }
                     }
-
-                    //Centers.AsParallel().ForAll(centerVector =>
-                    //{
-                    //    var termDistanceMap = new Dictionary<string, float>();
-
-                    //    for (var i = 0; i < LSA.MatrixContainer.UMatrix.RowCount; i++)
-                    //    {
-                    //        termDistanceMap[LSA.MatrixContainer.Terms[i]] = Distance.Cosine(centerVector.Value, LSA.MatrixContainer.UMatrix.Row(i).ToArray());
-                    //    }
-
-                    //    foreach(var term in termDistanceMap.OrderBy(t => t.Value).Select(t => t.Key).Take(20))
-                    //    {
-                    //        clusterEntity.ClusterJobTerms.Add(new ClusterJobTerm()
-                    //        {
-                    //            ClusterCalculation = clusterCalculationEntity,
-                    //            Cluster = clusterEntity,
-                    //            JobId = JobId,
-                    //            JobTerm = context.JobTerms.FirstOrDefault(jd => jd.JobId == JobId && jd.Term.Value == term)
-                    //        });
-                    //    }
-                    //});
                 });
 
                 context.SaveChanges();
