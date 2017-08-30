@@ -31,6 +31,7 @@ namespace Engine
         public int MaximumClusterCount { get; set; }
         public int IterationsPerCluster { get; set; }
         public int MaximumOptimizationsCount { get; set; }
+        public Engine.Contracts.ClusterStatus Status { get; set; }
     
         public virtual Job Job { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

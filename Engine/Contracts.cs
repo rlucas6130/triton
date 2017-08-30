@@ -38,5 +38,13 @@ namespace Engine
             Complete,
             Failed
         }
+
+        public enum ClusterStatus
+        {
+            New,
+            Clustering,
+            Complete,
+            Failed
+        }
     }
 }

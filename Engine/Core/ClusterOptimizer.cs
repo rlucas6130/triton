@@ -28,18 +28,33 @@ namespace Engine.Core
 
         public static Cluster OptimizeRange(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
         {
-            var randGen = new Random();
+            using (var context = new SvdEntities())
+            {
+                var clusterCalculationEntity = Cluster.CreateCalculation(context, jobId, clusterParams);
 
-            var clusters = (from k in Enumerable.Range(clusterParams.MinimumClusterCount, (clusterParams.MaximumClusterCount - clusterParams.MinimumClusterCount) + 1)
-                            select Optimize(randGen, jobId, k, clusterParams.IterationsPerCluster, clusterParams.MaximumOptimizationsCount)).ToList();
+                try
+                {
+                    var randGen = new Random();
 
-            var optimizedCluster = clusters
-                .OrderByDescending(c => c.GlobalSi)
-                .ThenByDescending(c => c.GlobalClusterSiAverage).First();
+                    Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Clustering);
 
-            optimizedCluster.Save(clusterParams);
+                    var clusters = (from k in Enumerable.Range(clusterParams.MinimumClusterCount, (clusterParams.MaximumClusterCount - clusterParams.MinimumClusterCount) + 1)
+                                    select Optimize(randGen, jobId, k, clusterParams.IterationsPerCluster, clusterParams.MaximumOptimizationsCount)).ToList();
 
-            return optimizedCluster;
+                    var optimizedCluster = clusters
+                        .OrderByDescending(c => c.GlobalSi)
+                        .ThenByDescending(c => c.GlobalClusterSiAverage).First();
+
+                    optimizedCluster.Save(context, clusterCalculationEntity);
+
+                    return optimizedCluster;
+                }
+                catch (Exception)
+                {
+                    Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Failed);
+                    throw;
+                }
+            }
         }
     }
 }
