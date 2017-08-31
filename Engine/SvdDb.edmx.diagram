@@ -11,8 +11,8 @@
         <EntityTypeShape EntityType="SvdModel.Job" Width="1.75" PointX="6.125" PointY="3.375" />
         <EntityTypeShape EntityType="SvdModel.JobTerm" Width="1.5" PointX="11.25" PointY="3" />
         <EntityTypeShape EntityType="SvdModel.Term" Width="1.875" PointX="11" PointY="0.5" />
-        <EntityTypeShape EntityType="SvdModel.UMatrix" Width="1.5" PointX="8.625" PointY="1.75" />
-        <EntityTypeShape EntityType="SvdModel.VMatrix" Width="1.5" PointX="3.875" PointY="1.75" />
+        <EntityTypeShape EntityType="SvdModel.UMatrix" Width="1.5" PointX="8.875" PointY="4.5" />
+        <EntityTypeShape EntityType="SvdModel.VMatrix" Width="1.5" PointX="3.75" PointY="4.5" />
         <AssociationConnector Association="SvdModel.FK_ClusterCalculation_Job" />
         <AssociationConnector Association="SvdModel.FK_JobDocuments_Documents" />
         <AssociationConnector Association="SvdModel.FK_JobDocuments_Jobs" />

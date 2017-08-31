@@ -12,6 +12,7 @@ import { CreateJobComponent } from './createJob.component';
 import { VisualizeJobComponent } from './visualizeJob.component';
 import { JobService } from './job.service';
 import { DocumentService } from './document.service';
+import { ClusterCalculationService } from './clusterCalculation.service';
 import { AppRoutingModule } from './app-routing.module';
 
 import { FileDropDirective, FileSelectDirective } from 'ng2-file-upload';
@@ -38,6 +39,7 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
     providers: [
         JobService,
         DocumentService,
+        ClusterCalculationService,
         {
             provide: FileUploader, useFactory: () => {
                 return new FileUploader({

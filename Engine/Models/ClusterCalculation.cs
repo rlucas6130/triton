@@ -3,12 +3,10 @@ using System;
 
 namespace Engine
 {
-    public partial class Job
+    public partial class ClusterCalculation
     {
-        public TimeSpan TotalCalculationTime
-        {
-            get
-            {
+        public TimeSpan TotalCalculationTime {
+            get {
                 return Utilities.GetTotalCalculationTime(this.Completed, this.Created);
             }
         }

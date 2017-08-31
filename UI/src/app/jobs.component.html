@@ -35,7 +35,7 @@
                                     <i class="fa fa-fw fa-microchip"></i> Running SVD
                                 </span>
 
-                                <span *ngSwitchCase="jobStatus.Completed" class="badge badge-success">
+                                <span *ngSwitchCase="jobStatus.Complete" class="badge badge-success">
                                     <i class="fa fa-fw fa-check-square-o"></i> Completed
                                 </span>
 
@@ -46,7 +46,7 @@
                                 <i *ngIf="job.status == jobStatus.New || job.status == jobStatus.BuildingMatrix || job.status == jobStatus.SVD" class="fa fa-spinner fa-pulse fa-fw"></i>
                         </td>
                         <td>
-                            <a [hidden]="job.status != jobStatus.Completed" role="button" [routerLink]="['/visualize', job.id]" class="btn btn-primary btn-sm">
+                            <a [hidden]="job.status != jobStatus.Complete" role="button" [routerLink]="['/visualize', job.id]" class="btn btn-primary btn-sm">
                                 <i class="fa fa-fw fa-cubes"></i> 
                                 Visualize
                             </a>

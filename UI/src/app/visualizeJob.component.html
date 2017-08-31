@@ -1,53 +1,11 @@
 ﻿<div class="container-fluid">
-    <h1>Visualize</h1>
+    <h1>Visualize <i class="fa fa-fw fa-bar-chart-o"></i></h1>
     <!--<div class="row">
         <svg #jobViewport class="col-12">
             <circle class="circleClass" cx="1" cy="1" r="26" />
         </svg>
     </div>-->
     <div class="row">
-        <div class="col-6">
-            <div class="card">
-                <h3 class="card-header display-4">Job Details</h3>
-                <div class="card-block">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <h1 class="display-4">Number Of Documents: </h1>
-                            </div>
-                            <div class="col-6">
-                                <h1 class="display-4">{{job.documentCount}}</h1>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <h1 class="display-4">Created: </h1>
-                            </div>
-                            <div class="col-6">
-                                <h1 class="display-4">{{job.created | date:'medium'}}</h1>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <h1 class="display-4">Number Of Dimension: </h1>
-                            </div>
-                            <div class="col-6">
-                                <h1 class="display-4">{{job.dimensions}}</h1>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <h1 class="display-4">Total Calculation Time: </h1>
-                            </div>
-                            <div class="col-6">
-                                <h1 class="display-4">{{job.totalCalculationTimeString}}</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="col-6">
             <div class="card">
                 <h3 class="card-header display-4">Cluster Analysis</h3>
@@ -89,5 +47,116 @@
                     </form>
                 </div>
             </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <h3 class="card-header display-4">Job Details</h3>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Number Of Documents: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.documentCount}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Created: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.created | date:'medium'}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Number Of Dimension: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.dimensions}}</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h1 class="display-4">Total Calculation Time: </h1>
+                            </div>
+                            <div class="col-6">
+                                <h1 class="display-4">{{job.totalCalculationTimeString}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div> 
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <h3 class="card-header display-4">Cluster Calculations</h3>
+                    <div class="card-block">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Cluster Count</th>
+                                                <th>Global Si</th>
+                                                <th>Global Cluster Si</th>
+                                                <th>Minimum Cluster Count</th>
+                                                <th>Maximum Cluster Count</th>
+                                                <th>Iterations Per Cluster</th>
+                                                <th>Maximum Optimization Count</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr *ngFor="let clusterCalculation of clusterCalculations">
+                                                <th scope="row">{{clusterCalculation.id}}</th>
+                                                <td>{{clusterCalculation.clusterCount}}</td>
+                                                <td>{{clusterCalculation.created | date:'medium' }}</td>
+                                                <td>{{clusterCalculation.minimumClusterCount}}</td>
+                                                <td>{{clusterCalculation.maximumClusterCount}}</td>
+                                                <td>{{clusterCalculation.iterationsPerCluster}}</td>
+                                                <td>{{clusterCalculation.maximumOptimizationsCount}}</td>
+                                                <td>{{clusterCalculation.totalCalculationTimeString}}</td>
+                                                <td [ngSwitch]="clusterCalculation.status">
+
+                                                    <span *ngSwitchCase="clusterCalculationStatus.New" class="badge badge-primary">
+                                                        <i class="fa fa-fw fa-bolt"></i> New
+                                                    </span>
+
+                                                    <span *ngSwitchCase="clusterCalculationStatus.Clustering" class="badge badge-info">
+                                                        <i class="fa fa-fw fa-hourglass-start"></i> Clustering
+                                                    </span>
+
+                                                    <span *ngSwitchCase="clusterCalculationStatus.Completed" class="badge badge-success">
+                                                        <i class="fa fa-fw fa-check-square-o"></i> Completed
+                                                    </span>
+
+                                                    <span *ngSwitchCase="clusterCalculationStatus.Failed" class="badge badge-danger">
+                                                        <i class="fa fa-fw fa-bomb"></i> Failed
+                                                    </span>
+
+                                                    <i *ngIf="clusterCalculationStatus.status == clusterCalculationStatus.New || clusterCalculationStatus.status == clusterCalculationStatus.Clustering" class="fa fa-spinner fa-pulse fa-fw"></i>
+                                                </td>
+                                                <td>
+                                                    <a [hidden]="clusterCalculationStatus.status != clusterCalculationStatus.Completed" role="button" [routerLink]="['/clusterCalculation', clusterCalculation.id]" class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-fw fa-cubes"></i>
+                                                        View Results
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

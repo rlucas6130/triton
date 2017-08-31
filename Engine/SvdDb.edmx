@@ -10,6 +10,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Created" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Completed" Type="datetime2" Precision="7" />
           <Property Name="ClusterCount" Type="int" Nullable="false" />
           <Property Name="GlobalSi" Type="real" Nullable="false" />
           <Property Name="ClusterSi" Type="real" Nullable="false" />
@@ -40,6 +42,7 @@
           <Property Name="ClusterCalculationId" Type="int" Nullable="false" />
           <Property Name="JobTermId" Type="int" Nullable="false" />
           <Property Name="ClusterId" Type="int" Nullable="false" />
+          <Property Name="DistanceToClusterCenter" Type="real" Nullable="false" />
         </EntityType>
         <EntityType Name="Clusters">
           <Key>
@@ -547,6 +550,8 @@
           <Property Name="IterationsPerCluster" Type="Int32" Nullable="false" />
           <Property Name="MaximumOptimizationsCount" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="SvdModel.ClusterStatus" Nullable="false" />
+          <Property Name="Created" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Completed" Type="DateTime" Precision="7" />
         </EntityType>
         <EntityType Name="Document">
           <Key>
@@ -773,6 +778,7 @@
           <NavigationProperty Name="Cluster" Relationship="SvdModel.FK_ClusterJobTerms_Clusters" FromRole="ClusterJobTerm" ToRole="Cluster" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterJobTerms_Jobs" FromRole="ClusterJobTerm" ToRole="Job" />
           <NavigationProperty Name="JobTerm" Relationship="SvdModel.FK_ClusterJobTerms_JobTerms" FromRole="ClusterJobTerm" ToRole="JobTerm" />
+          <Property Name="DistanceToClusterCenter" Type="Single" Nullable="false" />
         </EntityType>
         <EntityType Name="Cluster">
           <Key>
@@ -918,6 +924,8 @@
           <EntitySetMapping Name="ClusterCalculations">
             <EntityTypeMapping TypeName="SvdModel.ClusterCalculation">
               <MappingFragment StoreEntitySet="ClusterCalculations">
+                <ScalarProperty Name="Completed" ColumnName="Completed" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="MaximumOptimizationsCount" ColumnName="MaximumOptimizationsCount" />
                 <ScalarProperty Name="IterationsPerCluster" ColumnName="IterationsPerCluster" />
@@ -1019,6 +1027,7 @@
           <EntitySetMapping Name="ClusterJobTerms">
             <EntityTypeMapping TypeName="SvdModel.ClusterJobTerm">
               <MappingFragment StoreEntitySet="ClusterJobTerms">
+                <ScalarProperty Name="DistanceToClusterCenter" ColumnName="DistanceToClusterCenter" />
                 <ScalarProperty Name="ClusterId" ColumnName="ClusterId" />
                 <ScalarProperty Name="JobTermId" ColumnName="JobTermId" />
                 <ScalarProperty Name="ClusterCalculationId" ColumnName="ClusterCalculationId" />

@@ -98,7 +98,9 @@
     <Compile Include="JobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Helpers\Utilities.cs" />
     <Compile Include="Models\Document.cs" />
+    <Compile Include="Models\ClusterCalculation.cs" />
     <Compile Include="Models\Job.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SvdDb.Context.cs">

@@ -38,10 +38,6 @@ export class JobService {
             .then(response => response.json() as Job[])
             .catch(this.handleError)
     }
-    private handleError(error: any): Promise<any> {
-        console.error('An error occurred', error);
-        return Promise.reject(error.message || error);
-    }
     getJob(id: number): Promise<Job> {
         const url = `${this.jobUrl}/${id}`;
         return this.http.get(url)
@@ -49,19 +45,8 @@ export class JobService {
             .then(response => response.json() as Job)
             .catch(this.handleError);
     }
-    clusterAnalysis(jobId: number, parameters: ClusterAnalysisParameters): Promise<boolean> {
-        const url = `${this.jobUrl}/clusterAnalysis?jobId=${jobId}`;
-        return this.http
-            .post(url, JSON.stringify(parameters), { headers: this.headers })
-            .toPromise()
-            .then(res => true)
-            .catch(this.handleError);
+    private handleError(error: any): Promise<any> {
+        console.error('An error occurred', error);
+        return Promise.reject(error.message || error);
     }
-}
-
-export interface ClusterAnalysisParameters {
-    minimumClusterCount: number;
-    maximumClusterCount: number;
-    iterationsPerCluster: number;
-    maximumOptimizationsCount: number;
 }

@@ -19,6 +19,7 @@ namespace Engine
         public int ClusterCalculationId { get; set; }
         public int JobTermId { get; set; }
         public int ClusterId { get; set; }
+        public float DistanceToClusterCenter { get; set; }
     
         public virtual ClusterCalculation ClusterCalculation { get; set; }
         public virtual Cluster Cluster { get; set; }

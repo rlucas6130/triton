@@ -20,6 +20,7 @@ namespace Engine.Core
         public static string DictionaryPath = "D:/Wiki/dict.txt";
 
         public static MatrixContainer MatrixContainer { get; set; }
+        private static Dictionary<int, MatrixContainer> _matrixContainers { get; set; } = new Dictionary<int, MatrixContainer>();
 
         public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered", "portal", "views", "free", "recent", "search", "details", "license", "encyclopedia", "page", "terms", "current", "content", "foundation", "categories", "help", "changes", "discussion", "users", "featured", "article" };
 
@@ -369,7 +370,7 @@ namespace Engine.Core
 
                     job.Dimensions = dimensions;
                     job.Completed = DateTime.Now;
-                    job.Status = JobStatus.Complete;
+                    job.Status = JobStatus.Completed;
 
                     context.SaveChanges();
                 }
@@ -503,52 +504,55 @@ namespace Engine.Core
 
         public static void GetMatrixContainer(int jobId)
         {
-            if (MatrixContainer != null) return;
-
-            using (var context = new SvdEntities())
+            if (!_matrixContainers.ContainsKey(jobId))
             {
-                var job = context.Jobs.Find(jobId);
-
-                var binaryFormatter = new BinaryFormatter();
-
-                DenseMatrix newUMatrix = null;
-                DenseMatrix newVMatrix = null;
-
-                using (var ms = new MemoryStream(job.UMatrix.SerializedValues))
+                using (var context = new SvdEntities())
                 {
-                    var uValues = binaryFormatter.Deserialize(ms) as float[];
+                    var job = context.Jobs.Find(jobId);
 
-                    newUMatrix = new DenseMatrix(job.JobTerms.Count, job.Dimensions, uValues);
-                }
+                    var binaryFormatter = new BinaryFormatter();
 
-                using (var ms = new MemoryStream(job.VMatrix.SerializedValues))
-                {
-                    var vValues = binaryFormatter.Deserialize(ms) as float[];
+                    DenseMatrix newUMatrix = null;
+                    DenseMatrix newVMatrix = null;
 
-                    newVMatrix = new DenseMatrix(job.Dimensions, job.JobDocuments.Count, vValues);
-                }
-
-                // Calc Distance Map
-                var distanceMap = new float[newVMatrix.ColumnCount, newVMatrix.ColumnCount];
-
-                Enumerable.Range(0, newVMatrix.ColumnCount).AsParallel().ForAll(i =>
-                {
-                    for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                    using (var ms = new MemoryStream(job.UMatrix.SerializedValues))
                     {
-                        distanceMap[i, m] = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray());
-                    }
-                });
+                        var uValues = binaryFormatter.Deserialize(ms) as float[];
 
-                MatrixContainer = new MatrixContainer()
-                {
-                    Dimensions = job.Dimensions,
-                    DocNameMap = job.JobDocuments.OrderBy(jd => jd.OrdinalIndex).Select(d => d.Document.Name).ToList(),
-                    Terms = job.JobTerms.OrderBy(jt => jt.OrdinalIndex).Select(t => t.Term.Value).ToList(),
-                    UMatrix = newUMatrix,
-                    VMatrix = newVMatrix,
-                    DistanceMap = distanceMap
-                };
+                        newUMatrix = new DenseMatrix(job.JobTerms.Count, job.Dimensions, uValues);
+                    }
+
+                    using (var ms = new MemoryStream(job.VMatrix.SerializedValues))
+                    {
+                        var vValues = binaryFormatter.Deserialize(ms) as float[];
+
+                        newVMatrix = new DenseMatrix(job.Dimensions, job.JobDocuments.Count, vValues);
+                    }
+
+                    // Calc Distance Map
+                    var distanceMap = new float[newVMatrix.ColumnCount, newVMatrix.ColumnCount];
+
+                    Enumerable.Range(0, newVMatrix.ColumnCount).AsParallel().ForAll(i =>
+                    {
+                        for (var m = 0; m < newVMatrix.ColumnCount; m++)
+                        {
+                            distanceMap[i, m] = Distance.Cosine(newVMatrix.Column(i).ToArray(), newVMatrix.Column(m).ToArray());
+                        }
+                    });
+
+                    _matrixContainers[jobId] = new MatrixContainer()
+                    {
+                        Dimensions = job.Dimensions,
+                        DocNameMap = job.JobDocuments.OrderBy(jd => jd.OrdinalIndex).Select(d => d.Document.Name).ToList(),
+                        Terms = job.JobTerms.OrderBy(jt => jt.OrdinalIndex).Select(t => t.Term.Value).ToList(),
+                        UMatrix = newUMatrix,
+                        VMatrix = newVMatrix,
+                        DistanceMap = distanceMap
+                    };
+                }
             }
+
+            MatrixContainer = _matrixContainers[jobId];
         }
     }
 }

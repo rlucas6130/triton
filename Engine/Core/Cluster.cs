@@ -12,15 +12,15 @@ namespace Engine.Core
 {
     public class Cluster
     {
-        public ConcurrentDictionary<int, float> Distances { get; set; }
-        public ConcurrentDictionary<int, int> ClusterMap { get; set; }
-        public Dictionary<int, int> DocsPerCluster { get; set; }
-        public ConcurrentDictionary<int, float[]> Centers { get; set; }
-        public ConcurrentBag<Tuple<int, float>> ClusterSi { get; set; }
-        public Dictionary<int, float> ClusterSiAverages { get; set; }
-        public Dictionary<int, float> DocumentSi { get; set; }
-        public bool IsOptimized { get; set; }
-        public float OptimizationVarianceThreshold { get; set; }
+        public ConcurrentDictionary<int, float> Distances { get; set; } = new ConcurrentDictionary<int, float>();
+        public ConcurrentDictionary<int, int> ClusterMap { get; set; } = new ConcurrentDictionary<int, int>();
+        public Dictionary<int, int> DocsPerCluster { get; set; } = new Dictionary<int, int>();
+        public ConcurrentDictionary<int, float[]> Centers { get; set; } = new ConcurrentDictionary<int, float[]>();
+        public ConcurrentBag<Tuple<int, float>> ClusterSi { get; set; } = new ConcurrentBag<Tuple<int, float>>();
+        public Dictionary<int, float> ClusterSiAverages { get; set; } = new Dictionary<int, float>();
+        public Dictionary<int, float> DocumentSi { get; set; } = new Dictionary<int, float>();
+        public bool IsOptimized { get; set; } = false;
+        public float OptimizationVarianceThreshold { get; set; } = .00000002F;
         public int MaxIterations { get; set; }
         public float GlobalSi { get; set; }
         public float GlobalClusterSiAverage { get; set; }
@@ -30,23 +30,10 @@ namespace Engine.Core
         public Cluster(Random generator, int jobId, int k = 2, int maxIteration = 200)
         {
             Clusters = k;
-
-            Centers = new ConcurrentDictionary<int, float[]>();
-            ClusterMap = new ConcurrentDictionary<int, int>();
-            DocsPerCluster = new Dictionary<int, int>();
-            Distances = new ConcurrentDictionary<int, float>();
-            ClusterSi = new ConcurrentBag<Tuple<int, float>>();
-            ClusterSiAverages = new Dictionary<int, float>();
-            DocumentSi = new Dictionary<int, float>();
-            IsOptimized = false;
-            OptimizationVarianceThreshold = .00000002F;
             MaxIterations = maxIteration;
             JobId = jobId;
 
-            if (LSA.MatrixContainer == null)
-            {
-                LSA.GetMatrixContainer(JobId);
-            }
+            LSA.GetMatrixContainer(JobId);
 
             var clusterCentersDocIndex = new HashSet<int>();
 
@@ -90,15 +77,12 @@ namespace Engine.Core
                 // Get aI
                 var currentCluster = kvp.Value;
 
-                //var targetDoc = LSA.MatrixContainer.VMatrix.Column(kvp.Key).ToArray();
-
                 var targetCluster = ClusterMap.Where(c => c.Value == currentCluster).ToList();
                 var distanceTotal = new List<float>();
 
                 for(var i = 0; i < targetCluster.Count; i++)
                 {
-                    //var docToCompare = LSA.MatrixContainer.VMatrix.Column(targetCluster[i].Key).ToArray();
-                    var distance = LSA.MatrixContainer.DistanceMap[kvp.Key, targetCluster[i].Key]; // Distance.Cosine(targetDoc, docToCompare);
+                    var distance = LSA.MatrixContainer.DistanceMap[kvp.Key, targetCluster[i].Key];
 
                     if (!float.IsInfinity(distance) && !float.IsNaN(distance))
                     {
@@ -120,8 +104,7 @@ namespace Engine.Core
 
                     for(var m = 0; m < otherTargetCluster.Count; m++)
                     {
-                        //var docToCompareOther = LSA.MatrixContainer.VMatrix.Column(otherTargetCluster[m].Key).ToArray();
-                        var distanceOther = LSA.MatrixContainer.DistanceMap[kvp.Key, otherTargetCluster[m].Key];//Distance.Cosine(targetDoc, docToCompareOther);
+                        var distanceOther = LSA.MatrixContainer.DistanceMap[kvp.Key, otherTargetCluster[m].Key];
 
                         if (!float.IsInfinity(distanceOther) && !float.IsNaN(distanceOther))
                         {
@@ -252,6 +235,12 @@ namespace Engine.Core
 
         public static void SetCalculationStatus(SvdEntities context, ClusterCalculation clusterCalculationEntity, Contracts.ClusterStatus status)
         {
+            if (status == Contracts.ClusterStatus.New)
+                clusterCalculationEntity.Created = DateTime.Now;
+
+            if (status == Contracts.ClusterStatus.Completed || status == Contracts.ClusterStatus.Failed)
+                clusterCalculationEntity.Completed = DateTime.Now;
+
             clusterCalculationEntity.Status = status;
             context.SaveChanges();
         }
@@ -325,9 +314,9 @@ namespace Engine.Core
                         termDistanceMap[LSA.MatrixContainer.Terms[i]] = Distance.Cosine(centerVector, LSA.MatrixContainer.UMatrix.Row(i).ToArray());
                     }
 
-                    foreach (var term in termDistanceMap.OrderBy(t => t.Value).Select(t => t.Key).Take(20))
+                    foreach (var term in termDistanceMap.OrderBy(t => t.Value).Take(20))
                     {
-                        var jobTermLookup = jobTerms[term];
+                        var jobTermLookup = jobTerms[term.Key];
 
                         if (jobTermLookup != null)
                         {
@@ -336,7 +325,8 @@ namespace Engine.Core
                                 ClusterCalculationId = clusterCalculationEntity.Id,
                                 ClusterId = clusterEntity.Value.Id,
                                 JobId = JobId,
-                                JobTermId = jobTermLookup.First().Id
+                                JobTermId = jobTermLookup.First().Id,
+                                DistanceToClusterCenter = term.Value
                             });
                         }
                     }
@@ -347,7 +337,23 @@ namespace Engine.Core
             context.BulkInsert(clusterJobTermEntities);
             context.BulkInsert(clusterJobDocumentEntities);
 
-            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Complete);
+            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Completed);
+        }
+
+        public static IEnumerable<ClusterCalculation> GetAll(int jobId)
+        {
+            using (var context = new SvdEntities())
+            {
+                return context.ClusterCalculations.Where(cc => cc.JobId == jobId);
+            }
+        }
+
+        public static ClusterCalculation Get(int clusterCalculationId)
+        {
+            using (var context = new SvdEntities())
+            {
+                return context.ClusterCalculations.Find(clusterCalculationId);
+            }
         }
     }
 }

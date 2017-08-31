@@ -35,7 +35,7 @@ namespace Engine
             New,
             BuildingMatrix,
             Svd,
-            Complete,
+            Completed,
             Failed
         }
 
@@ -43,7 +43,7 @@ namespace Engine
         {
             New,
             Clustering,
-            Complete,
+            Completed,
             Failed
         }
     }
