@@ -18,10 +18,9 @@ export class ClusterCalculationService {
             .then(() => clusterCalculation)
             .catch(this.handleError);
     }
-    create(jobId: number, parameters: ClusterCalculationParameters): Promise<boolean> {
-        const url = `${this.clusterCalculationUrl}?jobId=${jobId}`;
+    create(parameters: ClusterCalculationParameters): Promise<boolean> {
         return this.http
-            .post(url, JSON.stringify(parameters), { headers: this.headers })
+            .post(this.clusterCalculationUrl, JSON.stringify(parameters), { headers: this.headers })
             .toPromise()
             .then(res => true)
             .catch(this.handleError);
@@ -58,4 +57,6 @@ export interface ClusterCalculationParameters {
     maximumClusterCount: number;
     iterationsPerCluster: number;
     maximumOptimizationsCount: number;
+    jobId?: number;
+    clusterCalculationId?: number;
 }

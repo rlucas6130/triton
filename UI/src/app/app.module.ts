@@ -17,7 +17,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { FileDropDirective, FileSelectDirective } from 'ng2-file-upload';
 
-//import { AlertModule, ModalModule, BsDropdownModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
 @NgModule({
@@ -26,7 +26,8 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
         BrowserAnimationsModule,
         FormsModule,
         HttpModule,
-        AppRoutingModule
+        AppRoutingModule,
+        ModalModule.forRoot()
     ],
     declarations: [
         AppComponent,

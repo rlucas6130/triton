@@ -18,7 +18,7 @@ namespace Engine.Core
         public ConcurrentDictionary<int, float[]> Centers { get; set; } = new ConcurrentDictionary<int, float[]>();
         public ConcurrentBag<Tuple<int, float>> ClusterSi { get; set; } = new ConcurrentBag<Tuple<int, float>>();
         public Dictionary<int, float> ClusterSiAverages { get; set; } = new Dictionary<int, float>();
-        public Dictionary<int, float> DocumentSi { get; set; } = new Dictionary<int, float>();
+        public ConcurrentDictionary<int, float> DocumentSi { get; set; } = new ConcurrentDictionary<int, float>();
         public bool IsOptimized { get; set; } = false;
         public float OptimizationVarianceThreshold { get; set; } = .00000002F;
         public int MaxIterations { get; set; }
@@ -126,8 +126,7 @@ namespace Engine.Core
 
                 if (!float.IsInfinity(sI) && !float.IsNaN(sI))
                 {
-                    DocumentSi[kvp.Key] = sI;
-
+                    DocumentSi.AddOrUpdate(kvp.Key, sI, (i, f) => sI);
                     ClusterSi.Add(Tuple.Create(currentCluster, sI));
                 }
             });
@@ -211,22 +210,18 @@ namespace Engine.Core
             IsOptimized = isOptimizedMap.All(v => v.Value == true);
         }
 
-        public static ClusterCalculation CreateCalculation(SvdEntities context, int jobId, Contracts.ClusterAnalysisParameters clusterParams)
+        public static ClusterCalculation CreateCalculation(SvdEntities context, Contracts.ClusterAnalysisParameters clusterParams)
         {
             var clusterCalculationEntity = context.ClusterCalculations.Add(new ClusterCalculation()
             {
-                JobId = jobId,
-                ClusterCount = 0,
-                GlobalSi = 0,
-                ClusterSi = 0,
-                Status = Contracts.ClusterStatus.New,
-
-                // Analysis Parameters
+                JobId = clusterParams.JobId,
                 MinimumClusterCount = clusterParams.MinimumClusterCount,
                 MaximumClusterCount = clusterParams.MaximumClusterCount,
                 IterationsPerCluster = clusterParams.IterationsPerCluster,
-                MaximumOptimizationsCount = clusterParams.MaximumOptimizationsCount
+                MaximumOptimizationsCount = clusterParams.MaximumOptimizationsCount,
             });
+
+            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.New);
 
             context.SaveChanges();
 
@@ -340,20 +335,14 @@ namespace Engine.Core
             SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Completed);
         }
 
-        public static IEnumerable<ClusterCalculation> GetAll(int jobId)
+        public static IEnumerable<ClusterCalculation> GetAll(SvdEntities context, int jobId)
         {
-            using (var context = new SvdEntities())
-            {
-                return context.ClusterCalculations.Where(cc => cc.JobId == jobId);
-            }
+            return context.ClusterCalculations.Where(cc => cc.JobId == jobId).ToList(); 
         }
 
-        public static ClusterCalculation Get(int clusterCalculationId)
+        public static ClusterCalculation Get(SvdEntities context, int clusterCalculationId)
         {
-            using (var context = new SvdEntities())
-            {
-                return context.ClusterCalculations.Find(clusterCalculationId);
-            }
+            return context.ClusterCalculations.Find(clusterCalculationId);
         }
     }
 }

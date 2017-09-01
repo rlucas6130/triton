@@ -1,8 +1,4 @@
-﻿.col-12 {
-    padding:0;
-}
-
-.display-4 {
+﻿.display-4 {
     font-size:1.5rem;
 }
 
@@ -12,4 +8,26 @@
 
 .ng-invalid:not(form)  {
   border-left: 5px solid #a94442; /* red */
+}
+
+.cluster-calculation-table {
+    margin-top:12px;
+}
+
+td.status {
+    white-space:nowrap;
+}
+
+.row .job-data {
+    font-weight:400;
+}
+
+td, tbody th {
+    vertical-align:middle;
+    text-align:center;
+}
+
+td.loading {
+    vertical-align:middle;
+    text-align:center;
 }

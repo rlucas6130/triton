@@ -23,9 +23,9 @@ namespace Engine
         }
     
         public int Id { get; set; }
-        public int ClusterCount { get; set; }
-        public float GlobalSi { get; set; }
-        public float ClusterSi { get; set; }
+        public Nullable<int> ClusterCount { get; set; }
+        public Nullable<float> GlobalSi { get; set; }
+        public Nullable<float> ClusterSi { get; set; }
         public int JobId { get; set; }
         public int MinimumClusterCount { get; set; }
         public int MaximumClusterCount { get; set; }

@@ -10,23 +10,33 @@ namespace UI.Controllers
 {
     public class ClusterCalculationsController : ApiController
     {
+        private SvdEntities _context = new SvdEntities();
+
+        public ClusterCalculationsController()
+        {
+            _context.Configuration.ProxyCreationEnabled = false;
+        }
+
         // GET api/<controller>
         [HttpGet]
         [Route("api/clusterCalculations/getAll")]
         public IEnumerable<ClusterCalculation> GetAll(int jobId)
         {
-            return ClusterCalculationManager.GetAll(jobId).OrderByDescending(i => i.Created);
+            return ClusterCalculationManager.GetAll(_context, jobId)
+                .OrderByDescending(i => i.Created);
         }
 
         public ClusterCalculation Get(int id)
         {
-            return ClusterCalculationManager.Get(id);
+            return ClusterCalculationManager.Get(_context, id);
         }
 
         // POST api/<controller>
-        public void Post(int jobId, [FromBody]Contracts.ClusterAnalysisParameters clusterParams)
+        public void Post([FromBody]Contracts.ClusterAnalysisParameters clusterParams)
         {
-            AzureHelper.SendQueueMessage("clusterqueue", Tuple.Create(jobId, clusterParams));
+            var clusterCalculation = ClusterCalculationManager.CreateCalculation(_context, clusterParams);
+
+            AzureHelper.SendQueueMessage("clusterqueue", clusterCalculation.Id);
         }
 
         // PUT api/<controller>/5

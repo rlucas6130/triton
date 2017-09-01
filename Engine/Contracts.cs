@@ -28,6 +28,8 @@ namespace Engine
             public int MaximumClusterCount { get; set; }
             public int IterationsPerCluster { get; set; }
             public int MaximumOptimizationsCount { get; set; }
+            public int JobId { get; set; }
+            public int ClusterCalculationId { get; set; }
         }
 
         public enum JobStatus

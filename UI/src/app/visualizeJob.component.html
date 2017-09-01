@@ -16,7 +16,7 @@
                                 Minimum Cluster Count (k-)
                             </label>
                             <div class="col-6">
-                                <input class="form-control" [(ngModel)]="clusterParams.minimumClusterCount" type="number" required id="minimumClusterCount" name="minimumClusterCount">
+                                <input class="form-control" [(ngModel)]="clusterCalculationParams.minimumClusterCount" type="number" required id="minimumClusterCount" name="minimumClusterCount">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -24,19 +24,19 @@
                                 Maximum Cluster Count (k+)
                             </label>
                             <div class="col-6">
-                                <input class="form-control" [(ngModel)]="clusterParams.maximumClusterCount" type="number" required id="maximumClusterCount" name="maximumClusterCount">
+                                <input class="form-control" [(ngModel)]="clusterCalculationParams.maximumClusterCount" type="number" required id="maximumClusterCount" name="maximumClusterCount">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="iterationsPerCluster" class="col-6 col-form-label display-4">Iterations Per Cluster (k)</label>
                             <div class="col-6">
-                                <input class="form-control" [(ngModel)]="clusterParams.iterationsPerCluster" type="number" required id="iterationsPerCluster" name="iterationsPerCluster">
+                                <input class="form-control" [(ngModel)]="clusterCalculationParams.iterationsPerCluster" type="number" required id="iterationsPerCluster" name="iterationsPerCluster">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="maximumOptimizationsCount" class="col-6 col-form-label display-4">Maximum Optimizations Performed</label>
                             <div class="col-6">
-                                <input class="form-control" [(ngModel)]="clusterParams.maximumOptimizationsCount" type="number" required id="maximumOptimizationsCount" name="maximumOptimizationsCount">
+                                <input class="form-control" [(ngModel)]="clusterCalculationParams.maximumOptimizationsCount" type="number" required id="maximumOptimizationsCount" name="maximumOptimizationsCount">
                             </div>
                         </div>
                         <div class="d-flex justify-content-end">
@@ -58,7 +58,7 @@
                                 <h1 class="display-4">Number Of Documents: </h1>
                             </div>
                             <div class="col-6">
-                                <h1 class="display-4">{{job.documentCount}}</h1>
+                                <h1 class="display-4 job-data">{{job.documentCount}}</h1>
                             </div>
                         </div>
                         <div class="row">
@@ -66,15 +66,15 @@
                                 <h1 class="display-4">Created: </h1>
                             </div>
                             <div class="col-6">
-                                <h1 class="display-4">{{job.created | date:'medium'}}</h1>
+                                <h1 class="display-4 job-data">{{job.created | date:'medium'}}</h1>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-6">
-                                <h1 class="display-4">Number Of Dimension: </h1>
+                                <h1 class="display-4">Number Of Dimensions: </h1>
                             </div>
                             <div class="col-6">
-                                <h1 class="display-4">{{job.dimensions}}</h1>
+                                <h1 class="display-4 job-data">{{job.dimensions}}</h1>
                             </div>
                         </div>
                         <div class="row">
@@ -82,76 +82,86 @@
                                 <h1 class="display-4">Total Calculation Time: </h1>
                             </div>
                             <div class="col-6">
-                                <h1 class="display-4">{{job.totalCalculationTimeString}}</h1>
+                                <h1 class="display-4 job-data">{{job.totalCalculationTimeString}}</h1>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div> 
-        <div class="row">
-            <div class="col-6">
-                <div class="card">
-                    <h3 class="card-header display-4">Cluster Calculations</h3>
-                    <div class="card-block">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-12">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Cluster Count</th>
-                                                <th>Global Si</th>
-                                                <th>Global Cluster Si</th>
-                                                <th>Minimum Cluster Count</th>
-                                                <th>Maximum Cluster Count</th>
-                                                <th>Iterations Per Cluster</th>
-                                                <th>Maximum Optimization Count</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card cluster-calculation-table">
+                <h3 class="card-header display-4">Cluster Calculations</h3>
+                <div class="card-block">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table table-sm table-hover table-striped table-bordered ">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Optimal Cluster Count</th>
+                                            <th>Created</th>
+                                            <th>Global Si</th>
+                                            <th>Global Cluster Si</th>
+                                            <th>Minimum Cluster Count</th>
+                                            <th>Maximum Cluster Count</th>
+                                            <th>Iterations Per Cluster</th>
+                                            <th>Maximum Optimization Count</th>
+                                            <th>Total Calculation Time</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let clusterCalculation of clusterCalculations">
+                                            <th scope="row">{{clusterCalculation.id}}</th>
+                                            <td [ngClass]="{'loading': isClusterCalculating(clusterCalculation)}">
+                                                <span *ngIf="!isClusterCalculating(clusterCalculation)">{{clusterCalculation.clusterCount}}</span>
+                                                <i *ngIf="isClusterCalculating(clusterCalculation)" class="fa fa-spinner fa-pulse fa-fw"></i></td>
+                                            <td>{{clusterCalculation.created | date:'medium' }}</td>
+                                            <td [ngClass]="{'loading': isClusterCalculating(clusterCalculation)}">
+                                                <span *ngIf="!isClusterCalculating(clusterCalculation)">{{clusterCalculation.globalSi}}</span>
+                                                <i *ngIf="isClusterCalculating(clusterCalculation)" class="fa fa-spinner fa-pulse fa-fw"></i>
+                                            </td>
+                                            <td [ngClass]="{'loading': isClusterCalculating(clusterCalculation)}">
+                                                <span *ngIf="!isClusterCalculating(clusterCalculation)">{{clusterCalculation.clusterSi}}</span> 
+                                                <i *ngIf="isClusterCalculating(clusterCalculation)" class="fa fa-spinner fa-pulse fa-fw"></i>
+                                            </td>
+                                            <td>{{clusterCalculation.minimumClusterCount}}</td>
+                                            <td>{{clusterCalculation.maximumClusterCount}}</td>
+                                            <td>{{clusterCalculation.iterationsPerCluster}}</td>
+                                            <td>{{clusterCalculation.maximumOptimizationsCount}}</td>
+                                            <td>{{clusterCalculation.totalCalculationTimeString}}</td>
+                                            <td class="status" [ngSwitch]="clusterCalculation.status">
 
-                                            <tr *ngFor="let clusterCalculation of clusterCalculations">
-                                                <th scope="row">{{clusterCalculation.id}}</th>
-                                                <td>{{clusterCalculation.clusterCount}}</td>
-                                                <td>{{clusterCalculation.created | date:'medium' }}</td>
-                                                <td>{{clusterCalculation.minimumClusterCount}}</td>
-                                                <td>{{clusterCalculation.maximumClusterCount}}</td>
-                                                <td>{{clusterCalculation.iterationsPerCluster}}</td>
-                                                <td>{{clusterCalculation.maximumOptimizationsCount}}</td>
-                                                <td>{{clusterCalculation.totalCalculationTimeString}}</td>
-                                                <td [ngSwitch]="clusterCalculation.status">
+                                                <span *ngSwitchCase="clusterCalculationStatus.New" class="badge badge-primary">
+                                                    <i class="fa fa-fw fa-bolt"></i> New
+                                                </span>
 
-                                                    <span *ngSwitchCase="clusterCalculationStatus.New" class="badge badge-primary">
-                                                        <i class="fa fa-fw fa-bolt"></i> New
-                                                    </span>
+                                                <span *ngSwitchCase="clusterCalculationStatus.Clustering" class="badge badge-info">
+                                                    <i class="fa fa-fw fa-hourglass-start fa-spin"></i> Clustering
+                                                </span>
 
-                                                    <span *ngSwitchCase="clusterCalculationStatus.Clustering" class="badge badge-info">
-                                                        <i class="fa fa-fw fa-hourglass-start"></i> Clustering
-                                                    </span>
+                                                <span *ngSwitchCase="clusterCalculationStatus.Completed" class="badge badge-success">
+                                                    <i class="fa fa-fw fa-check-square-o"></i> Completed
+                                                </span>
 
-                                                    <span *ngSwitchCase="clusterCalculationStatus.Completed" class="badge badge-success">
-                                                        <i class="fa fa-fw fa-check-square-o"></i> Completed
-                                                    </span>
-
-                                                    <span *ngSwitchCase="clusterCalculationStatus.Failed" class="badge badge-danger">
-                                                        <i class="fa fa-fw fa-bomb"></i> Failed
-                                                    </span>
-
-                                                    <i *ngIf="clusterCalculationStatus.status == clusterCalculationStatus.New || clusterCalculationStatus.status == clusterCalculationStatus.Clustering" class="fa fa-spinner fa-pulse fa-fw"></i>
-                                                </td>
-                                                <td>
-                                                    <a [hidden]="clusterCalculationStatus.status != clusterCalculationStatus.Completed" role="button" [routerLink]="['/clusterCalculation', clusterCalculation.id]" class="btn btn-primary btn-sm">
-                                                        <i class="fa fa-fw fa-cubes"></i>
-                                                        View Results
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                <span *ngSwitchCase="clusterCalculationStatus.Failed" class="badge badge-danger">
+                                                    <i class="fa fa-fw fa-bomb"></i> Failed
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a [hidden]="clusterCalculation.status != clusterCalculationStatus.Completed" role="button" [routerLink]="['/clusterCalculation', clusterCalculation.id]" class="btn btn-primary btn-sm">
+                                                    <i class="fa fa-fw fa-cubes"></i>
+                                                    View Results
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

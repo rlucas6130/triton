@@ -9,6 +9,13 @@ namespace UI.Controllers
 {
     public class HomeController : Controller
     {
+        private SvdEntities _context = new SvdEntities();
+
+        public HomeController()
+        {
+            _context.Configuration.ProxyCreationEnabled = false;
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -34,11 +41,12 @@ namespace UI.Controllers
 
             var start = DateTime.Now;
 
-            var cluster = ClusterOptimizer.OptimizeRange(jobId, new Contracts.ClusterAnalysisParameters() {
+            var cluster = ClusterOptimizer.OptimizeRange(_context, new Contracts.ClusterAnalysisParameters() {
                 MinimumClusterCount = 20,
                 MaximumClusterCount = 20,
                 IterationsPerCluster = 1,
-                MaximumOptimizationsCount = 200
+                MaximumOptimizationsCount = 200,
+                JobId = jobId
             });
 
             Debug.WriteLine($"Total Optimization Time: {DateTime.Now.Subtract(start).TotalMilliseconds} Milliseconds");

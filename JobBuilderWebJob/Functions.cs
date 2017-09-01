@@ -30,11 +30,14 @@ namespace JobBuilderWebJob
 
         // This function will get triggered/executed when a new message is written 
         // on an Azure Queue called queue.
-        public static void StartClusterAnalysis([QueueTrigger("clusterqueue")] Tuple<int, Contracts.ClusterAnalysisParameters> clusterParams, TextWriter log)
+        public static void StartClusterAnalysis([QueueTrigger("clusterqueue")] int clusterCalculationId, TextWriter log)
         {
             Task.Factory.StartNew(() =>
             {
-                var cluster = ClusterOptimizer.OptimizeRange(clusterParams.Item1, clusterParams.Item2);
+                using (var context = new SvdEntities())
+                {
+                    ClusterOptimizer.OptimizeRange(context, clusterCalculationId);
+                }
             });
         }
     }

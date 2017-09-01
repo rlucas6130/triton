@@ -12,9 +12,9 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Created" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Completed" Type="datetime2" Precision="7" />
-          <Property Name="ClusterCount" Type="int" Nullable="false" />
-          <Property Name="GlobalSi" Type="real" Nullable="false" />
-          <Property Name="ClusterSi" Type="real" Nullable="false" />
+          <Property Name="ClusterCount" Type="int" />
+          <Property Name="GlobalSi" Type="real" />
+          <Property Name="ClusterSi" Type="real" />
           <Property Name="JobId" Type="int" Nullable="false" />
           <Property Name="MinimumClusterCount" Type="int" Nullable="false" />
           <Property Name="MaximumClusterCount" Type="int" Nullable="false" />
@@ -537,9 +537,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ClusterCount" Type="Int32" Nullable="false" />
-          <Property Name="GlobalSi" Type="Single" Nullable="false" />
-          <Property Name="ClusterSi" Type="Single" Nullable="false" />
+          <Property Name="ClusterCount" Type="Int32" />
+          <Property Name="GlobalSi" Type="Single" />
+          <Property Name="ClusterSi" Type="Single" />
           <Property Name="JobId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Job" Relationship="SvdModel.FK_ClusterCalculation_Job" FromRole="ClusterCalculation" ToRole="Job" />
           <NavigationProperty Name="ClusterJobDocuments" Relationship="SvdModel.FK_ClusterJobDocuments_ClusterCalculation" FromRole="ClusterCalculation" ToRole="ClusterJobDocument" />

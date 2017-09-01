@@ -5,9 +5,7 @@ namespace Engine.Core
 {
     public class ClusterOptimizer
     {
-        public int NumClusters { get; set; }
-
-        public ClusterOptimizer(int k = 2)
+        public ClusterOptimizer()
         {
             // Method #1
             // Create 'n' number of Cluster(k) objects and select the one with the best Si stats. 
@@ -19,41 +17,44 @@ namespace Engine.Core
         public static Cluster Optimize(Random randomGenerator, int jobId, int k = 2, int iterations = 4, int maxOptimizationIterations = 200)
         {
             var clusters = (from c in Enumerable.Range(0, iterations)
-                           select new Cluster(randomGenerator, jobId, k, maxOptimizationIterations)).ToList();
+                            select new Cluster(randomGenerator, jobId, k, maxOptimizationIterations)).ToList();
 
             return clusters
                 .OrderByDescending(c => c.GlobalSi)
                 .ThenByDescending(c => c.GlobalClusterSiAverage).First();
         }
 
-        public static Cluster OptimizeRange(int jobId, Contracts.ClusterAnalysisParameters clusterParams)
+        public static Cluster OptimizeRange(SvdEntities context, int clusterCalculationId) =>
+            OptimizeRange(context, Cluster.Get(context, clusterCalculationId));
+
+
+        public static Cluster OptimizeRange(SvdEntities context, Contracts.ClusterAnalysisParameters clusterAnalysisParameters) =>
+            OptimizeRange(context, Cluster.CreateCalculation(context, clusterAnalysisParameters));
+
+
+        private static Cluster OptimizeRange(SvdEntities context, ClusterCalculation clusterCalculationEntity)
         {
-            using (var context = new SvdEntities())
+            try
             {
-                var clusterCalculationEntity = Cluster.CreateCalculation(context, jobId, clusterParams);
+                var randGen = new Random();
 
-                try
-                {
-                    var randGen = new Random();
+                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Clustering);
 
-                    Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Clustering);
+                var clusters = (from k in Enumerable.Range(clusterCalculationEntity.MinimumClusterCount, (clusterCalculationEntity.MaximumClusterCount - clusterCalculationEntity.MinimumClusterCount) + 1)
+                                select Optimize(randGen, clusterCalculationEntity.JobId, k, clusterCalculationEntity.IterationsPerCluster, clusterCalculationEntity.MaximumOptimizationsCount)).ToList();
 
-                    var clusters = (from k in Enumerable.Range(clusterParams.MinimumClusterCount, (clusterParams.MaximumClusterCount - clusterParams.MinimumClusterCount) + 1)
-                                    select Optimize(randGen, jobId, k, clusterParams.IterationsPerCluster, clusterParams.MaximumOptimizationsCount)).ToList();
+                var optimizedCluster = clusters
+                    .OrderByDescending(c => c.GlobalSi)
+                    .ThenByDescending(c => c.GlobalClusterSiAverage).First();
 
-                    var optimizedCluster = clusters
-                        .OrderByDescending(c => c.GlobalSi)
-                        .ThenByDescending(c => c.GlobalClusterSiAverage).First();
+                optimizedCluster.Save(context, clusterCalculationEntity);
 
-                    optimizedCluster.Save(context, clusterCalculationEntity);
-
-                    return optimizedCluster;
-                }
-                catch (Exception)
-                {
-                    Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Failed);
-                    throw;
-                }
+                return optimizedCluster;
+            }
+            catch (Exception)
+            {
+                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Failed);
+                throw;
             }
         }
     }
