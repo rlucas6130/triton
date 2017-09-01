@@ -1,0 +1,44 @@
+﻿<div class="modal-header">
+    <h4 class="modal-title pull-left">Create Cluster Calculation</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form #clusterForm="ngForm" (ngSubmit)="createNewClusterJob()">
+    <div class="modal-body">
+        <div class="form-group row">
+            <label for="minimumClusterCount" class="col-9 col-form-label display-4">
+                Minimum Cluster Count (k-)
+            </label>
+            <div class="col-3">
+                <input class="form-control" [(ngModel)]="clusterCalculationParams.minimumClusterCount" type="number" required id="minimumClusterCount" name="minimumClusterCount">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="maximumClusterCount" class="col-9 col-form-label display-4">
+                Maximum Cluster Count (k+)
+            </label>
+            <div class="col-3">
+                <input class="form-control" [(ngModel)]="clusterCalculationParams.maximumClusterCount" type="number" required id="maximumClusterCount" name="maximumClusterCount">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="iterationsPerCluster" class="col-9 col-form-label display-4">Iterations Per Cluster (k)</label>
+            <div class="col-3">
+                <input class="form-control" [(ngModel)]="clusterCalculationParams.iterationsPerCluster" type="number" required id="iterationsPerCluster" name="iterationsPerCluster">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="maximumOptimizationsCount" class="col-9 col-form-label display-4">Maximum Optimizations Performed</label>
+            <div class="col-3">
+                <input class="form-control" [(ngModel)]="clusterCalculationParams.maximumOptimizationsCount" type="number" required id="maximumOptimizationsCount" name="maximumOptimizationsCount">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button [disabled]="!clusterForm.form.valid" type="submit" class="btn btn-primary">
+            <i class="fa fa-fw fa-plus-square"></i>Create New Cluster Analysis
+        </button>
+    </div>
+</form>
+

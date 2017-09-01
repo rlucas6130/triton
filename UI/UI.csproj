@@ -982,6 +982,8 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="src\app\app.component.html" />
     <Content Include="src\app\app.component.css" />
+    <Content Include="src\app\clusterCalculationModal.component.html" />
+    <Content Include="src\app\clusterCalculationModal.component.css" />
     <Content Include="src\app\createJob.component.html" />
     <Content Include="src\app\createJob.component.css" />
     <Content Include="src\app\visualizeJob.component.html" />
@@ -1043,7 +1045,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\app\app-routing.module.ts" />
-    <TypeScriptCompile Include="src\app\app.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\clusterCalculationModal.component.ts" />
     <TypeScriptCompile Include="src\app\app.component.ts" />
     <TypeScriptCompile Include="src\app\app.module.ts" />
     <TypeScriptCompile Include="src\app\document.service.ts" />

@@ -1,5 +1,7 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, ViewChild  } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ClusterCalculationModal } from './clusterCalculationModal.component';
+
 
 import { Job } from './job';
 import { JobService } from './job.service';
@@ -7,13 +9,14 @@ import { JobService } from './job.service';
 import { ClusterCalculation } from './clusterCalculation';
 import { ClusterCalculationService, ClusterCalculationParameters } from './clusterCalculation.service';
 
-import { BsModalService, BsModalRef } from 'ngx-bootstrap';
+import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
 
 import 'rxjs/add/operator/switchMap';
+import { Subscription } from 'rxjs/Subscription';
 import * as _ from 'lodash'; 
 
 @Component({
-    selector: 'visualizeJob',
+    selector: 'visualizeJob', 
     templateUrl: './visualizeJob.component.html',
     styleUrls: ['./visualizeJob.component.css']
 })
@@ -21,13 +24,6 @@ export class VisualizeJobComponent implements OnInit {
     job: Job = new Job();
     clusterCalculations: ClusterCalculation[];
     clusterCalculationModal: BsModalRef;
-
-    clusterCalculationParams: ClusterCalculationParameters = {
-        minimumClusterCount: 2,
-        maximumClusterCount: 10,
-        iterationsPerCluster: 1,
-        maximumOptimizationsCount: 200
-    };
 
     public clusterCalculationStatus: {} = {
         New: ClusterCalculationStatus.New,
@@ -40,14 +36,19 @@ export class VisualizeJobComponent implements OnInit {
         private jobService: JobService,
         private clusterCalculationService: ClusterCalculationService,
         private route: ActivatedRoute,
-        private modalService: BsModalService) { }
+        private modalService: BsModalService) {
+
+        clusterCalculationService.createClusterCalculation$.subscribe(clusterCalculationParams => {
+            this.createNewClusterJob(clusterCalculationParams)
+
+        });
+    }
 
     ngOnInit(): void {
         this.route.paramMap
             .switchMap((params: ParamMap) => this.jobService.getJob(+params.get('jobId')))
             .subscribe(job => {
                 this.job = job;
-                this.clusterCalculationParams.jobId = this.job.id;
             });
 
         this.route.paramMap
@@ -80,8 +81,8 @@ export class VisualizeJobComponent implements OnInit {
         }
     }
 
-    createNewClusterJob(): void {
-        this.clusterCalculationService.create(this.clusterCalculationParams).then(success => {
+    createNewClusterJob(clusterCalculationParameters: ClusterCalculationParameters): void {
+        this.clusterCalculationService.create(clusterCalculationParameters).then(success => {
             if (success) {
 
                 //Fire Initial
@@ -106,11 +107,15 @@ export class VisualizeJobComponent implements OnInit {
             } else {
                 console.error("Cluster Calculation Creation Failed");
             }
-        });
+        }); 
     }
 
     isClusterCalculating(clusterCalculation : ClusterCalculation) : boolean {
         return clusterCalculation.status == ClusterCalculationStatus.New || clusterCalculation.status == ClusterCalculationStatus.Clustering;
+    }
+
+    showCreateClusterCalcModal(): void {
+        this.clusterCalculationModal = this.modalService.show(ClusterCalculationModal);
     }
 }
 

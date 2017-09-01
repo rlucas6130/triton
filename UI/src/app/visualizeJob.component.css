@@ -1,13 +1,9 @@
-﻿.display-4 {
-    font-size:1.5rem;
+﻿h3.display-4 {
+    font-size:1.5em;
 }
 
-.ng-valid[required], .ng-valid.required  {
-  border-left: 5px solid #42A948; /* green */
-}
-
-.ng-invalid:not(form)  {
-  border-left: 5px solid #a94442; /* red */
+.display-4 { 
+    font-size:1em;
 }
 
 .cluster-calculation-table {
@@ -30,4 +26,8 @@ td, tbody th {
 td.loading {
     vertical-align:middle;
     text-align:center;
+}
+
+.card-header button, h1 button {
+    margin-left:22px;
 }

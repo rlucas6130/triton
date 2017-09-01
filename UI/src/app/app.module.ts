@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
 import { VisualizeJobComponent } from './visualizeJob.component';
+import { ClusterCalculationModal } from './clusterCalculationModal.component';
 import { JobService } from './job.service';
 import { DocumentService } from './document.service';
 import { ClusterCalculationService } from './clusterCalculation.service';
@@ -17,7 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { FileDropDirective, FileSelectDirective } from 'ng2-file-upload';
 
-import { ModalModule } from 'ngx-bootstrap';
+import { ModalModule, PopoverModule  } from 'ngx-bootstrap';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 
 @NgModule({
@@ -27,13 +28,15 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
         FormsModule,
         HttpModule,
         AppRoutingModule,
-        ModalModule.forRoot()
+        ModalModule.forRoot(),
+        PopoverModule.forRoot()
     ],
     declarations: [
         AppComponent,
         JobsComponent,
         CreateJobComponent,
         VisualizeJobComponent,
+        ClusterCalculationModal,
         FileDropDirective,
         FileSelectDirective
     ],
@@ -49,6 +52,9 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
                 } as FileUploaderOptions)
             }
         }
+    ],
+    entryComponents: [
+        ClusterCalculationModal
     ],
     bootstrap: [ AppComponent ]
 })

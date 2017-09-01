@@ -2,6 +2,7 @@
 import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
+import { Subject } from 'rxjs/Subject';
 
 import { ClusterCalculation } from './clusterCalculation';
 
@@ -34,6 +35,9 @@ export class ClusterCalculationService {
     }
     getClusterCalculations(jobId: number): Promise<ClusterCalculation[]> {
         const url = `${this.clusterCalculationUrl}/getAll?jobId=${jobId}`;
+
+        this.contextJobId = jobId;
+
         return this.http.get(url)
             .toPromise()
             .then(response => response.json() as ClusterCalculation[])
@@ -45,6 +49,18 @@ export class ClusterCalculationService {
             .toPromise()
             .then(response => response.json() as ClusterCalculation)
             .catch(this.handleError);
+    }
+
+    private createClusterCalculationSource = new Subject<ClusterCalculationParameters>();
+    public createClusterCalculation$ = this.createClusterCalculationSource.asObservable();
+    private contextJobId: number;
+
+    createClusterCalculation(clusterCalculationParams: ClusterCalculationParameters): void {
+
+        if (!clusterCalculationParams.jobId && this.contextJobId && this.contextJobId > 0)
+            clusterCalculationParams.jobId = this.contextJobId;
+
+        this.createClusterCalculationSource.next(clusterCalculationParams);
     }
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error);
