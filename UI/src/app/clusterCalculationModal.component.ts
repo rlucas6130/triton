@@ -18,7 +18,7 @@ export class ClusterCalculationModal implements OnInit {
     };
 
     ngOnInit(): void {
-
+         
     }
 
     constructor(private modalRef: BsModalRef, private clusterCalculationService: ClusterCalculationService) {
