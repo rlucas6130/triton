@@ -2,14 +2,13 @@
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ClusterCalculationModal } from './clusterCalculationModal.component';
 
-
 import { Job } from './job';
 import { JobService } from './job.service';
 
 import { ClusterCalculation } from './clusterCalculation';
 import { ClusterCalculationService, ClusterCalculationParameters } from './clusterCalculation.service';
 
-import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 
 import 'rxjs/add/operator/switchMap';
 import { Subscription } from 'rxjs/Subscription';
@@ -22,7 +21,7 @@ import * as _ from 'lodash';
 })
 export class VisualizeJobComponent implements OnInit {
     job: Job = new Job();
-    clusterCalculations: ClusterCalculation[];
+    clusterCalculations: ClusterCalculation[]; 
     clusterCalculationModal: BsModalRef;
 
     public clusterCalculationStatus: {} = {
@@ -39,8 +38,7 @@ export class VisualizeJobComponent implements OnInit {
         private modalService: BsModalService) {
 
         clusterCalculationService.createClusterCalculation$.subscribe(clusterCalculationParams => {
-            this.createNewClusterJob(clusterCalculationParams)
-
+            this.createNewClusterJob(clusterCalculationParams);
         });
     }
 
@@ -116,6 +114,7 @@ export class VisualizeJobComponent implements OnInit {
 
     showCreateClusterCalcModal(): void {
         this.clusterCalculationModal = this.modalService.show(ClusterCalculationModal);
+        this.clusterCalculationModal.content.clusterCalculationParams.jobId = this.job.id;
     }
 }
 

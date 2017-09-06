@@ -342,7 +342,33 @@ namespace Engine.Core
 
         public static ClusterCalculation Get(SvdEntities context, int clusterCalculationId)
         {
-            return context.ClusterCalculations.Find(clusterCalculationId);
+            var ccs = context.ClusterCalculations
+                .Include("Clusters")
+                .Include("ClusterJobTerms")
+                .Include("ClusterJobDocuments")
+                .Include("ClusterJobDocuments.JobDocument.Document")
+                .Include("ClusterJobTerms.JobTerm.Term")
+                .FirstOrDefault(cc => cc.Id == clusterCalculationId);
+
+            ccs.Clusters.ToList().ForEach(c => c.ClusterCalculation = null);
+
+            ccs.ClusterJobTerms.ToList().ForEach(c => {
+                c.ClusterCalculation = null;
+                c.Cluster = null;
+
+                c.JobTerm.ClusterJobTerms = null;
+                c.JobTerm.Term.JobTerms = null;
+            });
+
+            ccs.ClusterJobDocuments.ToList().ForEach(c => {
+                c.ClusterCalculation = null;
+                c.Cluster = null;
+
+                c.JobDocument.ClusterJobDocuments = null;
+                c.JobDocument.Document.JobDocuments = null;
+            });
+
+            return ccs;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace UI.Controllers
         public ClusterCalculationsController()
         {
             _context.Configuration.ProxyCreationEnabled = false;
+            _context.Configuration.LazyLoadingEnabled = false;
         }
 
         // GET api/<controller>

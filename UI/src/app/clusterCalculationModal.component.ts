@@ -17,11 +17,9 @@ export class ClusterCalculationModal implements OnInit {
         maximumOptimizationsCount: 200
     };
 
-    ngOnInit(): void {
-         
-    }
+    constructor(private modalRef: BsModalRef, private clusterCalculationService: ClusterCalculationService) { }
 
-    constructor(private modalRef: BsModalRef, private clusterCalculationService: ClusterCalculationService) {
+    ngOnInit(): void {
 
     }
 
@@ -29,4 +27,4 @@ export class ClusterCalculationModal implements OnInit {
         this.clusterCalculationService.createClusterCalculation(this.clusterCalculationParams);
         this.modalRef.hide();
     }
-} 
+}

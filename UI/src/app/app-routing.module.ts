@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
 import { VisualizeJobComponent } from './visualizeJob.component';
+import { ClusterCalculationComponent } from './clusterCalculation.component';
 
 const routes: Routes = [
     {
@@ -22,6 +23,10 @@ const routes: Routes = [
     {
         path: 'visualize/:jobId',
         component: VisualizeJobComponent
+    },
+    {
+        path: 'clusterCalculation/:clusterCalculationId',
+        component: ClusterCalculationComponent
     }
 ];
 

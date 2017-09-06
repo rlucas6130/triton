@@ -1,0 +1,10 @@
+﻿<div class="container-fluid">
+    <h1>
+        Cluster Calculation <i class="fa fa-fw fa-calculator"></i>
+    </h1>
+    <svg #clusterSvg attr.height="{{svgHeight}}" attr.width="{{svgWidth}}" class="cluster-svg" (window:resize)="resize()">
+
+        <circle attr.cx="{{svgWidth/2}}" attr.cy="{{svgHeight/2}}" r="40" stroke="green" stroke-width="4" fill="yellow" />
+
+    </svg>
+</div>

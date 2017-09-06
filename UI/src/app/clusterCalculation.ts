@@ -1,4 +1,6 @@
-﻿export class ClusterCalculation {
+﻿import { Cluster } from './cluster';
+
+export class ClusterCalculation {
     id: number;
     created: string;
     completed: string;
@@ -12,4 +14,5 @@
     maximumOptimizationsCount: number;
     status: number;
     totalCalculationTimeString: string;
+    clusters?: Cluster[]
 }

@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { JobsComponent } from './jobs.component';
 import { CreateJobComponent } from './createJob.component';
 import { VisualizeJobComponent } from './visualizeJob.component';
+import { ClusterCalculationComponent } from './clusterCalculation.component';
 import { ClusterCalculationModal } from './clusterCalculationModal.component';
 import { JobService } from './job.service';
 import { DocumentService } from './document.service';
@@ -37,6 +38,7 @@ import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
         CreateJobComponent,
         VisualizeJobComponent,
         ClusterCalculationModal,
+        ClusterCalculationComponent,
         FileDropDirective,
         FileSelectDirective
     ],
