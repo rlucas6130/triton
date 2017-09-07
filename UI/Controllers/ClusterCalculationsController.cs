@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using UI.Controllers.Helpers;
-using UI.ViewModels;
+using UI.ViewModels.Dtos;
 using ClusterCalculationManager = Engine.Core.Cluster;
 
 namespace UI.Controllers

@@ -8,7 +8,7 @@ export interface Cluster
     jobId: number;
     clusterCalculationId: number;
     centerVector: number[];
-    si: number;
+    si?: number;
     clusterJobDocuments: ClusterJobDocument[];
     clusterJobTerms: ClusterJobTerm[];
 }

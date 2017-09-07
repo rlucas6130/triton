@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UI.ViewModels
+namespace UI.ViewModels.Dtos
 {
     public class ClusterCalculation : Calculable
     {

@@ -37,9 +37,17 @@
         
         return null;
     }
+
+    string Nullable(Property property) {
+        if(property.Type.IsNullable) {
+            return "?";
+        }
+        
+        return null;
+    }
 }
-$Classes(UI.ViewModels*)[$Imports
+$Classes(UI.ViewModels.Dtos*)[$Imports
 export interface $Name$TypeParameters $Extends
 { $Properties[
-    $name: $Type;]
+    $name$Nullable: $Type;]
 }]

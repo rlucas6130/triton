@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using UI.ViewModels;
+using UI.ViewModels.Dtos;
 using LSA = Engine.Core.LSA;
 
 namespace UI
@@ -42,7 +38,7 @@ namespace UI
             Mapper.Initialize(config => {
                 config.CreateMap<Engine.Job, Job>();
                 config.CreateMap<Engine.Document, Document>()
-                    .ForMember(dest => dest.TotalTermDocCount.GetValueOrDefault(), opt => opt.ResolveUsing<TermDocCountResolver>());
+                    .ForMember(dest => dest.TotalTermDocCount, opt => opt.ResolveUsing<TermDocCountResolver>());
                 config.CreateMap<Engine.ClusterCalculation, ClusterCalculation>();
                 config.CreateMap<Engine.Cluster, Cluster>()
                     .ForMember(dest => dest.CenterVector, opt => opt.ResolveUsing<BinaryVectorResolver, byte[]>(src => src.CenterVectorSerialized));
@@ -86,9 +82,9 @@ namespace UI
             }
         }
 
-        private class TermDocCountResolver : IValueResolver<Engine.Document, Document, int>
+        private class TermDocCountResolver : IValueResolver<Engine.Document, Document, int?>
         {
-            public int Resolve(Engine.Document source, Document destination, int destinationMember, ResolutionContext context)
+            public int? Resolve(Engine.Document source, Document destination, int? destinationMember, ResolutionContext context)
             {
                 return context.Items.ContainsKey("context") ? 
                     LSA.GetTotalTermDocCount(context.Items["context"] as Engine.SvdEntities, source.Id) : 0;

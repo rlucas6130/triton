@@ -1,7 +1,7 @@
 ﻿using System;
 using UI.ViewModels.Helpers;
 
-namespace UI.ViewModels
+namespace UI.ViewModels.Dtos
 {
     public abstract class Calculable
     {

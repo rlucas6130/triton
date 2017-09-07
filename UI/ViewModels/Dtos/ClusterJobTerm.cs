@@ -1,14 +1,14 @@
-﻿namespace UI.ViewModels
+﻿namespace UI.ViewModels.Dtos
 {
-    public class ClusterJobDocument
+    public class ClusterJobTerm
     {
         public int Id { get; set; }
         public int JobId { get; set; }
         public int ClusterCalculationId { get; set; }
-        public int JobDocumentId { get; set; }
+        public int JobTermId { get; set; }
         public int ClusterId { get; set; }
-        public float Si { get; set; }
+        public float DistanceToClusterCenter { get; set; }
         public float[] Vector { get; set; }
-        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }
