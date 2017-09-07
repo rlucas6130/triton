@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ViewChild  } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ClusterCalculationModal } from './clusterCalculationModal.component';
 
@@ -20,10 +20,11 @@ import * as _ from 'lodash';
     templateUrl: './visualizeJob.component.html',
     styleUrls: ['./visualizeJob.component.css']
 })
-export class VisualizeJobComponent implements OnInit {
+export class VisualizeJobComponent implements OnInit, OnDestroy {
     job: Job;
     clusterCalculations: ClusterCalculation[]; 
     clusterCalculationModal: BsModalRef;
+    createClusterCalculationSubscription: Subscription;
 
     public clusterCalculationStatus: {} = {
         New: ClusterCalculationStatus.New,
@@ -38,7 +39,7 @@ export class VisualizeJobComponent implements OnInit {
         private route: ActivatedRoute,
         private modalService: BsModalService) {
 
-        clusterCalculationService.createClusterCalculation$.subscribe(clusterCalculationParams => {
+        this.createClusterCalculationSubscription = clusterCalculationService.createClusterCalculation$.subscribe(clusterCalculationParams => {
             this.createNewClusterJob(clusterCalculationParams);
         });
     }
@@ -61,6 +62,10 @@ export class VisualizeJobComponent implements OnInit {
                     this.refreshUntilCompleted(processingClusterCalculations);
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        this.createClusterCalculationSubscription.unsubscribe();
     }
 
     private refreshUntilCompleted(processingClusterCalculations: ClusterCalculation[]): void {
