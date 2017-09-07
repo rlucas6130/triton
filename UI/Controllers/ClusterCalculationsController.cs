@@ -1,21 +1,23 @@
-﻿using Engine;
+﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using UI.Controllers.Helpers;
+using UI.ViewModels;
 using ClusterCalculationManager = Engine.Core.Cluster;
 
 namespace UI.Controllers
 {
     public class ClusterCalculationsController : ApiController
     {
-        private SvdEntities _context = new SvdEntities();
+        private Engine.SvdEntities _context = new Engine.SvdEntities();
+        private Engine.SvdEntities _noLazyContext = new Engine.SvdEntities();
 
         public ClusterCalculationsController()
         {
-            _context.Configuration.ProxyCreationEnabled = false;
-            _context.Configuration.LazyLoadingEnabled = false;
+            _noLazyContext.Configuration.LazyLoadingEnabled = false;
+            _noLazyContext.Configuration.ProxyCreationEnabled = false;
         }
 
         // GET api/<controller>
@@ -23,17 +25,21 @@ namespace UI.Controllers
         [Route("api/clusterCalculations/getAll")]
         public IEnumerable<ClusterCalculation> GetAll(int jobId)
         {
-            return ClusterCalculationManager.GetAll(_context, jobId)
+            var clusterCalculations = ClusterCalculationManager.GetAll(_noLazyContext, jobId)
                 .OrderByDescending(i => i.Created);
+
+            return Mapper.Map<IEnumerable<Engine.ClusterCalculation>, IEnumerable<ClusterCalculation>>(clusterCalculations);
         }
 
         public ClusterCalculation Get(int id)
         {
-            return ClusterCalculationManager.Get(_context, id);
+            var clusterCalculation = ClusterCalculationManager.Get(_context, id);
+
+            return Mapper.Map<Engine.ClusterCalculation, ClusterCalculation>(clusterCalculation);
         }
 
         // POST api/<controller>
-        public void Post([FromBody]Contracts.ClusterAnalysisParameters clusterParams)
+        public void Post([FromBody]Engine.Contracts.ClusterCalculationParameters clusterParams)
         {
             var clusterCalculation = ClusterCalculationManager.CreateCalculation(_context, clusterParams);
 

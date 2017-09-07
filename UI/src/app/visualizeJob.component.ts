@@ -6,7 +6,8 @@ import { Job } from './job';
 import { JobService } from './job.service';
 
 import { ClusterCalculation } from './clusterCalculation';
-import { ClusterCalculationService, ClusterCalculationParameters } from './clusterCalculation.service';
+import { ClusterCalculationService } from './clusterCalculation.service';
+import { ClusterCalculationParameters } from './clusterCalculationParameters';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 
@@ -20,7 +21,7 @@ import * as _ from 'lodash';
     styleUrls: ['./visualizeJob.component.css']
 })
 export class VisualizeJobComponent implements OnInit {
-    job: Job = new Job();
+    job: Job;
     clusterCalculations: ClusterCalculation[]; 
     clusterCalculationModal: BsModalRef;
 
@@ -71,7 +72,7 @@ export class VisualizeJobComponent implements OnInit {
 
                     _.assign(cc, c);
 
-                    if (c.status == ClusterCalculationStatus.Completed || c.status == ClusterCalculationStatus.Failed) {
+                    if (c.status.valueOf() == ClusterCalculationStatus.Completed || c.status.valueOf() == ClusterCalculationStatus.Failed) {
                         clearInterval(intervalId);
                     }
                 });
@@ -109,7 +110,7 @@ export class VisualizeJobComponent implements OnInit {
     }
 
     isClusterCalculating(clusterCalculation : ClusterCalculation) : boolean {
-        return clusterCalculation.status == ClusterCalculationStatus.New || clusterCalculation.status == ClusterCalculationStatus.Clustering;
+        return clusterCalculation.status.valueOf() == ClusterCalculationStatus.New || clusterCalculation.status.valueOf() == ClusterCalculationStatus.Clustering;
     }
 
     showCreateClusterCalcModal(): void {

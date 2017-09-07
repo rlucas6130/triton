@@ -1,8 +1,11 @@
-﻿export class Job {
+﻿
+import { Calculable } from "./calculable";
+import { JobStatus } from "./JobStatus"; 
+
+export interface Job extends Calculable
+{ 
     id: number;
-    created: string;
-    status: number;
-    documentCount: string;
+    documentCount: number;
     dimensions: number;
-    totalCalculationTimeString: string;
+    status: JobStatus;
 }

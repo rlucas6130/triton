@@ -15,6 +15,13 @@ import { FileUploader, FileItem } from 'ng2-file-upload';
 
 import * as _ from 'lodash'; 
 
+type ViewDocument = Document & {
+    isSelected: boolean,
+    isUploading: boolean,
+    isNew?: boolean,
+    FileItem?: FileItem
+};
+
 @Component({
     selector: 'createJob',
     templateUrl: './createJob.component.html',
@@ -38,8 +45,8 @@ import * as _ from 'lodash';
         ])
     ]
 })
-export class CreateJobComponent implements OnInit, DoCheck {
-    documents: Document[] = [];
+export class CreateJobComponent implements OnInit, DoCheck { 
+    documents: ViewDocument[] = [];
     allDocsSelected: boolean;
     initialUploadCount: number;
     constructor(
@@ -52,7 +59,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     ngOnInit(): void {
         this.documentService.getDocuments()
-            .then(docs => this.documents = docs);
+            .then(docs => this.documents = docs as ViewDocument[]);
     }
 
     ngDoCheck(...args: any[]): void {
@@ -73,7 +80,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
                         isSelected: false,
                         isUploading: false,
                         fileItem: file
-                    } as Document);
+                    } as ViewDocument);
                 }
             }
         }
@@ -123,7 +130,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
         this.waitUntilComplete();
     }
 
-    public uploadDocument(document: Document): void {
+    public uploadDocument(document: ViewDocument): void {
         if (!document.isUploading) {
 
             this.initialUploadCount = 1;

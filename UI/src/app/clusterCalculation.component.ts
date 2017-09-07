@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef  } from '@angular/core';
 import { ClusterCalculation } from './clusterCalculation';
-import { ClusterCalculationService, ClusterCalculationParameters } from './clusterCalculation.service';
+import { ClusterCalculationParameters } from './clusterCalculationParameters';
+import { ClusterCalculationService } from './clusterCalculation.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import 'rxjs/add/operator/switchMap';
@@ -26,6 +27,7 @@ export class ClusterCalculationComponent implements OnInit {
             .switchMap((params: ParamMap) => this.clusterCalculationService.getClusterCalculation(+params.get('clusterCalculationId')))
             .subscribe(clusterCalculation => {
                 this.clusterCalculation = clusterCalculation;
+                console.log(this.clusterCalculation);
             });
 
         this.resize();

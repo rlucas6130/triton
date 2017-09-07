@@ -1,9 +1,11 @@
-﻿import { Cluster } from './cluster';
+﻿
+import { Calculable } from "./calculable";
+import { ClusterStatus } from "./ClusterStatus"; 
+import { Cluster } from "./Cluster"; 
 
-export class ClusterCalculation {
+export interface ClusterCalculation extends Calculable
+{ 
     id: number;
-    created: string;
-    completed: string;
     clusterCount: number;
     globalSi: number;
     clusterSi: number;
@@ -12,7 +14,6 @@ export class ClusterCalculation {
     maximumClusterCount: number;
     iterationsPerCluster: number;
     maximumOptimizationsCount: number;
-    status: number;
-    totalCalculationTimeString: string;
-    clusters?: Cluster[]
+    status: ClusterStatus;
+    clusters: Cluster[];
 }

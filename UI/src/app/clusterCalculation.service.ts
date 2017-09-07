@@ -5,6 +5,7 @@ import 'rxjs/add/operator/toPromise';
 import { Subject } from 'rxjs/Subject';
 
 import { ClusterCalculation } from './clusterCalculation';
+import { ClusterCalculationParameters } from './clusterCalculationParameters';
 
 @Injectable()
 export class ClusterCalculationService {
@@ -59,13 +60,4 @@ export class ClusterCalculationService {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
-}
-
-export interface ClusterCalculationParameters {
-    minimumClusterCount: number;
-    maximumClusterCount: number;
-    iterationsPerCluster: number;
-    maximumOptimizationsCount: number;
-    jobId?: number;
-    clusterCalculationId?: number;
 }

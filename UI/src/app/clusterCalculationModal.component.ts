@@ -1,6 +1,7 @@
 import { Component, OnInit  } from '@angular/core';
 import { ClusterCalculation } from './clusterCalculation';
-import { ClusterCalculationService, ClusterCalculationParameters } from './clusterCalculation.service';
+import { ClusterCalculationParameters } from './clusterCalculationParameters';
+import { ClusterCalculationService } from './clusterCalculation.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 
 @Component({

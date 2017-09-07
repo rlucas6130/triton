@@ -37,7 +37,7 @@ export class JobsComponent implements OnInit {
                     .then(jobs => this.jobs = jobs)
                     .then(jobs => {
 
-                        var processingJobs = jobs.filter((job) => job.status == JobStatus.New || job.status == JobStatus.SVD || job.status == JobStatus.BuildingMatrix);
+                        var processingJobs = jobs.filter((job) => job.status.valueOf() == JobStatus.New || job.status.valueOf() == JobStatus.SVD || job.status.valueOf() == JobStatus.BuildingMatrix);
 
                         if (processingJobs.length > 0) {
                             clearInterval(jobsListIntervalId); 
@@ -49,7 +49,7 @@ export class JobsComponent implements OnInit {
 
                                 this.jobService.getJob(j.id).then(jj => {
 
-                                    if (jj.status == JobStatus.Completed || jj.status == JobStatus.Failed) {                                      
+                                    if (jj.status.valueOf() == JobStatus.Completed || jj.status.valueOf() == JobStatus.Failed) {                                      
                                         j.dimensions = jj.dimensions;
                                         clearInterval(intervalId);
                                     }

@@ -28,7 +28,7 @@ namespace Engine.Core
             OptimizeRange(context, Cluster.Get(context, clusterCalculationId));
 
 
-        public static Cluster OptimizeRange(SvdEntities context, Contracts.ClusterAnalysisParameters clusterAnalysisParameters) =>
+        public static Cluster OptimizeRange(SvdEntities context, Contracts.ClusterCalculationParameters clusterAnalysisParameters) =>
             OptimizeRange(context, Cluster.CreateCalculation(context, clusterAnalysisParameters));
 
 

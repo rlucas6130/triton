@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Contracts;
 using Engine.Core;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace UI.Controllers
 
             var start = DateTime.Now;
 
-            var cluster = ClusterOptimizer.OptimizeRange(_context, new Contracts.ClusterAnalysisParameters() {
+            var cluster = ClusterOptimizer.OptimizeRange(_context, new ClusterCalculationParameters() {
                 MinimumClusterCount = 20,
                 MaximumClusterCount = 20,
                 IterationsPerCluster = 1,

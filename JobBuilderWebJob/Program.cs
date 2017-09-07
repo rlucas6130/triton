@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 
 namespace JobBuilderWebJob
@@ -23,7 +19,6 @@ namespace JobBuilderWebJob
 
             config.Queues.MaxPollingInterval = TimeSpan.FromSeconds(2);
             config.Queues.BatchSize = 32;
-            config.FunctionTimeout = TimeSpan.FromDays(1);
 
             var host = new JobHost(config);
             

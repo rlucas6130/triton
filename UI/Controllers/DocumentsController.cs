@@ -1,4 +1,4 @@
-﻿using Engine;
+﻿using AutoMapper;
 using Engine.Core;
 using System;
 using System.Collections.Generic;
@@ -9,15 +9,20 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using UI.Controllers.Helpers;
+using UI.ViewModels;
 
 namespace UI.Controllers
 {
     public class DocumentsController : ApiController
     {
+        private Engine.SvdEntities _context = new Engine.SvdEntities();
+
         // GET api/<controller>
         public IEnumerable<Document> Get(int page = 1, int docsPerPage = 20)
         {
-            return LSA.GetDocuments(page, docsPerPage);
+            var documents = LSA.GetDocuments(_context, page, docsPerPage);
+
+            return Mapper.Map<IEnumerable<Engine.Document>, IEnumerable<Document>>(documents, opt => opt.Items["context"] = _context); ;
         }
 
         // GET api/<controller>/5

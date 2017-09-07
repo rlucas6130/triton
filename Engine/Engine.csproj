@@ -47,8 +47,8 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.5.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.5.2\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -64,8 +64,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Z.EntityFramework.Extensions, Version=3.12.23.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Z.EntityFramework.Extensions.3.12.23\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
+    <Reference Include="Z.EntityFramework.Extensions, Version=3.12.24.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Extensions.3.12.24\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -82,9 +82,12 @@
     <Compile Include="ClusterJobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Contracts\ClusterStatus.cs" />
+    <Compile Include="Contracts\JobStatus.cs" />
+    <Compile Include="Contracts\ClusterCalculationParameters.cs" />
     <Compile Include="Core\Cluster.cs" />
     <Compile Include="Core\ClusterOptimizer.cs" />
-    <Compile Include="Contracts.cs" />
+    <Compile Include="MatrixContainer.cs" />
     <Compile Include="Core\Engine.cs" />
     <Compile Include="Document.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
@@ -98,10 +101,6 @@
     <Compile Include="JobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Helpers\Utilities.cs" />
-    <Compile Include="Models\Document.cs" />
-    <Compile Include="Models\ClusterCalculation.cs" />
-    <Compile Include="Models\Job.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SvdDb.Context.cs">
       <AutoGen>True</AutoGen>
@@ -133,7 +132,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <EntityDeploy Include="SvdDb.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>SvdDb.Designer.cs</LastGenOutput>
@@ -163,7 +164,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

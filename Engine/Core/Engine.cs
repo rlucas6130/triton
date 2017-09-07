@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Engine.Contracts;
+using HtmlAgilityPack;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using MathNet.Numerics.LinearAlgebra.Single;
@@ -10,8 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
-using static Engine.Contracts;
 
 namespace Engine.Core
 {
@@ -417,7 +418,7 @@ namespace Engine.Core
                 Console.WriteLine("Query Vector: " + queryVector.ToString());
                 Console.WriteLine("Dimensions: " + MatrixContainer.Dimensions);
 
-                var docResults = new List<DocResult>();
+                var docResults = new List<dynamic>();
 
                 for (var i = 0; i < MatrixContainer.DocNameMap.Count; i++)
                 {
@@ -427,7 +428,7 @@ namespace Engine.Core
 
                     var distance = Distance.Cosine(documentVector, queryVector);
 
-                    docResults.Add(new DocResult()
+                    docResults.Add(new
                     {
                         Name = MatrixContainer.DocNameMap[i],
                         Distance = distance
@@ -441,65 +442,125 @@ namespace Engine.Core
             }
         }
 
-        public static Job CreateNewJob(int docCount)
+        public static Job CreateNewJob(SvdEntities context, int docCount)
         {
-            using (var context = new SvdEntities())
+            var job = context.Jobs.Add(new Job()
             {
-                var job = context.Jobs.Add(new Job()
+                DocumentCount = docCount,
+                Created = DateTime.Now
+            });
+
+            context.SaveChanges();
+
+            return job;
+        }
+
+        public static List<Job> GetJobs(SvdEntities context)
+        {
+            return context.Jobs.ToList();
+        }
+
+        private static readonly object locker = new object();
+
+        public static Job GetJob(SvdEntities context, int id, bool preLoadMatrixContainer = true)
+        {
+            if(preLoadMatrixContainer)
+            {
+                Task.Factory.StartNew(() =>
                 {
-                    DocumentCount = docCount,
-                    Created = DateTime.Now
+                    lock(locker)
+                    {
+                        LoadMatrices(id);
+                    }
                 });
-
-                context.SaveChanges();
-
-                return job;
             }
+
+            return context.Jobs.Find(id);
         }
 
-        public static List<Job> GetJobs()
+        public static List<Document> GetDocuments(SvdEntities context, int page, int docsPerPage)
         {
-            using (var context = new SvdEntities())
-            {
-                context.Configuration.ProxyCreationEnabled = false;
-                return context.Jobs.ToList();
-            }
+            return context.Documents.OrderBy(i => i.Name)/*.Skip(page * docsPerPage).Take(docsPerPage)*/.ToList();
         }
 
-        public static Job GetJob(int id)
+        public static Document GetDocument(SvdEntities context, int documentId)
         {
-            using (var context = new SvdEntities())
-            {
-                context.Configuration.ProxyCreationEnabled = false;
-                return context.Jobs.Find(id);
-            }
+            return context.Documents.Find(documentId);
         }
 
-        public static List<Document> GetDocuments(int page, int docsPerPage)
+        public static int GetTotalTermDocCount(SvdEntities context, int documentId)
         {
-            using (var context = new SvdEntities())
+            return context.TermDocumentCounts.Count(tdc => tdc.DocumentId == documentId);
+        }
+
+        private static Dictionary<int, DenseMatrix> _vMatrices = new Dictionary<int, DenseMatrix>();
+        private static Dictionary<int, DenseMatrix> _uMatrices = new Dictionary<int, DenseMatrix>();
+        private static Dictionary<Tuple<int, int>, float[]> _vMatrixVectors = new Dictionary<Tuple<int, int>, float[]>();
+        private static Dictionary<Tuple<int, int>, float[]> _uMatrixVectors = new Dictionary<Tuple<int, int>, float[]>();
+        private static BinaryFormatter _binaryFormatter = new BinaryFormatter();
+
+        public static void LoadMatrices(int jobId)
+        {
+            if (!_vMatrices.ContainsKey(jobId) || !_uMatrices.ContainsKey(jobId))
             {
-                context.Configuration.ProxyCreationEnabled = false;
-
-                var docs = context.Documents.OrderBy(i => i.Name)/*.Skip(page * docsPerPage).Take(docsPerPage)*/.ToList();
-
-                foreach (var doc in docs)
+                using (var context = new SvdEntities())
                 {
-                    doc.TotalTermDocCount = context.TermDocumentCounts.Count(tdc => tdc.DocumentId == doc.Id);
-                }
+                    Job job = null;
 
-                return docs;
+                    if (!_vMatrices.ContainsKey(jobId))
+                    {
+                        job = context.Jobs.Find(jobId);
+
+                        using (var ms = new MemoryStream(job.VMatrix.SerializedValues))
+                        {
+                            var vValues = _binaryFormatter.Deserialize(ms) as float[];
+
+                            _vMatrices[jobId] = new DenseMatrix(job.Dimensions, job.JobDocuments.Count, vValues);
+                        }
+                    }
+
+                    if (!_uMatrices.ContainsKey(jobId))
+                    {
+                        if (job == null)
+                            job = context.Jobs.Find(jobId);
+
+                        using (var ms = new MemoryStream(job.UMatrix.SerializedValues))
+                        {
+                            var uValues = _binaryFormatter.Deserialize(ms) as float[];
+
+                            _uMatrices[jobId] = new DenseMatrix(job.JobTerms.Count, job.Dimensions, uValues);
+                        }
+                    }
+                }
             }
         }
 
-        public static List<TermDocumentCount> GetTermDocumentCounts(int docId)
+        public static float[] GetDocumentVector(int jobId, int ordinalIndex)
         {
-            using (var context = new SvdEntities())
-            {
-                context.Configuration.ProxyCreationEnabled = false;
+            LoadMatrices(jobId);
 
-                return context.TermDocumentCounts.Where(tdc => tdc.DocumentId == docId).ToList();
+            var key = Tuple.Create(jobId, ordinalIndex);
+
+            if (!_vMatrixVectors.ContainsKey(key))
+            {
+                _vMatrixVectors[key] = _vMatrices[jobId].Column(ordinalIndex).ToArray();
             }
+
+            return _vMatrixVectors[key];
+        }
+
+        public static float[] GetTermVector(int jobId, int ordinalIndex)
+        {
+            LoadMatrices(jobId);
+
+            var key = Tuple.Create(jobId, ordinalIndex);
+
+            if (!_uMatrixVectors.ContainsKey(key))
+            {
+                _uMatrixVectors[key] = _uMatrices[jobId].Row(ordinalIndex).ToArray();
+            }
+
+            return _uMatrixVectors[key];
         }
 
         public static void GetMatrixContainer(int jobId)
@@ -553,6 +614,7 @@ namespace Engine.Core
             }
 
             MatrixContainer = _matrixContainers[jobId];
+            
         }
     }
 }
