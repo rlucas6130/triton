@@ -31,7 +31,7 @@ namespace Engine
         public int MaximumClusterCount { get; set; }
         public int IterationsPerCluster { get; set; }
         public int MaximumOptimizationsCount { get; set; }
-        public Engine.Contracts.ClusterStatus Status { get; set; }
+        public Engine.Contracts.ClusterCalculationStatus Status { get; set; }
         public System.DateTime Created { get; set; }
         public Nullable<System.DateTime> Completed { get; set; }
     

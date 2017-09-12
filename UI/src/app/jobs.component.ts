@@ -28,16 +28,15 @@ export class JobsComponent implements OnInit {
     ngOnInit(): void {
 
         this.jobService.getJobs()
-            .then(jobs => this.jobs = jobs);
+            .subscribe(jobs => this.jobs = jobs);
 
         if (this.route.snapshot.paramMap.get('refreshUntilComplete') == 'true') {
             var jobsListIntervalId = setInterval(() => {
 
                 this.jobService.getJobs()
-                    .then(jobs => this.jobs = jobs)
-                    .then(jobs => {
-
-                        var processingJobs = jobs.filter((job) => job.status.valueOf() == JobStatus.New || job.status.valueOf() == JobStatus.SVD || job.status.valueOf() == JobStatus.BuildingMatrix);
+                    .subscribe(jobs => {
+                        this.jobs = jobs;
+                        var processingJobs = this.jobs.filter((job) => job.status.valueOf() == JobStatus.New || job.status.valueOf() == JobStatus.SVD || job.status.valueOf() == JobStatus.BuildingMatrix);
 
                         if (processingJobs.length > 0) {
                             clearInterval(jobsListIntervalId); 
@@ -47,7 +46,7 @@ export class JobsComponent implements OnInit {
 
                             var intervalId = setInterval((j: Job) => {
 
-                                this.jobService.getJob(j.id).then(jj => {
+                                this.jobService.getJob(j.id).subscribe(jj => {
 
                                     if (jj.status.valueOf() == JobStatus.Completed || jj.status.valueOf() == JobStatus.Failed) {                                      
                                         j.dimensions = jj.dimensions;

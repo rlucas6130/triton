@@ -3,6 +3,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ClusterCalculationModal } from './clusterCalculationModal.component';
 
 import { Job } from './job';
+import { ClusterCalculationStatus } from './clusterCalculationStatus';
 import { JobService } from './job.service';
 
 import { ClusterCalculation } from './clusterCalculation';
@@ -122,11 +123,4 @@ export class VisualizeJobComponent implements OnInit, OnDestroy {
         this.clusterCalculationModal = this.modalService.show(ClusterCalculationModal);
         this.clusterCalculationModal.content.clusterCalculationParams.jobId = this.job.id;
     }
-}
-
-enum ClusterCalculationStatus {
-    New,
-    Clustering,
-    Completed,
-    Failed
 }

@@ -1,6 +1,6 @@
 ﻿namespace Engine.Contracts
 {
-    public enum ClusterStatus
+    public enum ClusterCalculationStatus
     {
         New,
         Clustering,

@@ -1,15 +1,18 @@
 ﻿import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpResponse } from '@angular/common/http';
+
+import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/toPromise';
+import { LoadingIndicatorService } from './loadingIndicator.service';
 
 import { Job } from './job';
 
 @Injectable()
 export class JobService {
     private jobUrl = '/api/jobs';
-    private headers = new Headers({ 'Content-Type': 'application/json' });
-    constructor(private http: Http) { }
+    private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    constructor(private http: HttpClient, private loadingIndicatorService: LoadingIndicatorService) { }
     update(job: Job): Promise<Job> {
         const url = `${this.jobUrl}/${job.id}`;
         return this.http
@@ -32,18 +35,12 @@ export class JobService {
             .then(() => null)
             .catch(this.handleError);
     }
-    getJobs(): Promise<Job[]> {
-        return this.http.get(this.jobUrl)
-            .toPromise()
-            .then(response => response.json() as Job[])
-            .catch(this.handleError)
+    getJobs(): Observable<Job[]> {
+        return this.http.get<Job[]>(this.jobUrl);
     }
-    getJob(id: number): Promise<Job> {
+    getJob(id: number): Observable<Job> {
         const url = `${this.jobUrl}/${id}`;
-        return this.http.get(url)
-            .toPromise()
-            .then(response => response.json() as Job)
-            .catch(this.handleError);
+        return this.http.get<Job>(url);
     }
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error);

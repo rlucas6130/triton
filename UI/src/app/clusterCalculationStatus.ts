@@ -2,7 +2,7 @@
  
 
 
-export enum ClusterStatus {
+export enum ClusterCalculationStatus {
     New,
     Clustering,
     Completed,

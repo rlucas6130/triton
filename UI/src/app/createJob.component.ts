@@ -25,25 +25,7 @@ type ViewDocument = Document & {
 @Component({
     selector: 'createJob',
     templateUrl: './createJob.component.html',
-    styleUrls: ['./createJob.component.css'],
-    animations: [
-        trigger('flyInOut', [
-            state('in', style({ opacity: 1, transform: 'translateX(0)' })),
-            transition('void => *', [
-                style({
-                    opacity: 0,
-                    transform: 'translateX(-100%)'
-                }),
-                animate('0.2s ease-in')
-            ]),
-            transition('* => void', [
-                animate('0.2s 0.1s ease-out', style({
-                    opacity: 0,
-                    transform: 'translateX(100%)'
-                }))
-            ])
-        ])
-    ]
+    styleUrls: ['./createJob.component.css']
 })
 export class CreateJobComponent implements OnInit, DoCheck { 
     documents: ViewDocument[] = [];
@@ -59,7 +41,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     ngOnInit(): void {
         this.documentService.getDocuments()
-            .then(docs => this.documents = docs as ViewDocument[]);
+            .subscribe(docs => this.documents = docs as ViewDocument[]);
     }
 
     ngDoCheck(...args: any[]): void {
@@ -155,7 +137,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
             }
 
             this.documentService.getDocuments()
-                .then(docs => {
+                .subscribe(docs => {
                     for (let uploadingDoc of uploadingDocs) {
                         var savedDoc = _.find(docs, (doc) => doc.name == uploadingDoc.name);
 

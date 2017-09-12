@@ -549,7 +549,7 @@
           <Property Name="MaximumClusterCount" Type="Int32" Nullable="false" />
           <Property Name="IterationsPerCluster" Type="Int32" Nullable="false" />
           <Property Name="MaximumOptimizationsCount" Type="Int32" Nullable="false" />
-          <Property Name="Status" Type="SvdModel.ClusterStatus" Nullable="false" />
+          <Property Name="Status" Type="SvdModel.ClusterCalculationStatus" Nullable="false" />
           <Property Name="Created" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="Completed" Type="DateTime" Precision="7" />
         </EntityType>
@@ -914,7 +914,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EnumType Name="ClusterStatus" a:ExternalTypeName="Engine.Contracts.ClusterStatus" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
+        <EnumType Name="ClusterCalculationStatus" a:ExternalTypeName="Engine.Contracts.ClusterCalculationStatus" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->

@@ -221,19 +221,19 @@ namespace Engine.Core
                 MaximumOptimizationsCount = clusterParams.MaximumOptimizationsCount,
             });
 
-            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.New);
+            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterCalculationStatus.New);
 
             context.SaveChanges();
 
             return clusterCalculationEntity;
         }
 
-        public static void SetCalculationStatus(SvdEntities context, ClusterCalculation clusterCalculationEntity, Contracts.ClusterStatus status)
+        public static void SetCalculationStatus(SvdEntities context, ClusterCalculation clusterCalculationEntity, Contracts.ClusterCalculationStatus status)
         {
-            if (status == Contracts.ClusterStatus.New)
+            if (status == Contracts.ClusterCalculationStatus.New)
                 clusterCalculationEntity.Created = DateTime.Now;
 
-            if (status == Contracts.ClusterStatus.Completed || status == Contracts.ClusterStatus.Failed)
+            if (status == Contracts.ClusterCalculationStatus.Completed || status == Contracts.ClusterCalculationStatus.Failed)
                 clusterCalculationEntity.Completed = DateTime.Now;
 
             clusterCalculationEntity.Status = status;
@@ -332,7 +332,7 @@ namespace Engine.Core
             context.BulkInsert(clusterJobTermEntities);
             context.BulkInsert(clusterJobDocumentEntities);
 
-            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Completed);
+            SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterCalculationStatus.Completed);
         }
 
         public static IEnumerable<ClusterCalculation> GetAll(SvdEntities context, int jobId)

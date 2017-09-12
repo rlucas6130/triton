@@ -38,7 +38,7 @@ namespace Engine.Core
             {
                 var randGen = new Random();
 
-                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Clustering);
+                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterCalculationStatus.Clustering);
 
                 var clusters = (from k in Enumerable.Range(clusterCalculationEntity.MinimumClusterCount, (clusterCalculationEntity.MaximumClusterCount - clusterCalculationEntity.MinimumClusterCount) + 1)
                                 select Optimize(randGen, clusterCalculationEntity.JobId, k, clusterCalculationEntity.IterationsPerCluster, clusterCalculationEntity.MaximumOptimizationsCount)).ToList();
@@ -53,7 +53,7 @@ namespace Engine.Core
             }
             catch (Exception)
             {
-                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterStatus.Failed);
+                Cluster.SetCalculationStatus(context, clusterCalculationEntity, Contracts.ClusterCalculationStatus.Failed);
                 throw;
             }
         }

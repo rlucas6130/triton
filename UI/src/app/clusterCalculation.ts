@@ -1,6 +1,6 @@
 ﻿
 import { Calculable } from "./calculable";
-import { ClusterStatus } from "./ClusterStatus"; 
+import { ClusterCalculationStatus } from "./ClusterCalculationStatus"; 
 import { Cluster } from "./Cluster"; 
 
 export interface ClusterCalculation extends Calculable
@@ -14,6 +14,6 @@ export interface ClusterCalculation extends Calculable
     maximumClusterCount: number;
     iterationsPerCluster: number;
     maximumOptimizationsCount: number;
-    status: ClusterStatus;
+    status: ClusterCalculationStatus;
     clusters: Cluster[];
 }

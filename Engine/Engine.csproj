@@ -82,13 +82,11 @@
     <Compile Include="ClusterJobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Contracts\ClusterStatus.cs" />
+    <Compile Include="Contracts\ClusterCalculationStatus.cs" />
     <Compile Include="Contracts\JobStatus.cs" />
     <Compile Include="Contracts\ClusterCalculationParameters.cs" />
     <Compile Include="Core\Cluster.cs" />
     <Compile Include="Core\ClusterOptimizer.cs" />
-    <Compile Include="MatrixContainer.cs" />
-    <Compile Include="Core\Engine.cs" />
     <Compile Include="Document.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
@@ -101,6 +99,8 @@
     <Compile Include="JobTerm.cs">
       <DependentUpon>SvdDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="MatrixContainer.cs" />
+    <Compile Include="Core\Engine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SvdDb.Context.cs">
       <AutoGen>True</AutoGen>

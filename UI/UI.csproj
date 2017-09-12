@@ -1093,6 +1093,10 @@
       <DependentUpon>contracts.tst</DependentUpon>
       <CustomToolNamespace>..\Engine\Contracts\ClusterCalculationParameters.cs</CustomToolNamespace>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\app\clusterCalculationStatus.ts">
+      <DependentUpon>contracts.tst</DependentUpon>
+      <CustomToolNamespace>..\Engine\Contracts\ClusterCalculationStatus.cs</CustomToolNamespace>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\app\clusterJobDocument.ts">
       <DependentUpon>model.tst</DependentUpon>
       <CustomToolNamespace>ViewModels\Dtos\ClusterJobDocument.cs</CustomToolNamespace>
@@ -1101,10 +1105,6 @@
       <DependentUpon>model.tst</DependentUpon>
       <CustomToolNamespace>ViewModels\Dtos\ClusterJobTerm.cs</CustomToolNamespace>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\app\clusterStatus.ts">
-      <DependentUpon>contracts.tst</DependentUpon>
-      <CustomToolNamespace>..\Engine\Contracts\ClusterStatus.cs</CustomToolNamespace>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="src\app\document.service.ts" />
     <TypeScriptCompile Include="src\app\clusterCalculation.service.ts" />
     <TypeScriptCompile Include="src\app\createJob.component.ts" />
@@ -1112,6 +1112,7 @@
       <DependentUpon>model.tst</DependentUpon>
       <CustomToolNamespace>ViewModels\Dtos\Document.cs</CustomToolNamespace>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\app\loadingIndicator.service.ts" />
     <TypeScriptCompile Include="src\app\job.ts">
       <DependentUpon>model.tst</DependentUpon>
       <CustomToolNamespace>ViewModels\Dtos\Job.cs</CustomToolNamespace>
@@ -1120,6 +1121,7 @@
       <DependentUpon>contracts.tst</DependentUpon>
       <CustomToolNamespace>..\Engine\Contracts\JobStatus.cs</CustomToolNamespace>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\app\loadingIndicator.interceptor.ts" />
     <TypeScriptCompile Include="src\app\visualizeJob.component.ts" />
     <TypeScriptCompile Include="src\app\jobs.component.ts" />
     <TypeScriptCompile Include="src\app\job.service.ts" />

@@ -6,6 +6,10 @@ import { CreateJobComponent } from './createJob.component';
 import { VisualizeJobComponent } from './visualizeJob.component';
 import { ClusterCalculationComponent } from './clusterCalculation.component';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoadingIndicatorInterceptor } from './loadingIndicator.interceptor';
+import { LoadingIndicatorService } from './loadingIndicator.service';
+
 const routes: Routes = [
     {
         path: '',

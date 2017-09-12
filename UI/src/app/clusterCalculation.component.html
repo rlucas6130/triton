@@ -4,25 +4,16 @@
     </h1>
     <svg #clusterSvg attr.height="{{svgHeight}}" attr.width="{{svgWidth}}" class="cluster-svg" (window:resize)="resize()">
 
-        <circle attr.cx="{{svgWidth/2}}" attr.cy="{{svgHeight/2}}" r="40" stroke="green" stroke-width="4" fill="yellow" />
-        <!--<path d="M10 315
-           L 110 215
-           A 30 50 0 0 1 162.55 162.45
-           L 172.55 152.45
-           A 30 50 -45 0 1 215.1 109.9
-           L 315 10" stroke="black" fill="green" stroke-width="2" fill-opacity="0.5" />-->
+        <circle outsideClick="true" container="body" containerClass="cluster-popup" placement="right" *ngFor="let cluster of clusters" (click)="activeCluster=cluster" [popover]="clusterPopup" [popoverTitle]="cluster.popoverTitle" attr.cx="{{cluster.x}}" attr.cy="{{cluster.y}}" attr.r="{{cluster.size}}" attr.stroke="{{cluster.stroke}}" stroke-width="4" attr.fill="{{cluster.fill}}" />
+        <circle *ngFor="let doc of documents"  attr.cx="{{doc.x}}" attr.cy="{{doc.y}}" attr.r="5" attr.stroke="{{doc.stroke}}" stroke-width="4" attr.fill="{{doc.fill}}"/>
 
-        <path d="M80 80
-           A 45 45, 0, 0, 0, 125 125
-           L 125 80 Z" fill="green" />
-        <path d="M230 80
-           A 45 45, 0, 1, 0, 275 125
-           L 275 80 Z" fill="red" />
-        <path d="M80 230
-           A 45 45, 0, 0, 1, 125 275
-           L 125 230 Z" fill="purple" />
-        <path d="M230 230
-           A 45 45, 0, 1, 1, 275 275
-           L 275 230 Z" fill="blue" />
     </svg>
 </div>
+
+<ng-template #clusterPopup>
+    <span class="badge badge-pill badge-success">{{activeCluster.si}}</span>
+    <span class="badge badge-pill badge-default">{{activeCluster.id}}</span>
+    <div class="display-4" *ngFor="let doc of activeCluster.clusterJobDocuments">
+        {{doc.name}}
+    </div>
+</ng-template>
