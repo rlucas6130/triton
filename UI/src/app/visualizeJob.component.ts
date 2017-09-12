@@ -74,7 +74,7 @@ export class VisualizeJobComponent implements OnInit, OnDestroy {
 
             var intervalId = setInterval((cc: ClusterCalculation) => {
 
-                this.clusterCalculationService.getClusterCalculation(cc.id).then(c => {
+                this.clusterCalculationService.getClusterCalculation(cc.id, true).subscribe(c => {
 
                     _.assign(cc, c);
 
@@ -91,15 +91,14 @@ export class VisualizeJobComponent implements OnInit, OnDestroy {
             if (success) {
 
                 //Fire Initial
-                this.clusterCalculationService.getClusterCalculations(this.job.id)
-                    .then(ccs => this.clusterCalculations = ccs);
+                this.clusterCalculationService.getClusterCalculations(this.job.id, true)
+                    .subscribe(ccs => this.clusterCalculations = ccs);
 
                 var clusterCalculationListIntervalId = setInterval(() => {
 
-                    this.clusterCalculationService.getClusterCalculations(this.job.id)
-                        .then(ccs => this.clusterCalculations = ccs)
-                        .then(ccs => {
-
+                    this.clusterCalculationService.getClusterCalculations(this.job.id, true)
+                        .subscribe(ccs => {
+                            this.clusterCalculations = ccs
                             var processingClusterCalculations = ccs.filter((cc) => this.isClusterCalculating(cc));
 
                             if (processingClusterCalculations.length > 0) {

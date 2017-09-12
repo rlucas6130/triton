@@ -52,11 +52,8 @@ export class ClusterCalculationComponent implements OnInit {
         this.route.paramMap
             .switchMap((params: ParamMap) => this.clusterCalculationService.getClusterCalculation(+params.get('clusterCalculationId')))
             .subscribe(clusterCalculation => {
-                console.log(clusterCalculation);
                 this.clusterCalculation = clusterCalculation;
                 this.clusters = clusterCalculation.clusters as ViewCluster[];
-
-                
                 this.computeClusterSizes();
             });
 
@@ -109,7 +106,7 @@ export class ClusterCalculationComponent implements OnInit {
                 cluster.clusterJobTerms = _.orderBy(cluster.clusterJobTerms, jt => jt.distanceToClusterCenter);
                 cluster.clusterJobDocuments = _.orderBy(cluster.clusterJobDocuments, jd => jd.si);
 
-                cluster.popoverTitle = `${cluster.clusterJobTerms[0].value}, ${cluster.clusterJobTerms[1].value}, ${cluster.clusterJobTerms[2].value} , ${cluster.clusterJobTerms[3].value}`;
+                cluster.popoverTitle = `${cluster.clusterJobTerms[0].value}, ${cluster.clusterJobTerms[1].value}, ${cluster.clusterJobTerms[2].value}, ${cluster.clusterJobTerms[3].value}`;
 
                 if (cluster.id == 2643) {
                     this.documents = cluster.clusterJobDocuments as ViewClusterJobDocument[];

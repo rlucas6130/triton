@@ -12,6 +12,11 @@ export class LoadingIndicatorInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).do(event => {
+
+            if (req.urlWithParams.indexOf('hideloader') > -1 || req.method === "POST") {
+                return;
+            }
+
             if (event instanceof HttpResponse) {
                 this.loadingIndicatorService.toggle(false);
             } else {

@@ -31,6 +31,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
     documents: ViewDocument[] = [];
     allDocsSelected: boolean;
     initialUploadCount: number;
+    docsLoaded: boolean = false;
     constructor(
         private documentService: DocumentService,
         private jobService: JobService,
@@ -41,7 +42,10 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
     ngOnInit(): void {
         this.documentService.getDocuments()
-            .subscribe(docs => this.documents = docs as ViewDocument[]);
+            .subscribe(docs => {
+                this.documents = docs as ViewDocument[];
+                this.docsLoaded = true;
+            });
     }
 
     ngDoCheck(...args: any[]): void {
@@ -136,7 +140,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
                 clearInterval(intervalId);
             }
 
-            this.documentService.getDocuments()
+            this.documentService.getDocuments(true)
                 .subscribe(docs => {
                     for (let uploadingDoc of uploadingDocs) {
                         var savedDoc = _.find(docs, (doc) => doc.name == uploadingDoc.name);
@@ -151,7 +155,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
                         }
                     }
                 });
-        }, 3000);
+        }, 5000);
     }
 
     public removeDocument(document: Document): void {

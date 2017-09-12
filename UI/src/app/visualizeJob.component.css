@@ -1,9 +1,21 @@
-﻿h3.display-4 {
-    font-size:1.5em;
+﻿
+h4.display-4 {
+    font-size:2em;
 }
 
-.display-4 { 
-    font-size:1em;
+h4 small {
+    font-size:60%;
+    font-weight:300;
+}
+
+
+h4 i {
+    font-size:80%;
+    vertical-align:14%;
+}
+
+h3.display-4 {
+    font-size:1.5em;
 }
 
 .cluster-calculation-table {
@@ -28,6 +40,6 @@ td.loading {
     text-align:center;
 }
 
-.card-header button, h1 button {
+.card-header button, h4 button {
     margin-left:22px;
 }

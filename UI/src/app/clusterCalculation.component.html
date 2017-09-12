@@ -1,7 +1,8 @@
 ﻿<div class="container-fluid">
-    <h1>
-        Cluster Calculation <i class="fa fa-fw fa-calculator"></i>
-    </h1>
+    <h4 class="display-4">
+        <i class="fa fa-fw fa-calculator"></i>Cluster Calculation 
+        <small class="text-muted">select a cluster</small>
+    </h4>
     <svg #clusterSvg attr.height="{{svgHeight}}" attr.width="{{svgWidth}}" class="cluster-svg" (window:resize)="resize()">
 
         <circle outsideClick="true" container="body" containerClass="cluster-popup" placement="right" *ngFor="let cluster of clusters" (click)="activeCluster=cluster" [popover]="clusterPopup" [popoverTitle]="cluster.popoverTitle" attr.cx="{{cluster.x}}" attr.cy="{{cluster.y}}" attr.r="{{cluster.size}}" attr.stroke="{{cluster.stroke}}" stroke-width="4" attr.fill="{{cluster.fill}}" />

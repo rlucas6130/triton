@@ -76,7 +76,7 @@ namespace UI.Controllers
                         blob.UploadFromStream(filestream);
                     }
 
-                    AzureHelper.SendQueueMessage("documentqueue", fileData.Headers.ContentDisposition.FileName);
+                    AzureHelper.SendQueueMessage(fileData.Headers.ContentDisposition.FileName, "documentqueue");
 
                     File.Delete(fileData.LocalFileName);
                 }

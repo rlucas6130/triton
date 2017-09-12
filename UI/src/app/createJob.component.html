@@ -1,5 +1,8 @@
 ﻿<div class="container-fluid">
-    <h4 class="display-4"><i class="fa fa-fw fa-gears"></i> Create Job <small class="text-muted">Select documents for analysis</small></h4>
+    <h4 class="display-4">
+        <i class="fa fa-fw fa-gears"></i> Create Job 
+        <small class="text-muted">Select documents for analysis</small>
+    </h4>
     <div class="row">
         <div class="col-12">
             <table class="table table-hover table-sm table-bordered">
@@ -73,9 +76,9 @@
                         </div>
                     </div>
 
-                    <input id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
+                    <input [disabled]="!docsLoaded" id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
                     <label for="docfile" class="btn btn-secondary">Upload Documents</label>
-                    <button (click)="startProcessingJob()" [disabled]="getSelectedDocuments().length < 2 || uploader.isUploading" type="button" class="btn btn-primary">Start Processing Job</button>
+                    <button (click)="startProcessingJob()" [disabled]="getSelectedDocuments().length < 2 || uploader.isUploading || documents.length == 0" type="button" class="btn btn-primary">Start Processing Job</button>
                 </nav>
             </div>
         </div>

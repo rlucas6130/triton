@@ -1,8 +1,12 @@
 ﻿import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { HttpHeaders, HttpClient, HttpResponse } from '@angular/common/http';
+
+import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/toPromise';
 import { Subject } from 'rxjs/Subject';
+
+import { LoadingIndicatorService } from './loadingIndicator.service';
 
 import { ClusterCalculation } from './clusterCalculation';
 import { ClusterCalculationParameters } from './clusterCalculationParameters';
@@ -10,8 +14,8 @@ import { ClusterCalculationParameters } from './clusterCalculationParameters';
 @Injectable()
 export class ClusterCalculationService {
     private clusterCalculationUrl = '/api/clusterCalculations';
-    private headers = new Headers({ 'Content-Type': 'application/json' });
-    constructor(private http: Http) { }
+    private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    constructor(private http: HttpClient, private loadingIndicatorService: LoadingIndicatorService) { }
     update(clusterCalculation: ClusterCalculation): Promise<ClusterCalculation> {
         const url = `${this.clusterCalculationUrl}/${clusterCalculation.id}`;
         return this.http
@@ -34,19 +38,17 @@ export class ClusterCalculationService {
             .then(() => null)
             .catch(this.handleError);
     }
-    getClusterCalculations(jobId: number): Promise<ClusterCalculation[]> {
+    getClusterCalculations(jobId: number, hideLoadingIndicator: boolean = false): Observable<ClusterCalculation[]> {
         const url = `${this.clusterCalculationUrl}/getAll?jobId=${jobId}`;
-        return this.http.get(url)
-            .toPromise()
-            .then(response => response.json() as ClusterCalculation[])
-            .catch(this.handleError);
+
+        return this.http.get<ClusterCalculation[]>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(url) : url);
+            
     }
-    getClusterCalculation(id: number): Promise<ClusterCalculation> {
+    getClusterCalculation(id: number, hideLoadingIndicator: boolean = false): Observable<ClusterCalculation> {
         const url = `${this.clusterCalculationUrl}/${id}`;
-        return this.http.get(url)
-            .toPromise()
-            .then(response => response.json() as ClusterCalculation)
-            .catch(this.handleError);
+        return this.http.get<ClusterCalculation>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(url) : url);
     }
 
     private createClusterCalculationSource = new Subject<ClusterCalculationParameters>();

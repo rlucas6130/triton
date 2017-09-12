@@ -1,7 +1,8 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpHeaders, HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { LoadingIndicatorService } from './loadingIndicator.service';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -11,7 +12,7 @@ import { Document } from './document';
 export class DocumentService {
     private documentUrl = '/api/documents';
     private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private loadingIndicatorService: LoadingIndicatorService) { }
     update(document: Document): Promise<Document> {
         const url = `${this.documentUrl}/${document.id}`;
         return this.http
@@ -31,8 +32,9 @@ export class DocumentService {
             .then(() => null)
             .catch(this.handleError);
     }
-    getDocuments(page: number = 1, docsPerPage: number = 20): Observable<Document[]> {
-        return this.http.get<Document[]>(this.documentUrl);
+    getDocuments(hideLoadingIndicator: boolean = false): Observable<Document[]> {
+        return this.http.get<Document[]>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(this.documentUrl) : this.documentUrl);
     }
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error);
