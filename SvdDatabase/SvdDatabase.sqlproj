@@ -8,7 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{5ac66514-e861-40ee-8df4-12704edccfdc}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql110DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -73,5 +73,6 @@
     <Build Include="dbo\Tables\Clusters.sql" />
     <Build Include="dbo\Tables\ClusterJobTerms.sql" />
     <Build Include="dbo\Tables\ClusterJobDocuments.sql" />
+    <PostDeploy Include="dbo\LoadDictionaryToTerms.sql" />
   </ItemGroup>
 </Project>

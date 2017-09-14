@@ -57,11 +57,11 @@ import { LoadingIndicatorInterceptor } from './loadingIndicator.interceptor';
             provide: FileUploader, useFactory: () => {
                 return new FileUploader({
                     url: '/api/documents/upload',
-                    removeAfterUpload: true
+                    removeAfterUpload: true,
+                    allowedMimeType: ['text/html']
                 } as FileUploaderOptions)
             }
         }
-
     ],
     entryComponents: [
         ClusterCalculationModal

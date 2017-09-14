@@ -11,7 +11,9 @@ import {
 import { Document } from './document';
 import { DocumentService } from './document.service';
 import { JobService } from './job.service';
+import { LoadingIndicatorService } from './loadingIndicator.service';
 import { FileUploader, FileItem } from 'ng2-file-upload';
+import * as Rx from 'rxjs/Rx';
 
 import * as _ from 'lodash'; 
 
@@ -36,7 +38,8 @@ export class CreateJobComponent implements OnInit, DoCheck {
         private documentService: DocumentService,
         private jobService: JobService,
         private router: Router,
-        private uploader: FileUploader) {
+        private uploader: FileUploader,
+        private loadingIndicatorService: LoadingIndicatorService) {
 
     }
 
@@ -48,9 +51,18 @@ export class CreateJobComponent implements OnInit, DoCheck {
             });
     }
 
+    setFocusEvent(): void {
+        var focus = Rx.Observable.fromEvent(window, 'focus').subscribe(event => {
+            this.loadingIndicatorService.toggle(true);
+            focus.unsubscribe();
+        });
+    }
+
     ngDoCheck(...args: any[]): void {
 
-        if (this.uploader.queue.length > 0 && !this.uploader.isUploading) {
+        if (this.uploader.queue.length > 0 && !this.uploader.isUploading &&
+            _.differenceWith(this.uploader.queue, this.documents,
+                (file: FileItem, doc: Document) => doc.name == file.file.name).length > 0) {
 
             this.uploader.queue = _.uniqBy(this.uploader.queue, 'file.name')
 
@@ -69,6 +81,8 @@ export class CreateJobComponent implements OnInit, DoCheck {
                     } as ViewDocument);
                 }
             }
+
+            this.loadingIndicatorService.toggle(false);
         }
     }
 

@@ -17,11 +17,7 @@ export class LoadingIndicatorInterceptor implements HttpInterceptor {
                 return;
             }
 
-            if (event instanceof HttpResponse) {
-                this.loadingIndicatorService.toggle(false);
-            } else {
-                this.loadingIndicatorService.toggle(true);
-            }
+            this.loadingIndicatorService.toggle(!(event instanceof HttpResponse));
         });
     }
 }

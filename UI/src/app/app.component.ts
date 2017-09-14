@@ -12,8 +12,6 @@ export class AppComponent  {
     private isLoading: boolean = true;
 
     constructor(private loadingIndicatorService: LoadingIndicatorService, private applicationRef: ApplicationRef) {
-        console.log('constructing AppComponent');
-
         loadingIndicatorService.isLoading$.subscribe(isLoading => {
             setTimeout(() => this.isLoading = isLoading);
         });

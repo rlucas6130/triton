@@ -77,7 +77,7 @@
                     </div>
 
                     <input [disabled]="!docsLoaded" id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
-                    <label for="docfile" class="btn btn-secondary">Upload Documents</label>
+                    <label (click)="setFocusEvent()" for="docfile" class="btn btn-secondary">Upload Documents</label>
                     <button (click)="startProcessingJob()" [disabled]="getSelectedDocuments().length < 2 || uploader.isUploading || documents.length == 0" type="button" class="btn btn-primary">Start Processing Job</button>
                 </nav>
             </div>
