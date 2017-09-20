@@ -32,9 +32,14 @@ type ViewDocument = Document & {
 })
 export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterViewChecked { 
     documents: ViewDocument[] = [];
+    masterDocuments: ViewDocument[] = [];
     allDocsSelected: boolean;
     initialUploadCount: number;
     docsLoaded: boolean = false;
+    pageSize: number = 30;
+    currentPage: number = 0;
+    totalPages: number = 0;
+
     constructor(
         private documentService: DocumentService,
         private jobService: JobService,
@@ -52,7 +57,14 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
     ngOnInit(): void {
         this.documentService.getDocuments()
             .subscribe(docs => {
-                this.documents = docs as ViewDocument[];
+                this.masterDocuments = docs as ViewDocument[];
+
+                var start = this.pageSize * this.currentPage;
+
+                this.documents = _.slice(this.masterDocuments, start, start + this.pageSize);
+
+                this.totalPages = _.ceil(this.masterDocuments.length / this.pageSize);
+
                 this.docsLoaded = true;
             });
     }
@@ -73,35 +85,41 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
     ngDoCheck(...args: any[]): void {
         if (this.uploader.queue.length > 0 && !this.uploader.isUploading) {
 
-            this.uploader.queue = _.differenceWith(this.uploader.queue, this.documents,
+            this.uploader.queue = _.differenceWith(this.uploader.queue, this.masterDocuments,
                 (file: FileItem, doc: Document) => doc.name == file.file.name && doc.id > 0);            
 
             if (this.uploader.queue.length > 0) {
 
-                this.uploader.queue = _.uniqBy(this.uploader.queue, 'file.name')
-
-                this.uploader.queue = _.filter(this.uploader.queue, (fi) => {
-                    return !_.some(_.filter(this.documents, (d) => d.id > 0), { name: fi.file.name });
+                this.uploader.queue = _.uniqBy(this.uploader.queue, 'file.name').filter((fi) => {
+                    return !_.some(_.filter(this.masterDocuments, (d) => d.id > 0), { name: fi.file.name });
                 });
 
+                let pageChange: boolean = false;
+
                 for (let file of this.uploader.queue) {
-                    if (!_.some(this.documents, { name: file.file.name })) {
-                        this.documents.unshift({
+                    if (!_.some(this.masterDocuments, { name: file.file.name })) {
+                        this.masterDocuments.unshift({
                             id: 0,
                             name: file.file.name,
                             isSelected: false,
                             isUploading: false,
                             fileItem: file
                         } as ViewDocument);
+                        pageChange = true;
                     }
-                } 
+                }
+
+                if (pageChange) {
+                    this.totalPages = _.ceil(this.masterDocuments.length / this.pageSize);
+                    this.changePage(0);
+                }
             }
         }
     }
 
     public getSelectedDocuments(): Document[]
     {
-        return _.filter(this.documents, doc => doc.isSelected);
+        return _.filter(this.masterDocuments, doc => doc.isSelected);
     }
 
     public getPercentCompleted(): number 
@@ -111,19 +129,19 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
 
     public getUploadingDocuments(): Document[]
     {
-        return _.filter(this.documents, doc => doc.isUploading);
+        return _.filter(this.masterDocuments, doc => doc.isUploading);
     }
 
     public getAvailableDocuments(): Document[]
     {
-        return _.filter(this.documents, doc => doc.id > 0);
+        return _.filter(this.masterDocuments, doc => doc.id > 0);
     }
 
     public selectAllDocuments(): void {
 
         this.allDocsSelected = !this.allDocsSelected;
 
-        for (let doc of this.documents) {
+        for (let doc of this.masterDocuments) {
             doc.isSelected = this.allDocsSelected;
         }
     }
@@ -134,13 +152,21 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
 
         this.uploader.uploadAllFiles();
 
-        for (let doc of this.documents) {
+        for (let doc of this.masterDocuments) {
             if (doc.id == 0) {
                 doc.isUploading = true;
             }
         }
 
         this.waitUntilComplete();
+    }
+
+    public changePage(direction: number): void {
+        this.currentPage += direction;
+
+        var start = this.pageSize * this.currentPage;
+
+        this.documents = _.slice(this.masterDocuments, start, start + this.pageSize);
     }
 
     public uploadDocument(document: ViewDocument): void {
@@ -161,7 +187,7 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
     private waitUntilComplete(): void {
         this.timer = setInterval(() => {
 
-            var uploadingDocs = _.filter(this.documents, (doc) => {
+            var uploadingDocs = _.filter(this.masterDocuments, (doc) => {
                 return doc.id == 0 && doc.isUploading == true;
             });
 
@@ -169,20 +195,22 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
                 clearInterval(this.timer);
             }
 
-            this.documentService.getDocuments(true)
+            var sub = this.documentService.getDocuments(true)
                 .subscribe(docs => {
                     for (let uploadingDoc of uploadingDocs) {
                         var savedDoc = _.find(docs, (doc) => doc.name == uploadingDoc.name);
 
                         if (savedDoc) {
-                            var docsIndex = _.findIndex(this.documents, (doc) => doc.name == uploadingDoc.name);
-                            this.documents[docsIndex].id = savedDoc.id;
-                            this.documents[docsIndex].isUploading = false;
-                            this.documents[docsIndex].isSelected = true;
-                            this.documents[docsIndex].isNew = true;
-                            this.documents[docsIndex].totalTermDocCount = savedDoc.totalTermDocCount;
+                            var docsIndex = _.findIndex(this.masterDocuments, (doc) => doc.name == uploadingDoc.name);
+                            this.masterDocuments[docsIndex].id = savedDoc.id;
+                            this.masterDocuments[docsIndex].isUploading = false;
+                            this.masterDocuments[docsIndex].isSelected = true;
+                            this.masterDocuments[docsIndex].isNew = true;
+                            this.masterDocuments[docsIndex].totalTermDocCount = savedDoc.totalTermDocCount;
                         }
                     }
+
+                    sub.unsubscribe();
                 });
         }, 5000);
     }
@@ -190,13 +218,13 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
     public removeDocument(document: Document): void {
         _.find(this.uploader.queue, (fI) => fI.file.name == document.name).remove();
 
-        _.remove(this.documents, document);
+        _.remove(this.masterDocuments, document);
     }
 
     public removeAllUploads(): void {
         this.uploader.clearQueue();
 
-        _.remove(this.documents, (doc) => doc.id == 0);
+        _.remove(this.masterDocuments, (doc) => doc.id == 0);
     }
 
     public docIdTracker(index: number, doc: Document): string {
@@ -204,7 +232,7 @@ export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterView
     }
 
     public hideGlobalMenu(): boolean {
-        return !_.some(this.documents, doc => doc.id == 0 && doc.isUploading == false);
+        return !_.some(this.masterDocuments, doc => doc.id == 0 && doc.isUploading == false);
     }
 
     public startProcessingJob(): void {

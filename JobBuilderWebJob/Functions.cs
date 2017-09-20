@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -31,9 +32,7 @@ namespace JobBuilderWebJob
 
                 var uploadDocs = binaryFormatter.Deserialize(blobStream) as UploadDocumentParameter[];
 
-                foreach(var doc in uploadDocs) { 
-                    LSA.CreateDocument(doc.StreamData, doc.FileName);
-                }
+                uploadDocs.AsParallel().ForAll(doc => LSA.CreateDocument(doc.StreamData, doc.FileName));
             }
             catch (Exception)
             { 

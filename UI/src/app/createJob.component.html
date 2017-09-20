@@ -30,7 +30,7 @@
                     <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents; trackBy:docIdTracker">
                         <th scope="row">
                             <i [hidden]="!doc.id" [class.fadeIn]="doc.isNew" [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
-                            <i (click)="uploadDocument(doc)" [hidden]="doc.id" class="fa upload-mini-btn" [class.fa-hourglass]="doc.isUploading" [class.fa-cloud-upload]="!doc.isUploading"></i>
+                            <i (click)="uploadDocument(doc)" [hidden]="doc.id" class="fa upload-mini-btn" [class.fa-gear]="doc.isUploading" [class.fa-spin]="doc.isUploading" [class.fa-cloud-upload]="!doc.isUploading"></i>
                         </th>
                         <td>
                             {{doc.name}} 
@@ -53,31 +53,50 @@
         </div>
         <div class="container">
             <div class="row">
-                <nav class="nav col-10 offset-2 justify-content-end fixed-bottom navbar-light bg-faded">
+                <nav class="nav col-10 offset-2 justify-content-end fixed-bottom navbar-light bg-faded fixed-footer">
                     <div class="container">
                         <div class="row">
+
+                            <nav class="col-2 pagination " aria-label="...">
+                                <ul class="pagination">
+                                    <li [ngClass]="{'disabled': currentPage == 0}" class="page-item">
+                                        <a (click)="changePage(-1)" class="page-link" tabindex="-1" href="javascript:void(0)">
+                                            <i class="fa fa-fw fa-arrow-circle-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Page {{currentPage+1}}</span>
+                                    </li>
+                                    <li [ngClass]="{ 'disabled': currentPage == (totalPages-1) || totalPages == 0 }" class="page-item">
+                                        <a (click)="changePage(1)" class="page-link" href="javascript:void(0)">
+                                            <i class="fa fa-fw fa-arrow-circle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+
                             <p class="col-3 lead">
                                 <strong>{{getAvailableDocuments().length}}</strong> documents available.
                             </p>
                             <p class="col-3 lead">
                                 <strong>{{getSelectedDocuments().length}}</strong> documents selected.
                             </p>
-                            <p [hidden]="!uploader.queue.length || getUploadingDocuments().length" class="col-6 lead">
+                            <p [hidden]="!uploader.queue.length || getUploadingDocuments().length" class="col-4 lead">
                                 <strong>{{uploader.queue.length}}</strong> documents queued for upload.
                             </p>
-                            <div class="progress col-6" [hidden]="!getUploadingDocuments().length">
+                            <div class="progress col-4" [hidden]="!getUploadingDocuments().length">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" [attr.aria-valuenow]="getPercentCompleted()" aria-valuemin="0" aria-valuemax="100" [style.width.%]="getPercentCompleted()">
                                     <span [hidden]="getPercentCompleted() < 2">{{getPercentCompleted()}}%</span>
                                 </div>
                                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" [attr.aria-valuenow]="100 - getPercentCompleted()" aria-valuemin="0" aria-valuemax="100" [style.width.%]="100 - getPercentCompleted()">
-                                    <span [hidden]="(100 - getPercentCompleted()) < 10">{{getUploadingDocuments().length}} Remaining</span>
+                                    <span [hidden]="(100 - getPercentCompleted()) < 20">{{getUploadingDocuments().length}} Remaining</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <input [disabled]="!docsLoaded" id="docfile" name="docfile" type="file" ng2FileSelect [uploader]="uploader" multiple webkitdirectory directory />
-                    <label (click)="setFocusEvent()" for="docfile" class="btn btn-secondary">Upload Documents</label>
+                    <label (click)="setFocusEvent()" for="docfile" class="btn btn-secondary">Choose Documents</label>
                     <button (click)="startProcessingJob()" [disabled]="getSelectedDocuments().length < 2 || uploader.isUploading || documents.length == 0" type="button" class="btn btn-primary">Start Processing Job</button>
                 </nav>
             </div>

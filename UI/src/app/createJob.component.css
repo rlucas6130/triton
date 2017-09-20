@@ -20,7 +20,7 @@ table th:first-child i:first-child {
     cursor:pointer;
 }
 
-nav {
+nav.fixed-footer {
     border-top:solid 1px #eee;
     padding:10px;
 }
@@ -57,7 +57,7 @@ nav p {
     to {opacity:1}
 }
 
-.fa-cloud-upload.upload-mini-btn, .fa-spinner.upload-mini-btn {
+.fa-cloud-upload.upload-mini-btn, .fa-gear.upload-mini-btn {
     color: #5bc0de;
     cursor:pointer;
 }
@@ -84,7 +84,7 @@ nav p {
 
 .progress-bar {
     height:100%;
-    padding-top:6px;
+    padding-top:11px;
     /*border-top-right-radius:30px;
     border-bottom-right-radius:30px;*/
 }
@@ -92,4 +92,14 @@ nav p {
 .progress-bar:nth-child(2n) {
     opacity:.5;
     color:#000;
+}
+
+ul.pagination, 
+nav.pagination {
+    margin:0;
+    padding:0;
+}
+
+.fixed-footer p {
+    padding-top:5px;
 }
