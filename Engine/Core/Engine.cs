@@ -18,14 +18,12 @@ namespace Engine.Core
 {
     public static class LSA
     {
-        public static string DictionaryPath = "D:/Wiki/dict.txt";
-
         public static MatrixContainer MatrixContainer { get; set; }
         private static Dictionary<int, MatrixContainer> _matrixContainers { get; set; } = new Dictionary<int, MatrixContainer>();
 
         public static readonly HashSet<string> Exclusions = new HashSet<string>() { "me", "you", "his", "him", "her", "herself", "no", "gnu", "disclaimers", "copyrights", "navigation", "donate", "documentation", "trademark", "revision", "contact", "modified", "charity", "registered", "portal", "views", "free", "recent", "search", "details", "license", "encyclopedia", "page", "terms", "current", "content", "foundation", "categories", "help", "changes", "discussion", "users", "featured", "article" };
 
-        public static void CreateDocument(Stream blobStream, string documentName)
+        public static void CreateDocument(byte[] documentBytes, string documentName)
         {
             using (var context = new SvdEntities())
             {
@@ -33,9 +31,8 @@ namespace Engine.Core
 
                 if (document == null)
                 {
-                    var termLookup = GetOrAddTerms(context).ToLookup(t => t.Value);
-                    var sr = new StreamReader(blobStream);
-                    var html = sr.ReadToEnd();
+                    var termLookup = GetTerms(context).ToLookup(t => t.Value);
+                    var html = Encoding.UTF8.GetString(documentBytes);
 
                     document = context.Documents.Add(new Document()
                     {
@@ -103,34 +100,14 @@ namespace Engine.Core
             }
         }
 
-        public static IEnumerable<Term> GetOrAddTerms(SvdEntities context)
+        public static IEnumerable<Term> GetTerms(SvdEntities context)
         {
-            var terms = context.Terms.ToList();
-
-            if (!terms.Any()) {
-                var fileStreamDict = new StreamReader(DictionaryPath);
-
-                terms = new List<Term>();
-
-                while (!fileStreamDict.EndOfStream)
-                {
-                    terms.Add(new Term()
-                    {
-                        Value = fileStreamDict.ReadLine()
-                    });
-                }
-
-                terms = context.Terms.AddRange(terms).ToList();
-
-                context.SaveChanges();
-            }
-
-            return terms;
+            return context.Terms.ToList();
         }
 
         public static DenseMatrix GetTermDocMatrix(SvdEntities context, Job job, IEnumerable<int> docIds)
         {
-            var termLookup = GetOrAddTerms(context).ToLookup(t => t.Value);
+            var termLookup = GetTerms(context).ToLookup(t => t.Value);
             
             SetJobStatus(context, job, JobStatus.BuildingMatrix);
 

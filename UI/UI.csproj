@@ -1112,6 +1112,7 @@
       <DependentUpon>model.tst</DependentUpon>
       <CustomToolNamespace>ViewModels\Dtos\Document.cs</CustomToolNamespace>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="src\app\fileUploader.extension.ts" />
     <TypeScriptCompile Include="src\app\loadingIndicator.service.ts" />
     <TypeScriptCompile Include="src\app\job.ts">
       <DependentUpon>model.tst</DependentUpon>
@@ -1122,6 +1123,10 @@
       <CustomToolNamespace>..\Engine\Contracts\JobStatus.cs</CustomToolNamespace>
     </TypeScriptCompile>
     <TypeScriptCompile Include="src\app\loadingIndicator.interceptor.ts" />
+    <TypeScriptCompile Include="src\app\uploadDocumentParameter.ts">
+      <DependentUpon>contracts.tst</DependentUpon>
+      <CustomToolNamespace>..\Engine\Contracts\UploadDocumentParameter.cs</CustomToolNamespace>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="src\app\visualizeJob.component.ts" />
     <TypeScriptCompile Include="src\app\jobs.component.ts" />
     <TypeScriptCompile Include="src\app\job.service.ts" />

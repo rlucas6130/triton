@@ -30,7 +30,7 @@
                     <tr [ngClass]="{'table-info': doc.isSelected}" *ngFor="let doc of documents; trackBy:docIdTracker">
                         <th scope="row">
                             <i [hidden]="!doc.id" [class.fadeIn]="doc.isNew" [class.fa-square-o]="!doc.isSelected" [class.fa-check-square-o]="doc.isSelected" (click)="doc.isSelected = !doc.isSelected" class="fa"></i>
-                            <i (click)="uploadDocument(doc)" [hidden]="doc.id" class="fa upload-mini-btn" [class.fa-spin]="doc.isUploading"  [class.fa-spinner]="doc.isUploading"  [class.fa-cloud-upload]="!doc.isUploading"></i>
+                            <i (click)="uploadDocument(doc)" [hidden]="doc.id" class="fa upload-mini-btn" [class.fa-hourglass]="doc.isUploading" [class.fa-cloud-upload]="!doc.isUploading"></i>
                         </th>
                         <td>
                             {{doc.name}} 

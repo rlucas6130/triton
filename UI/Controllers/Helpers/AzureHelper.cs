@@ -60,7 +60,7 @@ namespace UI.Controllers.Helpers
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             // Retrieve a reference to a container.
-            CloudQueue queue = queueClient.GetQueueReference("documentqueue");
+            CloudQueue queue = queueClient.GetQueueReference(queueName);
 
             // Create the queue if it doesn't already exist
             queue.CreateIfNotExists();

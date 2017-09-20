@@ -35,12 +35,16 @@ export class JobService {
             .then(() => null)
             .catch(this.handleError);
     }
-    getJobs(): Observable<Job[]> {
-        return this.http.get<Job[]>(this.jobUrl);
+    getJobs(hideLoadingIndicator: boolean = false): Observable<Job[]> {
+        return this.http.get<Job[]>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(this.jobUrl) : this.jobUrl)
+            .catch(this.handleError);
     }
-    getJob(id: number): Observable<Job> {
+    getJob(id: number, hideLoadingIndicator: boolean = false): Observable<Job> {
         const url = `${this.jobUrl}/${id}`;
-        return this.http.get<Job>(url);
+        return this.http.get<Job>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(url) : url)
+            .catch(this.handleError);
     }
     private handleError(error: any): Promise<any> {
         console.error('An error occurred', error);

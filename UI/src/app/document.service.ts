@@ -40,8 +40,9 @@ export class DocumentService {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
     }
-    getDocument(id: number): Observable<Document> {
+    getDocument(id: number, hideLoadingIndicator: boolean = false): Observable<Document> {
         const url = `${this.documentUrl}/${id}`;
-        return this.http.get<Document>(url);
+        return this.http.get<Document>(hideLoadingIndicator ?
+            this.loadingIndicatorService.hide(url) : url);
     }
 }

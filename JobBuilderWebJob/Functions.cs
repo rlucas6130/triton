@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Engine.Core;
 using Engine;
+using Engine.Contracts;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace JobBuilderWebJob
 {
@@ -21,11 +23,22 @@ namespace JobBuilderWebJob
             });
         }
 
-        // This function will get triggered/executed when a new message is written 
-        // on an Azure Queue called queue.
-        public static void UploadDocument([QueueTrigger("documentqueue")] string blobName, [Blob("documents/{queueTrigger}", FileAccess.Read)] Stream blobStream, TextWriter log)
+        public static void UploadDocument([QueueTrigger("uploadqueue")] string blobName, [Blob("uploadbatch/{queueTrigger}", FileAccess.Read)] Stream blobStream, TextWriter log)
         {
-            LSA.CreateDocument(blobStream, blobName);
+            try
+            {
+                var binaryFormatter = new BinaryFormatter();
+
+                var uploadDocs = binaryFormatter.Deserialize(blobStream) as UploadDocumentParameter[];
+
+                foreach(var doc in uploadDocs) { 
+                    LSA.CreateDocument(doc.StreamData, doc.FileName);
+                }
+            }
+            catch (Exception)
+            { 
+                throw;
+            }
         }
 
         // This function will get triggered/executed when a new message is written 

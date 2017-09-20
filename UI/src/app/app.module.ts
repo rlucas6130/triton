@@ -4,7 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { ModalModule, PopoverModule } from 'ngx-bootstrap';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
-
+import { FileUploaderExtension } from './fileUploader.extension';
+ 
 import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -54,8 +55,8 @@ import { LoadingIndicatorInterceptor } from './loadingIndicator.interceptor';
         ClusterCalculationService,
         LoadingIndicatorService,
         {
-            provide: FileUploader, useFactory: () => {
-                return new FileUploader({
+            provide: FileUploaderExtension, useFactory: () => {
+                return new FileUploaderExtension({
                     url: '/api/documents/upload',
                     removeAfterUpload: true,
                     allowedMimeType: ['text/html']

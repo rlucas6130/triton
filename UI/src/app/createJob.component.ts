@@ -1,4 +1,4 @@
-﻿import { Input, Component, OnInit, DoCheck } from '@angular/core';
+﻿import { Input, Component, OnInit, OnDestroy, DoCheck, AfterContentChecked, AfterViewChecked } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import {
     trigger,
@@ -12,7 +12,8 @@ import { Document } from './document';
 import { DocumentService } from './document.service';
 import { JobService } from './job.service';
 import { LoadingIndicatorService } from './loadingIndicator.service';
-import { FileUploader, FileItem } from 'ng2-file-upload';
+import { FileUploader, FileItem, FileUploaderOptions } from 'ng2-file-upload';
+import { FileUploaderExtension } from './fileUploader.extension';
 import * as Rx from 'rxjs/Rx';
 
 import * as _ from 'lodash'; 
@@ -29,7 +30,7 @@ type ViewDocument = Document & {
     templateUrl: './createJob.component.html',
     styleUrls: ['./createJob.component.css']
 })
-export class CreateJobComponent implements OnInit, DoCheck { 
+export class CreateJobComponent implements OnInit, DoCheck, OnDestroy, AfterViewChecked { 
     documents: ViewDocument[] = [];
     allDocsSelected: boolean;
     initialUploadCount: number;
@@ -38,9 +39,14 @@ export class CreateJobComponent implements OnInit, DoCheck {
         private documentService: DocumentService,
         private jobService: JobService,
         private router: Router,
-        private uploader: FileUploader,
+        private uploader: FileUploaderExtension,
         private loadingIndicatorService: LoadingIndicatorService) {
 
+    }
+
+    ngAfterViewChecked(): void
+    {
+        this.loadingIndicatorService.toggle(false);
     }
 
     ngOnInit(): void {
@@ -51,6 +57,12 @@ export class CreateJobComponent implements OnInit, DoCheck {
             });
     }
 
+    ngOnDestroy(): void {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+    }
+
     setFocusEvent(): void {
         var focus = Rx.Observable.fromEvent(window, 'focus').subscribe(event => {
             this.loadingIndicatorService.toggle(true);
@@ -59,30 +71,31 @@ export class CreateJobComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(...args: any[]): void {
+        if (this.uploader.queue.length > 0 && !this.uploader.isUploading) {
 
-        if (this.uploader.queue.length > 0 && !this.uploader.isUploading &&
-            _.differenceWith(this.uploader.queue, this.documents,
-                (file: FileItem, doc: Document) => doc.name == file.file.name).length > 0) {
+            this.uploader.queue = _.differenceWith(this.uploader.queue, this.documents,
+                (file: FileItem, doc: Document) => doc.name == file.file.name && doc.id > 0);            
 
-            this.uploader.queue = _.uniqBy(this.uploader.queue, 'file.name')
+            if (this.uploader.queue.length > 0) {
 
-            this.uploader.queue = _.filter(this.uploader.queue, (fi) => {
-                return !_.some(_.filter(this.documents, (d) => d.id > 0), { name: fi.file.name });
-            });
+                this.uploader.queue = _.uniqBy(this.uploader.queue, 'file.name')
 
-            for (let file of this.uploader.queue) {
-                if (!_.some(this.documents, { name: file.file.name })) {
-                    this.documents.unshift({
-                        id: 0,
-                        name: file.file.name,
-                        isSelected: false,
-                        isUploading: false,
-                        fileItem: file
-                    } as ViewDocument);
-                }
+                this.uploader.queue = _.filter(this.uploader.queue, (fi) => {
+                    return !_.some(_.filter(this.documents, (d) => d.id > 0), { name: fi.file.name });
+                });
+
+                for (let file of this.uploader.queue) {
+                    if (!_.some(this.documents, { name: file.file.name })) {
+                        this.documents.unshift({
+                            id: 0,
+                            name: file.file.name,
+                            isSelected: false,
+                            isUploading: false,
+                            fileItem: file
+                        } as ViewDocument);
+                    }
+                } 
             }
-
-            this.loadingIndicatorService.toggle(false);
         }
     }
 
@@ -119,7 +132,7 @@ export class CreateJobComponent implements OnInit, DoCheck {
 
         this.initialUploadCount = this.uploader.queue.length;
 
-        this.uploader.uploadAll();
+        this.uploader.uploadAllFiles();
 
         for (let doc of this.documents) {
             if (doc.id == 0) {
@@ -143,15 +156,17 @@ export class CreateJobComponent implements OnInit, DoCheck {
         }
     }
 
+    private timer: NodeJS.Timer;
+
     private waitUntilComplete(): void {
-        var intervalId = setInterval(() => {
+        this.timer = setInterval(() => {
 
             var uploadingDocs = _.filter(this.documents, (doc) => {
                 return doc.id == 0 && doc.isUploading == true;
             });
 
             if (uploadingDocs.length == 0) {
-                clearInterval(intervalId);
+                clearInterval(this.timer);
             }
 
             this.documentService.getDocuments(true)
